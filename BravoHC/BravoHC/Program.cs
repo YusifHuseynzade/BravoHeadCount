@@ -2,12 +2,17 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Interfaces;
+using DepartmentDetails;
 using FluentValidation.AspNetCore;
+using FunctionalAreaDetails;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PositionDetails;
+using ProjectDetails;
+using SubSubSectionDetails;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +86,11 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddAppUserServices();
+builder.Services.AddFunctionalAreaServices();
+builder.Services.AddDepartmentServices();
+builder.Services.AddSectionServices();
+builder.Services.AddSubSectionServices();
+builder.Services.AddPositionServices();
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(

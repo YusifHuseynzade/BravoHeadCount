@@ -24,7 +24,16 @@
   <ItemGroup>
     <ProjectReference Include="..\ApplicationUserDetails\ApplicationUserDetails.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\DepartmentDetails\DepartmentDetails.csproj" />
+    <ProjectReference Include="..\EmployeeDetails\EmployeeDetails.csproj" />
+    <ProjectReference Include="..\FormatDetails\FormatDetails.csproj" />
+    <ProjectReference Include="..\FunctionalAreaDetails\FunctionalAreaDetails.csproj" />
+    <ProjectReference Include="..\HeadCountDetails\HeadCountDetails.csproj" />
+    <ProjectReference Include="..\PositionDetails\PositionDetails.csproj" />
+    <ProjectReference Include="..\ProjectDetails\ProjectDetails.csproj" />
+    <ProjectReference Include="..\SectionDetails\SectionDetails.csproj" />
+    <ProjectReference Include="..\StoreDetails\StoreDetails.csproj" />
+    <ProjectReference Include="..\SubSectionDetails\SubSectionDetails.csproj" />
   </ItemGroup>
 
 </Project>
