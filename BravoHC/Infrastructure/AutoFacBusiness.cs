@@ -13,6 +13,16 @@ namespace Infrastructure
         {
             builder.RegisterType<AppUserRepository>().As<IAppUserRepository>();
             builder.RegisterType<RoleRepository>().As<IRoleRepository>();
+            builder.RegisterType<DepartmentRepository>().As<IDepartmentRepository>();
+            builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>();
+            builder.RegisterType<FormatRepository>().As<IFormatRepository>();
+            builder.RegisterType<FunctionalAreaRepository>().As<IFunctionalAreaRepository>();
+            builder.RegisterType<HeadCountRepository>().As<IHeadCountRepository>();
+            builder.RegisterType<PositionRepository>().As<IPositionRepository>();
+            builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
+            builder.RegisterType<SectionRepository>().As<ISectionRepository>();
+            builder.RegisterType<StoreRepository>().As<IStoreRepository>();
+            builder.RegisterType<SubSectionRepository>().As<ISubSectionRepository>();
 
             builder.Register(ctx =>
             {
