@@ -17,13 +17,17 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.HasOne(s => s.Department)
+            builder.HasOne(s => s.Project)
                 .WithMany(d => d.Sections)
-                .HasForeignKey(s => s.DepartmentId);
+                .HasForeignKey(s => s.ProjectId);
 
             builder.HasMany(s => s.SubSections)
                 .WithOne(ss => ss.Section)
                 .HasForeignKey(ss => ss.SectionId);
+
+            builder.HasMany(s => s.Employees)
+             .WithOne(e => e.Section)
+             .HasForeignKey(e => e.SectionId);
         }
     }
 }

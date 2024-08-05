@@ -9,6 +9,7 @@ namespace Domain.Entities
     public class Format: BaseEntity
     {
         public string Name { get; set; }
+        public List<Store> Stores { get; set; }
         public void SetDetail(string name)
         {
             this.Name = name;

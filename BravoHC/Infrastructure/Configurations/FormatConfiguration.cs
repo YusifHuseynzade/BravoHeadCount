@@ -16,6 +16,10 @@ namespace Infrastructure.Configurations
             builder.Property(t => t.Name)
                 .IsRequired()
                 .HasMaxLength(100);
+
+            builder.HasMany(s => s.Stores)
+               .WithOne(e => e.Format)
+               .HasForeignKey(e => e.FormatId);
         }
     }
 }

@@ -10,11 +10,21 @@ namespace Domain.Entities
     {
         public string FullName { get; set; }
         public string Badge { get; set; }
-        public bool IsDirector { get; set; }
-        public bool IsRecruiter { get; set; }
-        public bool IsAreaManager { get; set; }
-        public bool IsStoreManager { get; set; }
+        public string? Director { get; set; }
+        public string? Recruiter { get; set; }
+        public string? AreaManager { get; set; }
+        public string? StoreManager { get; set; }
         public int StoreId { get; set; }
         public Store Store { get; set; }
+        public int FunctionalAreaId { get; set; }
+        public FunctionalArea FunctionalArea { get; set; }
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
+        public int PositionId { get; set; }
+        public Position Position { get; set; }
+        public int SectionId { get; set; }
+        public Section Section { get; set; }
+        public int? SubSectionId { get; set; }
+        public SubSection? SubSection { get; set; }
     }
 }

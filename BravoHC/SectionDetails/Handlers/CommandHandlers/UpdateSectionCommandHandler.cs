@@ -9,9 +9,9 @@ public class UpdateSectionCommandHandler : IRequestHandler<UpdateSectionCommandR
 {
 
     private readonly ISectionRepository _repository;
-    private readonly IDepartmentRepository _departmentRepository;
+    private readonly IProjectRepository _departmentRepository;
 
-    public UpdateSectionCommandHandler(ISectionRepository repository, IDepartmentRepository departmentRepository = null)
+    public UpdateSectionCommandHandler(ISectionRepository repository, IProjectRepository departmentRepository = null)
     {
         _repository = repository;
         _departmentRepository = departmentRepository;
@@ -39,7 +39,7 @@ public class UpdateSectionCommandHandler : IRequestHandler<UpdateSectionCommandR
             };
         }
         // Əgər tələbədə göndərilən DepartmentId varsa, onun mövcudluğunu yoxlayın
-        if (request.DepartmentId != 0 && !await _departmentRepository.IsExistAsync(p => p.Id == request.DepartmentId))
+        if (request.ProjectId != 0 && !await _departmentRepository.IsExistAsync(p => p.Id == request.ProjectId))
         {
             return new UpdateSectionCommandResponse
             {
@@ -48,7 +48,7 @@ public class UpdateSectionCommandHandler : IRequestHandler<UpdateSectionCommandR
         }
 
         existingSection.SetDetail(request.Name);
-        existingSection.DepartmentId = request.DepartmentId;
+        existingSection.ProjectId = request.ProjectId;
 
         // Update edilmiş Projecti yadda saxlamaq
         await _repository.UpdateAsync(existingSection);

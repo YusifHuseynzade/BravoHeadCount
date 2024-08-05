@@ -9,16 +9,16 @@ namespace SectionDetails.Handlers.CommandHandlers;
 public class CreateSectionCommandHandler : IRequestHandler<CreateSectionCommandRequest, CreateSectionCommandResponse>
 {
     private readonly ISectionRepository _repository;
-    private readonly IDepartmentRepository _departmentRepository;
+    private readonly IProjectRepository _projectRepository;
 
-    public CreateSectionCommandHandler(ISectionRepository repository, IDepartmentRepository departmentRepository)
+    public CreateSectionCommandHandler(ISectionRepository repository, IProjectRepository projectRepository)
     {
         _repository = repository;
-        _departmentRepository = departmentRepository;
+        _projectRepository = projectRepository;
     }
     public async Task<CreateSectionCommandResponse> Handle(CreateSectionCommandRequest request, CancellationToken cancellationToken)
     {
-        if (await _repository.IsExistAsync(d => d.Name == request.Name && d.DepartmentId == request.DepartmentId))
+        if (await _repository.IsExistAsync(d => d.Name == request.Name && d.ProjectId == request.ProjectId))
         {
             return new CreateSectionCommandResponse
             {
@@ -28,7 +28,7 @@ public class CreateSectionCommandHandler : IRequestHandler<CreateSectionCommandR
 
         var section = new Section
         {
-            DepartmentId = request.DepartmentId
+            ProjectId = request.ProjectId
         };
 
         section.SetDetail(request.Name);

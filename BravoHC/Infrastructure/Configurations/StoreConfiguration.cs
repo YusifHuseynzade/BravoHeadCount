@@ -16,17 +16,14 @@ namespace Infrastructure.Configurations
             builder.Property(t => t.HeadCountNumber)
                 .IsRequired();
 
-            builder.Property(t => t.CreatedDate)
-                .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(t => t.ModifiedDate)
-                .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
 
             builder.HasMany(s => s.Employees)
                 .WithOne(e => e.Store)
                 .HasForeignKey(e => e.StoreId);
+
+            builder.HasOne(e => e.Format)
+               .WithMany(s => s.Stores)
+               .HasForeignKey(e => e.FormatId);
         }
     }
 }

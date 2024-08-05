@@ -19,6 +19,6 @@ public class FunctionalAreaMapper :Profile
 
 		CreateMap<FunctionalArea, GetAllFunctionalAreaQueryResponse>().ReverseMap(); 
 		CreateMap<FunctionalArea, GetByIdFunctionalAreaQueryResponse>().ReverseMap();
-		CreateMap<Department, GetFunctionalAreaDepartmentsQueryResponse>().ReverseMap();
+		CreateMap<Project, GetFunctionalAreaProjectsQueryResponse>().ReverseMap();
 	}
 }

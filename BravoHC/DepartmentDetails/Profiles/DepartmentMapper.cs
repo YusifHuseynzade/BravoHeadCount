@@ -15,6 +15,6 @@ public class DepartmentMapper:Profile
 
 		CreateMap<Department, GetAllDepartmentQueryResponse>().ReverseMap();
 		CreateMap<Department, GetByIdDepartmentQueryResponse>().ReverseMap();
-		CreateMap<Project, GetDepartmentProjectQueryResponse>().ReverseMap();
+		CreateMap<Project, GetDepartmentSectionQueryResponse>().ReverseMap();
 	}
 }

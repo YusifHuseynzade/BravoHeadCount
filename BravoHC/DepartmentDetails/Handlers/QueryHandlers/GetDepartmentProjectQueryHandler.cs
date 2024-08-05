@@ -7,7 +7,7 @@ using MediatR;
 
 namespace DepartmentDetails.Handlers.QueryHandlers;
 
-public class GetDepartmentProjectQueryHandler : IRequestHandler<GetDepartmentProjectQueryRequest, List<GetDepartmentProjectQueryResponse>>
+public class GetDepartmentProjectQueryHandler : IRequestHandler<GetDepartmentSectionQueryRequest, List<GetDepartmentSectionQueryResponse>>
 {
     private readonly IDepartmentRepository _repository;
     private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ public class GetDepartmentProjectQueryHandler : IRequestHandler<GetDepartmentPro
         _mapper = mapper;
     }
 
-    public async Task<List<GetDepartmentProjectQueryResponse>> Handle(GetDepartmentProjectQueryRequest request, CancellationToken cancellationToken)
+    public async Task<List<GetDepartmentSectionQueryResponse>> Handle(GetDepartmentSectionQueryRequest request, CancellationToken cancellationToken)
     {
         var department = await _repository.FirstOrDefaultAsync(x => x.Id == request.DepartmentId, "Sections");
 
@@ -29,15 +29,15 @@ public class GetDepartmentProjectQueryHandler : IRequestHandler<GetDepartmentPro
         }
 
         var sections = department.Sections;
-        var sectionResponse = _mapper.Map<List<GetDepartmentProjectQueryResponse>>(sections);
+        var sectionResponse = _mapper.Map<List<GetDepartmentSectionQueryResponse>>(sections);
 
         if (request.ShowMore != null)
         {
             sectionResponse = sectionResponse.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
         }
 
-        PaginationListDto<GetDepartmentProjectQueryResponse> model =
-               new PaginationListDto<GetDepartmentProjectQueryResponse>(sectionResponse, request.Page, request.ShowMore?.Take ?? sectionResponse.Count, sectionResponse.Count());
+        PaginationListDto<GetDepartmentSectionQueryResponse> model =
+               new PaginationListDto<GetDepartmentSectionQueryResponse>(sectionResponse, request.Page, request.ShowMore?.Take ?? sectionResponse.Count, sectionResponse.Count());
 
         return model.Items;
     }

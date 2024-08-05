@@ -12,8 +12,8 @@ namespace Domain.Entities
         public Project Project { get; set; }
         public int FunctionalAreaId { get; set; }
         public FunctionalArea FunctionalArea { get; set; }
-        public int FormatId { get; set; }
-        public Format Format { get; set; }
+        public int? FormatId { get; set; }
+        public Format? Format { get; set; }
         public int HeadCountNumber { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow.AddHours(4);
         public DateTime ModifiedDate { get; set; } = DateTime.UtcNow.AddHours(4);

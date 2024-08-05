@@ -18,7 +18,6 @@ namespace Infrastructure
         }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Department> Departments { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Format> Formats { get; set; }
         public DbSet<FunctionalArea> FunctionalAreas { get; set; }

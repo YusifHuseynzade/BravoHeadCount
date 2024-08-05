@@ -23,6 +23,18 @@ namespace Infrastructure.Configurations
 
             builder.Property(t => t.IsStore).IsRequired();
             builder.Property(t => t.IsHeadOffice).IsRequired();
+
+            builder.HasOne(d => d.FunctionalArea)
+             .WithMany(fa => fa.Projects)
+             .HasForeignKey(d => d.FunctionalAreaId);
+
+            builder.HasMany(d => d.Sections)    
+                .WithOne(s => s.Project)
+                .HasForeignKey(s => s.ProjectId);
+
+            builder.HasMany(s => s.Employees)
+             .WithOne(e => e.Project)
+             .HasForeignKey(e => e.ProjectId);
         }
     }
 }

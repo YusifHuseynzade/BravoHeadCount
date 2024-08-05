@@ -9,7 +9,8 @@ namespace Domain.Entities
     public class FunctionalArea : BaseEntity
     {
         public string Name { get; set; }
-        public List<Department> Departments { get; set; }
+        public List<Project> Projects { get; set; }
+        public List<Employee> Employees { get; set; }
         public void SetDetail(string name)
         {
             this.Name = name;

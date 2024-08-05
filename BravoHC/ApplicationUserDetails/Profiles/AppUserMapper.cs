@@ -1,10 +1,9 @@
-﻿using ApplicationUserDetails.AppUserRoleDetails.Commands.Request;
-using ApplicationUserDetails.AppUserRoleDetails.Queries.Response;
-using ApplicationUserDetails.Commands.Request;
+﻿using ApplicationUserDetails.Commands.Request;
 using ApplicationUserDetails.Querires.Response;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
+using RoleDetails.Queries.Response;
 
 namespace ApplicationUserDetails.Profiles
 {
@@ -20,10 +19,8 @@ namespace ApplicationUserDetails.Profiles
             CreateMap<CreateAppUserCommandRequest, AppUser>();
             CreateMap<UpdateAppUserCommandRequest, AppUser>();
 
-            CreateMap<Role, GetAllAppUserRoleQueryResponse>();
-            CreateMap<Role, GetByIdAppUserRoleQueryResponse>();
-            CreateMap<CreateAppUserRoleCommandRequest, Role>();
-            CreateMap<UpdateAppUserRoleCommandRequest, Role>();
+            CreateMap<Role, GetAllRoleQueryResponse>().ReverseMap();
+            CreateMap<Role, GetByIdRoleQueryResponse>().ReverseMap();
         }
     }
 }

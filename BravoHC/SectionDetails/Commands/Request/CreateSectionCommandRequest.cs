@@ -6,5 +6,5 @@ namespace SectionDetails.Commands.Request;
 public class CreateSectionCommandRequest : IRequest<CreateSectionCommandResponse>
 {
     public string Name { get; set; }
-    public int DepartmentId { get; set; }
+    public int ProjectId { get; set; }
 }

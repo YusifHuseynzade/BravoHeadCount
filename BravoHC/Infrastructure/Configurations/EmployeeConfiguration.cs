@@ -21,9 +21,45 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(t => t.Director)
+               .IsRequired()
+               .HasMaxLength(50);
+
+            builder.Property(t => t.AreaManager)
+               .IsRequired()
+               .HasMaxLength(50);
+
+            builder.Property(t => t.StoreManager)
+               .IsRequired()
+               .HasMaxLength(50);
+
+            builder.Property(t => t.Recruiter)
+               .IsRequired()
+               .HasMaxLength(50);
+
             builder.HasOne(e => e.Store)
                 .WithMany(s => s.Employees)
                 .HasForeignKey(e => e.StoreId);
+
+            builder.HasOne(e => e.FunctionalArea)
+              .WithMany(s => s.Employees)
+              .HasForeignKey(e => e.FunctionalAreaId);
+
+            builder.HasOne(e => e.Project)
+              .WithMany(s => s.Employees)
+              .HasForeignKey(e => e.ProjectId);
+
+            builder.HasOne(e => e.Section)
+              .WithMany(s => s.Employees)
+              .HasForeignKey(e => e.SectionId);
+
+            builder.HasOne(e => e.SubSection)
+              .WithMany(s => s.Employees)
+              .HasForeignKey(e => e.SubSectionId);
+
+            builder.HasOne(e => e.Position)
+              .WithMany(s => s.Employees)
+              .HasForeignKey(e => e.PositionId);
         }
     }
 }

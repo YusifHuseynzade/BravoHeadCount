@@ -2,8 +2,16 @@
 using Autofac;
 using AutoMapper;
 using Domain.IRepositories;
+using EmployeeDetails.Profiles;
+using FormatDetails.Profiles;
+using FunctionalAreaDetails.Profiles;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
+using PositionDetails.Profiles;
+using ProjectDetails.Profiles;
+using SectionDetails.Profiles;
+using StoreDetails.Profiles;
+using SubSectionDetails.Profiles;
 
 namespace Infrastructure
 {
@@ -13,7 +21,6 @@ namespace Infrastructure
         {
             builder.RegisterType<AppUserRepository>().As<IAppUserRepository>();
             builder.RegisterType<RoleRepository>().As<IRoleRepository>();
-            builder.RegisterType<DepartmentRepository>().As<IDepartmentRepository>();
             builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>();
             builder.RegisterType<FormatRepository>().As<IFormatRepository>();
             builder.RegisterType<FunctionalAreaRepository>().As<IFunctionalAreaRepository>();
@@ -31,6 +38,14 @@ namespace Infrastructure
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile(new AppUserMapper(httpContextAccessor));
+                    cfg.AddProfile(new FormatMapper(httpContextAccessor));
+                    cfg.AddProfile(new FunctionalAreaMapper(httpContextAccessor));
+                    cfg.AddProfile(new ProjectMapper(httpContextAccessor));
+                    cfg.AddProfile(new SectionMapper(httpContextAccessor));
+                    cfg.AddProfile(new SubSectionMapper(httpContextAccessor));
+                    cfg.AddProfile(new PositionMapper(httpContextAccessor));
+                    cfg.AddProfile(new StoreMapper(httpContextAccessor));
+                    cfg.AddProfile(new EmployeeMapper(httpContextAccessor));
 
                 });
 

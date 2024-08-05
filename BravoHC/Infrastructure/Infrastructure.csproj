@@ -24,7 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ApplicationUserDetails\ApplicationUserDetails.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\DepartmentDetails\DepartmentDetails.csproj" />
     <ProjectReference Include="..\EmployeeDetails\EmployeeDetails.csproj" />
     <ProjectReference Include="..\FormatDetails\FormatDetails.csproj" />
     <ProjectReference Include="..\FunctionalAreaDetails\FunctionalAreaDetails.csproj" />

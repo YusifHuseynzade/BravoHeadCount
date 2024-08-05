@@ -20,6 +20,10 @@ namespace Infrastructure.Configurations
             builder.HasOne(ss => ss.Section)
                 .WithMany(s => s.SubSections)
                 .HasForeignKey(ss => ss.SectionId);
+
+            builder.HasMany(s => s.Employees)
+               .WithOne(e => e.SubSection)
+               .HasForeignKey(e => e.SubSectionId);
         }
     }
 }

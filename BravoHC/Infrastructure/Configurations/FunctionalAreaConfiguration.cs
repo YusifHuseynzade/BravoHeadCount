@@ -17,7 +17,7 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.HasMany(fa => fa.Departments)
+            builder.HasMany(fa => fa.Projects)
                 .WithOne(d => d.FunctionalArea)
                 .HasForeignKey(d => d.FunctionalAreaId);
         }
