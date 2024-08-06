@@ -93,10 +93,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 {
                     FullName = request.FullName,
                     Badge = request.Badge,
-                    Director = request.Director,
-                    Recruiter = request.Recruiter,
-                    AreaManager = request.AreaManager,
-                    StoreManager = request.StoreManager,
                     StoreId = request.StoreId,
                     FunctionalAreaId = request.FunctionalAreaId,
                     ProjectId = request.ProjectId,

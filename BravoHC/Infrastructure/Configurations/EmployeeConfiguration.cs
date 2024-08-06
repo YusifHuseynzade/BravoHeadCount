@@ -21,22 +21,6 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.Property(t => t.Director)
-               .IsRequired()
-               .HasMaxLength(50);
-
-            builder.Property(t => t.AreaManager)
-               .IsRequired()
-               .HasMaxLength(50);
-
-            builder.Property(t => t.StoreManager)
-               .IsRequired()
-               .HasMaxLength(50);
-
-            builder.Property(t => t.Recruiter)
-               .IsRequired()
-               .HasMaxLength(50);
-
             builder.HasOne(e => e.Store)
                 .WithMany(s => s.Employees)
                 .HasForeignKey(e => e.StoreId);

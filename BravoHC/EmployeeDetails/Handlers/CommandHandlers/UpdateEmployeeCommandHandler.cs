@@ -104,10 +104,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
 
                 employee.FullName = request.FullName;
                 employee.Badge = request.Badge;
-                employee.Director = request.Director;
-                employee.Recruiter = request.Recruiter;
-                employee.AreaManager = request.AreaManager;
-                employee.StoreManager = request.StoreManager;
                 employee.StoreId = request.StoreId;
                 employee.FunctionalAreaId = request.FunctionalAreaId;
                 employee.ProjectId = request.ProjectId;

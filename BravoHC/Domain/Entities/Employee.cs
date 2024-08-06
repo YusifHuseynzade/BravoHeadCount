@@ -10,10 +10,6 @@ namespace Domain.Entities
     {
         public string FullName { get; set; }
         public string Badge { get; set; }
-        public string? Director { get; set; }
-        public string? Recruiter { get; set; }
-        public string? AreaManager { get; set; }
-        public string? StoreManager { get; set; }
         public int StoreId { get; set; }
         public Store Store { get; set; }
         public int FunctionalAreaId { get; set; }
