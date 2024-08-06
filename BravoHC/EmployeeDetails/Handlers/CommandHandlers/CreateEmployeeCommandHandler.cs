@@ -89,7 +89,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                         throw new BadRequestException($"SubSection with ID {request.SubSectionId.Value} does not exist.");
                 }
 
-                // Yeni employee oluşturma
                 var employee = new Employee
                 {
                     FullName = request.FullName,

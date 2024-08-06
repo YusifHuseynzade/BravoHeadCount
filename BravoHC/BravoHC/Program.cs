@@ -92,6 +92,7 @@ builder.Services.AddProjectServices();
 builder.Services.AddFormatServices();
 builder.Services.AddStoreServices();
 builder.Services.AddEmployeeServices();
+builder.Services.AddHeadCountServices();
 
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

@@ -33,18 +33,18 @@ namespace BravoHC.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllEmployeeQueryRequest request)
         {
-            var formats = await _mediator.Send(request);
+            var employees = await _mediator.Send(request);
 
-            return Ok(formats);
+            return Ok(employees);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdEmployeeQueryRequest { Id = id };
-            var format = await _mediator.Send(requestModel);
+            var employee = await _mediator.Send(requestModel);
 
-            return format != null
-                ? (IActionResult)Ok(format)
+            return employee != null
+                ? (IActionResult)Ok(employee)
                 : NotFound(new { Message = "Employee not found." });
         }
     }
