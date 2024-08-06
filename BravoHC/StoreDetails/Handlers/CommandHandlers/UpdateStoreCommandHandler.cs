@@ -1,25 +1,32 @@
 ﻿using Core.Helpers;
+using Domain.Entities;
 using Domain.IRepositories;
 using MediatR;
 using StoreDetails.Commands.Request;
 using StoreDetails.Commands.Response;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StoreDetails.Handlers.CommandHandlers
 {
     public class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommandRequest, UpdateStoreCommandResponse>
     {
         private readonly IStoreRepository _storeRepository;
+        private readonly IHeadCountRepository _headCountRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly IFormatRepository _formatRepository;
 
         public UpdateStoreCommandHandler(
             IStoreRepository storeRepository,
+            IHeadCountRepository headCountRepository,
             IProjectRepository projectRepository,
             IFunctionalAreaRepository functionalAreaRepository,
             IFormatRepository formatRepository)
         {
             _storeRepository = storeRepository;
+            _headCountRepository = headCountRepository;
             _projectRepository = projectRepository;
             _functionalAreaRepository = functionalAreaRepository;
             _formatRepository = formatRepository;
@@ -68,6 +75,7 @@ namespace StoreDetails.Handlers.CommandHandlers
                     throw new BadRequestException($"Store with ID {request.Id} does not exist.");
                 }
 
+                int oldHeadCountNumber = store.HeadCountNumber;
                 store.ProjectId = request.ProjectId;
                 store.FunctionalAreaId = request.FunctionalAreaId;
                 store.FormatId = request.FormatId;
@@ -75,6 +83,24 @@ namespace StoreDetails.Handlers.CommandHandlers
                 store.ModifiedDate = DateTime.UtcNow;
 
                 await _storeRepository.UpdateAsync(store);
+                await _storeRepository.CommitAsync();
+
+                // Headcount kayıtlarını güncelleme veya ekleme
+                if (request.HeadCountNumber > oldHeadCountNumber)
+                {
+                    for (int i = oldHeadCountNumber + 1; i <= request.HeadCountNumber; i++)
+                    {
+                        var headCount = new HeadCount
+                        {
+                            ProjectId = request.ProjectId,
+                            FunctionalAreaId = request.FunctionalAreaId,
+                            HCNumber = i
+                        };
+
+                        await _headCountRepository.AddAsync(headCount);
+                    }
+                    await _headCountRepository.CommitAsync();
+                }
 
                 return new UpdateStoreCommandResponse
                 {
@@ -82,7 +108,7 @@ namespace StoreDetails.Handlers.CommandHandlers
                     Message = "Store updated successfully."
                 };
             }
-            catch (ValidationException valEx)
+            catch (BadRequestException valEx)
             {
                 return new UpdateStoreCommandResponse
                 {
