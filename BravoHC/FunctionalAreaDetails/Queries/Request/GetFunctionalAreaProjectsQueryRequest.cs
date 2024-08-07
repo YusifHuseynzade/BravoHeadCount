@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FunctionalAreaDetails.Queries.Request;
 
-public class GetFunctionalAreaProjectsQueryRequest : IRequest<List<GetFunctionalAreaProjectsQueryResponse>>
+public class GetFunctionalAreaProjectsQueryRequest : IRequest<List<GetFunctionalAreaProjectListResponse>>
 {
     public int Page { get; set; } = 1;
     public ShowMoreDto? ShowMore { get; set; }

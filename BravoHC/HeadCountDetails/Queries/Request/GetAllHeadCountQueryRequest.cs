@@ -4,7 +4,7 @@ using MediatR;
 
 namespace HeadCountDetails.Queries.Request;
 
-public class GetAllHeadCountQueryRequest : IRequest<List<GetAllHeadCountQueryResponse>>
+public class GetAllHeadCountQueryRequest : IRequest<List<GetHeadCountListResponse>>
 {
     public int Page { get; set; } = 1;
     public ShowMoreDto? ShowMore { get; set; }

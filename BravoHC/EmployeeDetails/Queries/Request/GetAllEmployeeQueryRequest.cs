@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EmployeeDetails.Queries.Request;
 
-public class GetAllEmployeeQueryRequest : IRequest<List<GetAllEmployeeQueryResponse>>
+public class GetAllEmployeeQueryRequest : IRequest<List<GetEmployeeListResponse>>
 {
     public int Page { get; set; } = 1;
     public ShowMoreDto? ShowMore { get; set; }

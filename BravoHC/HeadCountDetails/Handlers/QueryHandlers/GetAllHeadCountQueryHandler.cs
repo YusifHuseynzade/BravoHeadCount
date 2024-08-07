@@ -4,34 +4,47 @@ using Domain.IRepositories;
 using HeadCountDetails.Queries.Request;
 using HeadCountDetails.Queries.Response;
 using MediatR;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace HeadCountDetails.Handlers.QueryHandlers;
-
-public class GetAllHeadCountQueryHandler : IRequestHandler<GetAllHeadCountQueryRequest, List<GetAllHeadCountQueryResponse>>
+namespace HeadCountDetails.Handlers.QueryHandlers
 {
-    private readonly IHeadCountRepository _repository;
-    private readonly IMapper _mapper;
-
-    public GetAllHeadCountQueryHandler(IHeadCountRepository repository, IMapper mapper)
+    public class GetAllHeadCountQueryHandler : IRequestHandler<GetAllHeadCountQueryRequest, List<GetHeadCountListResponse>>
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        private readonly IHeadCountRepository _repository;
+        private readonly IMapper _mapper;
 
-    public async Task<List<GetAllHeadCountQueryResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
-    {
-        var headCounts = _repository.GetAll(x => true);
-
-        var response = _mapper.Map<List<GetAllHeadCountQueryResponse>>(headCounts);
-        if (request.ShowMore != null)
+        public GetAllHeadCountQueryHandler(IHeadCountRepository repository, IMapper mapper)
         {
-            response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
+            _repository = repository;
+            _mapper = mapper;
         }
-        PaginationListDto<GetAllHeadCountQueryResponse> model =
-               new PaginationListDto<GetAllHeadCountQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, headCounts.Count());
 
-        return model.Items;
+        public async Task<List<GetHeadCountListResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
+        {
+            var headCounts = _repository.GetAll(x => true);
 
+            var response = _mapper.Map<List<GetAllHeadCountQueryResponse>>(headCounts);
+            if (request.ShowMore != null)
+            {
+                response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
+            }
+
+            var totalCount = headCounts.Count();
+
+            PaginationListDto<GetAllHeadCountQueryResponse> model =
+                   new PaginationListDto<GetAllHeadCountQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);
+
+            return new List<GetHeadCountListResponse>
+            {
+                new GetHeadCountListResponse
+                {
+                    TotalHeadCount = totalCount,
+                    HeadCounts = model.Items
+                }
+            };
+        }
     }
-
 }

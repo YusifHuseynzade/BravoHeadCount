@@ -13,4 +13,5 @@ public class GetAllProjectQueryResponse
     public string ProjectName { get; set; }
     public bool IsStore { get; set; }
     public bool IsHeadOffice { get; set; }
+    public int FunctionalAreaId { get; set; }
 }

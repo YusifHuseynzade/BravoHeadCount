@@ -4,7 +4,7 @@ using MediatR;
 
 namespace FormatDetails.Queries.Request;
 
-public class GetAllFormatQueryRequest : IRequest<List<GetAllFormatQueryResponse>>
+public class GetAllFormatQueryRequest : IRequest<List<GetAllFormatListQueryResponse>>
 {
     public int Page { get; set; } = 1;
     public ShowMoreDto? ShowMore { get; set; }

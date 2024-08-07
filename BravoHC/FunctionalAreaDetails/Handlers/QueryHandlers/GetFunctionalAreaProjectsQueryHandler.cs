@@ -4,42 +4,54 @@ using Domain.IRepositories;
 using FunctionalAreaDetails.Queries.Request;
 using FunctionalAreaDetails.Queries.Response;
 using MediatR;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace FunctionalAreaDetails.Handlers.QueryHandlers;
-
-public class GetFunctionalAreaProjectsQueryHandler : IRequestHandler<GetFunctionalAreaProjectsQueryRequest, List<GetFunctionalAreaProjectsQueryResponse>>
+namespace FunctionalAreaDetails.Handlers.QueryHandlers
 {
-    private readonly IFunctionalAreaRepository _repository;
-    private readonly IMapper _mapper;
-
-    public GetFunctionalAreaProjectsQueryHandler(IFunctionalAreaRepository repository, IMapper mapper)
+    public class GetFunctionalAreaProjectsQueryHandler : IRequestHandler<GetFunctionalAreaProjectsQueryRequest, List<GetFunctionalAreaProjectListResponse>>
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        private readonly IFunctionalAreaRepository _repository;
+        private readonly IMapper _mapper;
 
-    public async Task<List<GetFunctionalAreaProjectsQueryResponse>> Handle(GetFunctionalAreaProjectsQueryRequest request, CancellationToken cancellationToken)
-    {
-        var functionalArea = await _repository.FirstOrDefaultAsync(x => x.Id == request.FunctionalAreaId, "Projects");
-
-        if (functionalArea == null)
+        public GetFunctionalAreaProjectsQueryHandler(IFunctionalAreaRepository repository, IMapper mapper)
         {
-
-            return null;
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        var projects = functionalArea.Projects;
-        var projectresponse = _mapper.Map<List<GetFunctionalAreaProjectsQueryResponse>>(projects);
-
-        if (request.ShowMore != null)
+        public async Task<List<GetFunctionalAreaProjectListResponse>> Handle(GetFunctionalAreaProjectsQueryRequest request, CancellationToken cancellationToken)
         {
-            projectresponse = projectresponse.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
+            var functionalArea = await _repository.FirstOrDefaultAsync(x => x.Id == request.FunctionalAreaId, "Projects");
+
+            if (functionalArea == null)
+            {
+                return null;
+            }
+
+            var projects = functionalArea.Projects;
+            var projectResponse = _mapper.Map<List<GetFunctionalAreaProjectsQueryResponse>>(projects);
+
+            if (request.ShowMore != null)
+            {
+                projectResponse = projectResponse.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
+            }
+
+            var totalCount = projects.Count();
+
+            PaginationListDto<GetFunctionalAreaProjectsQueryResponse> model =
+                   new PaginationListDto<GetFunctionalAreaProjectsQueryResponse>(projectResponse, request.Page, request.ShowMore?.Take ?? projectResponse.Count, totalCount);
+
+            return new List<GetFunctionalAreaProjectListResponse>
+            {
+                new GetFunctionalAreaProjectListResponse
+                {
+                    TotalFunctionalAreaProjectCount = totalCount,
+                    FunctionalAreaProjects = model.Items
+                }
+            };
         }
-
-        PaginationListDto<GetFunctionalAreaProjectsQueryResponse> model =
-               new PaginationListDto<GetFunctionalAreaProjectsQueryResponse>(projectresponse, request.Page, request.ShowMore?.Take ?? projectresponse.Count, projectresponse.Count());
-
-        return model.Items;
     }
 }
-

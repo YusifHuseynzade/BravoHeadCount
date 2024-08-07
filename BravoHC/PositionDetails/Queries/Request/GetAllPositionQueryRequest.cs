@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PositionDetails.Queries.Request;
 
-public class GetAllPositionQueryRequest : IRequest<List<GetAllPositionQueryResponse>>
+public class GetAllPositionQueryRequest : IRequest<List<GetAllPositionListQueryResponse>>
 {
 	public int Page { get; set; } = 1;
 	public ShowMoreDto? ShowMore { get; set; }

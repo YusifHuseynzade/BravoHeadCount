@@ -21,10 +21,6 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasOne(e => e.Store)
-                .WithMany(s => s.Employees)
-                .HasForeignKey(e => e.StoreId);
-
             builder.HasOne(e => e.FunctionalArea)
               .WithMany(s => s.Employees)
               .HasForeignKey(e => e.FunctionalAreaId);

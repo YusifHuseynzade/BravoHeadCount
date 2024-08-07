@@ -10,8 +10,6 @@ namespace Domain.Entities
     {
         public string FullName { get; set; }
         public string Badge { get; set; }
-        public int StoreId { get; set; }
-        public Store Store { get; set; }
         public int FunctionalAreaId { get; set; }
         public FunctionalArea FunctionalArea { get; set; }
         public int ProjectId { get; set; }

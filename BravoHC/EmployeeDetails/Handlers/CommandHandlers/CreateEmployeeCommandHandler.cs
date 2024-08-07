@@ -46,9 +46,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 if (string.IsNullOrWhiteSpace(request.Badge))
                     throw new BadRequestException("Badge is required.");
 
-                if (request.StoreId <= 0)
-                    throw new BadRequestException("StoreId is required and must be greater than 0.");
-
                 if (request.FunctionalAreaId <= 0)
                     throw new BadRequestException("FunctionalAreaId is required and must be greater than 0.");
 
@@ -62,9 +59,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     throw new BadRequestException("SectionId is required and must be greater than 0.");
 
                 // Veritabanı kontrolü
-                var storeExists = await _storeRepository.IsExistAsync(d => d.Id == request.StoreId);
-                if (!storeExists)
-                    throw new BadRequestException($"Store with ID {request.StoreId} does not exist.");
 
                 var functionalAreaExists = await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId);
                 if (!functionalAreaExists)
@@ -93,7 +87,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 {
                     FullName = request.FullName,
                     Badge = request.Badge,
-                    StoreId = request.StoreId,
                     FunctionalAreaId = request.FunctionalAreaId,
                     ProjectId = request.ProjectId,
                     PositionId = request.PositionId,

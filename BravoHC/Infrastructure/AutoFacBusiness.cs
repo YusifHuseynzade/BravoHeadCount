@@ -2,10 +2,13 @@
 using Autofac;
 using AutoMapper;
 using Domain.IRepositories;
+using Domain.IServices;
 using EmployeeDetails.Profiles;
 using FormatDetails.Profiles;
 using FunctionalAreaDetails.Profiles;
+using HeadCountDetails.Profiles;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
@@ -30,6 +33,7 @@ namespace Infrastructure
             builder.RegisterType<SectionRepository>().As<ISectionRepository>();
             builder.RegisterType<StoreRepository>().As<IStoreRepository>();
             builder.RegisterType<SubSectionRepository>().As<ISubSectionRepository>();
+            builder.RegisterType<SmsService>().As<ISmsService>();
 
             builder.Register(ctx =>
             {
@@ -46,6 +50,7 @@ namespace Infrastructure
                     cfg.AddProfile(new PositionMapper(httpContextAccessor));
                     cfg.AddProfile(new StoreMapper(httpContextAccessor));
                     cfg.AddProfile(new EmployeeMapper(httpContextAccessor));
+                    cfg.AddProfile(new HeadCountMapper(httpContextAccessor));
 
                 });
 

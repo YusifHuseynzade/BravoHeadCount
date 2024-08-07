@@ -8,7 +8,6 @@ public class CreateEmployeeCommandRequest : IRequest<CreateEmployeeCommandRespon
 {
     public string FullName { get; set; }
     public string Badge { get; set; }
-    public int StoreId { get; set; }
     public int FunctionalAreaId { get; set; }
     public int ProjectId { get; set; }
     public int PositionId { get; set; }

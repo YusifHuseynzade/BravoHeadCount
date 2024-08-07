@@ -12,7 +12,6 @@ public class UpdateEmployeeCommandRequest : IRequest<UpdateEmployeeCommandRespon
     public string? Recruiter { get; set; }
     public string? AreaManager { get; set; }
     public string? StoreManager { get; set; }
-    public int StoreId { get; set; }
     public int FunctionalAreaId { get; set; }
     public int ProjectId { get; set; }
     public int PositionId { get; set; }

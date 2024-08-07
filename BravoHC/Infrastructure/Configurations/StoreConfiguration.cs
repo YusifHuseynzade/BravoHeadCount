@@ -16,11 +16,6 @@ namespace Infrastructure.Configurations
             builder.Property(t => t.HeadCountNumber)
                 .IsRequired();
 
-
-            builder.HasMany(s => s.Employees)
-                .WithOne(e => e.Store)
-                .HasForeignKey(e => e.StoreId);
-
             builder.HasOne(e => e.Format)
                .WithMany(s => s.Stores)
                .HasForeignKey(e => e.FormatId);

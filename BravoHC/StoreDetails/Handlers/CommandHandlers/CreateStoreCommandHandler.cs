@@ -4,6 +4,8 @@ using Domain.IRepositories;
 using MediatR;
 using StoreDetails.Commands.Request;
 using StoreDetails.Commands.Response;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StoreDetails.Handlers.CommandHandlers
 {
@@ -14,19 +16,22 @@ namespace StoreDetails.Handlers.CommandHandlers
         private readonly IProjectRepository _projectRepository;
         private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly IFormatRepository _formatRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
         public CreateStoreCommandHandler(
             IStoreRepository storeRepository,
             IHeadCountRepository headCountRepository,
             IProjectRepository projectRepository,
             IFunctionalAreaRepository functionalAreaRepository,
-            IFormatRepository formatRepository)
+            IFormatRepository formatRepository,
+            IEmployeeRepository employeeRepository)
         {
             _storeRepository = storeRepository;
             _headCountRepository = headCountRepository;
             _projectRepository = projectRepository;
             _functionalAreaRepository = functionalAreaRepository;
             _formatRepository = formatRepository;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task<CreateStoreCommandResponse> Handle(CreateStoreCommandRequest request, CancellationToken cancellationToken)
@@ -59,9 +64,42 @@ namespace StoreDetails.Handlers.CommandHandlers
                 if (!formatExists)
                     throw new BadRequestException($"Format with ID {request.FormatId} does not exist.");
 
+                // Yöneticilerin varlığını kontrol et
+                if (request.DirectorId.HasValue)
+                {
+                    var directorExists = await _employeeRepository.IsExistAsync(d => d.Id == request.DirectorId.Value);
+                    if (!directorExists)
+                        throw new BadRequestException($"Director with ID {request.DirectorId.Value} does not exist.");
+                }
+
+                if (request.AreaManagerId.HasValue)
+                {
+                    var areaManagerExists = await _employeeRepository.IsExistAsync(d => d.Id == request.AreaManagerId.Value);
+                    if (!areaManagerExists)
+                        throw new BadRequestException($"AreaManager with ID {request.AreaManagerId.Value} does not exist.");
+                }
+
+                if (request.StoreManagerId.HasValue)
+                {
+                    var storeManagerExists = await _employeeRepository.IsExistAsync(d => d.Id == request.StoreManagerId.Value);
+                    if (!storeManagerExists)
+                        throw new BadRequestException($"StoreManager with ID {request.StoreManagerId.Value} does not exist.");
+                }
+
+                if (request.RecruiterId.HasValue)
+                {
+                    var recruiterExists = await _employeeRepository.IsExistAsync(d => d.Id == request.RecruiterId.Value);
+                    if (!recruiterExists)
+                        throw new BadRequestException($"Recruiter with ID {request.RecruiterId.Value} does not exist.");
+                }
+
                 // Yeni store oluşturma
                 var store = new Store
                 {
+                    DirectorId = request.DirectorId,
+                    AreaManagerId = request.AreaManagerId,
+                    StoreManagerId = request.StoreManagerId,
+                    RecruiterId = request.RecruiterId,
                     ProjectId = request.ProjectId,
                     FunctionalAreaId = request.FunctionalAreaId,
                     FormatId = request.FormatId,
