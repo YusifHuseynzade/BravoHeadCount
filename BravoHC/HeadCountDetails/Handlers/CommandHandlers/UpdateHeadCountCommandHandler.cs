@@ -1,8 +1,12 @@
 ﻿using Core.Helpers;
+using Domain.Entities;
 using Domain.IRepositories;
 using HeadCountDetails.Commands.Request;
 using HeadCountDetails.Commands.Response;
 using MediatR;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HeadCountDetails.Handlers.CommandHandlers
 {
@@ -92,6 +96,13 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                         throw new BadRequestException($"Employee with ID {request.EmployeeId.Value} does not exist.");
                 }
 
+                if (request.ParentId.HasValue)
+                {
+                    var parentExists = await _headCountRepository.IsExistAsync(d => d.Id == request.ParentId.Value);
+                    if (!parentExists)
+                        throw new BadRequestException($"Parent HeadCount with ID {request.ParentId.Value} does not exist.");
+                }
+
                 // HeadCount güncelleme
                 var headCount = await _headCountRepository.GetAsync(d => d.Id == request.Id);
                 if (headCount == null)
@@ -106,8 +117,12 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 headCount.PositionId = request.PositionId;
                 headCount.EmployeeId = request.EmployeeId;
                 headCount.HCNumber = request.HCNumber;
+                headCount.ParentId = request.ParentId;
+                headCount.IsVacant = request.IsVacant;
+                headCount.RecruiterComment = request.RecruiterComment;
 
                 await _headCountRepository.UpdateAsync(headCount);
+                await _headCountRepository.CommitAsync();
 
                 return new UpdateHeadCountCommandResponse
                 {
@@ -115,7 +130,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     Message = "HeadCount updated successfully."
                 };
             }
-            catch (ValidationException valEx)
+            catch (BadRequestException valEx)
             {
                 return new UpdateHeadCountCommandResponse
                 {

@@ -8,6 +8,8 @@ namespace Domain.Entities
 {
     public class HeadCount : BaseEntity
     {
+        public bool? IsVacant { get; set; }
+        public string? RecruiterComment { get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
         public int FunctionalAreaId { get; set; }
@@ -21,9 +23,13 @@ namespace Domain.Entities
         public int? EmployeeId { get; set; }
         public Employee? Employee { get; set; }
         public int HCNumber { get; set; }
+        public int? ParentId { get; set; }
+        public HeadCount? Parent { get; set; }
 
-        public void SetDetails(int projectId, Project project, int functionalAreaId, FunctionalArea functionalArea, int sectionId, Section section, int subSectionId, SubSection subSection, int positionId, Position position, int employeeId, Employee employee, int hcNumber)
+        public void SetDetails(bool? isVacant, string? recruiterComment,int projectId, Project project, int functionalAreaId, FunctionalArea functionalArea, int sectionId, Section section, int subSectionId, SubSection subSection, int positionId, Position position, int employeeId, Employee employee, int hcNumber, int? parentId)
         {
+            IsVacant = isVacant;
+            RecruiterComment = recruiterComment;
             ProjectId = projectId;
             Project = project;
             FunctionalAreaId = functionalAreaId;
@@ -37,6 +43,7 @@ namespace Domain.Entities
             EmployeeId = employeeId;
             Employee = employee;
             HCNumber = hcNumber;
+            ParentId = parentId;
         }
     }
 }

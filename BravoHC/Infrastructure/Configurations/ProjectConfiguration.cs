@@ -21,8 +21,8 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(t => t.IsStore).IsRequired();
-            builder.Property(t => t.IsHeadOffice).IsRequired();
+            builder.Property(t => t.IsStore).IsRequired(false);
+            builder.Property(t => t.IsHeadOffice).IsRequired(false);
 
             builder.HasOne(d => d.FunctionalArea)
              .WithMany(fa => fa.Projects)
