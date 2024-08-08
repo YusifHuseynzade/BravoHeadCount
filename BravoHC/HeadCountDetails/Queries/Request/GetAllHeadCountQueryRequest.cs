@@ -8,4 +8,5 @@ public class GetAllHeadCountQueryRequest : IRequest<List<GetHeadCountListRespons
 {
     public int Page { get; set; } = 1;
     public ShowMoreDto? ShowMore { get; set; }
+    public int? ProjectId { get; set; }
 }

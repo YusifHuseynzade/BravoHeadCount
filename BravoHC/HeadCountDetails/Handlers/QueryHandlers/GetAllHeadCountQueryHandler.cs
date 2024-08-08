@@ -24,7 +24,11 @@ namespace HeadCountDetails.Handlers.QueryHandlers
 
         public async Task<List<GetHeadCountListResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
         {
-            var headCounts = _repository.GetAll(x => true);
+            var headCountsQuery = _repository.GetAll(x => true);
+
+            headCountsQuery = request.ProjectId.HasValue ? headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value) : headCountsQuery;
+
+            var headCounts = headCountsQuery.ToList();
 
             var response = _mapper.Map<List<GetAllHeadCountQueryResponse>>(headCounts);
             if (request.ShowMore != null)

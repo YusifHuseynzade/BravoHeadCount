@@ -24,7 +24,12 @@ namespace EmployeeDetails.Handlers.QueryHandlers
 
         public async Task<List<GetEmployeeListResponse>> Handle(GetAllEmployeeQueryRequest request, CancellationToken cancellationToken)
         {
-            var employees = _repository.GetAll(x => true);
+            var employeesQuery = _repository.GetAll(x => true);
+
+            employeesQuery = !string.IsNullOrEmpty(request.Badge) ? employeesQuery.Where(x => x.Badge.Contains(request.Badge)) : employeesQuery;
+            employeesQuery = !string.IsNullOrEmpty(request.FullName) ? employeesQuery.Where(x => x.FullName.Contains(request.FullName)) : employeesQuery;
+
+            var employees = employeesQuery.ToList();
 
             var response = _mapper.Map<List<GetAllEmployeeQueryResponse>>(employees);
             if (request.ShowMore != null)
