@@ -35,6 +35,10 @@ namespace Infrastructure.Configurations
             builder.HasMany(s => s.Employees)
              .WithOne(e => e.Project)
              .HasForeignKey(e => e.ProjectId);
+
+            builder.HasMany(s => s.ScheduledDatas)
+            .WithOne(e => e.Project)
+            .HasForeignKey(e => e.ProjectId);
         }
     }
 }

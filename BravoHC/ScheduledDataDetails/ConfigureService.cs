@@ -6,11 +6,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StoreDetails
+namespace ScheduledDataDetails
 {
     public static class ConfigureService
     {
-        public static IServiceCollection AddStoreServices(this IServiceCollection services)
+        public static IServiceCollection AddScheduledDataServices(this IServiceCollection services)
         {
             services.AddMediatR(cfg =>
             {

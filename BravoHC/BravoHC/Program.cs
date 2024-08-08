@@ -2,9 +2,11 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Interfaces;
+using EmployeeDetails;
 using FluentValidation.AspNetCore;
 using FormatDetails;
 using FunctionalAreaDetails;
+using HeadCountDetails;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PositionDetails;
 using ProjectDetails;
+using ScheduledDataDetails;
+using SectionDetails;
+using StoreDetails;
 using SubSubSectionDetails;
 using System.Reflection;
 
@@ -93,6 +98,8 @@ builder.Services.AddFormatServices();
 builder.Services.AddStoreServices();
 builder.Services.AddEmployeeServices();
 builder.Services.AddHeadCountServices();
+builder.Services.AddScheduledDataServices();
+
 
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

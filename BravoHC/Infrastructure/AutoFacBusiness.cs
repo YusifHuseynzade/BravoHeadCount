@@ -33,6 +33,7 @@ namespace Infrastructure
             builder.RegisterType<SectionRepository>().As<ISectionRepository>();
             builder.RegisterType<StoreRepository>().As<IStoreRepository>();
             builder.RegisterType<SubSectionRepository>().As<ISubSectionRepository>();
+            builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
 
             builder.Register(ctx =>

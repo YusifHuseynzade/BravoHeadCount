@@ -75,13 +75,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                         throw new BadRequestException($"Section with ID {request.SectionId.Value} does not exist.");
                 }
 
-                if (request.SubSectionId.HasValue)
-                {
-                    var subSectionExists = await _subSectionRepository.IsExistAsync(d => d.Id == request.SubSectionId);
-                    if (!subSectionExists)
-                        throw new BadRequestException($"SubSection with ID {request.SubSectionId.Value} does not exist.");
-                }
-
                 if (request.PositionId.HasValue)
                 {
                     var positionExists = await _positionRepository.IsExistAsync(d => d.Id == request.PositionId);
@@ -96,11 +89,13 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                         throw new BadRequestException($"Employee with ID {request.EmployeeId.Value} does not exist.");
                 }
 
+                int? parentHeadCountId = null;
                 if (request.ParentId.HasValue)
                 {
-                    var parentExists = await _headCountRepository.IsExistAsync(d => d.Id == request.ParentId.Value);
-                    if (!parentExists)
-                        throw new BadRequestException($"Parent HeadCount with ID {request.ParentId.Value} does not exist.");
+                    var parentHeadCount = await _headCountRepository.GetAsync(d => d.EmployeeId == request.ParentId.Value);
+                    if (parentHeadCount == null)
+                        throw new BadRequestException($"Parent HeadCount with Employee ID {request.ParentId.Value} does not exist.");
+                    parentHeadCountId = parentHeadCount.Id;
                 }
 
                 // HeadCount güncelleme
@@ -117,7 +112,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 headCount.PositionId = request.PositionId;
                 headCount.EmployeeId = request.EmployeeId;
                 headCount.HCNumber = request.HCNumber;
-                headCount.ParentId = request.ParentId;
+                headCount.ParentId = parentHeadCountId;
                 headCount.IsVacant = request.IsVacant;
                 headCount.RecruiterComment = request.RecruiterComment;
 

@@ -15,5 +15,8 @@ public class GetByIdHeadCountQueryResponse
     public int SubSectionId { get; set; }
     public int PositionId { get; set; }
     public int EmployeeId { get; set; }
+    public int ParentId { get; set; }
+    public bool IsVacant { get; set; }
+    public string RecruiterComment { get; set; }
     public int HCNumber { get; set; }
 }

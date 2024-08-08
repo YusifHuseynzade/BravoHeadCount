@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FormatDetails;
+namespace HeadCountDetails;
 
 public static class ConfigureService
 {

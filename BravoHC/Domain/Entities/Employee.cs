@@ -20,5 +20,6 @@ namespace Domain.Entities
         public Section Section { get; set; }
         public int? SubSectionId { get; set; }
         public SubSection? SubSection { get; set; }
+        public List<ScheduledData> ScheduledDatas { get; set; }
     }
 }

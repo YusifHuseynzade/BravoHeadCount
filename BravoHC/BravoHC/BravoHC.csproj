@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\PositionDetails\PositionDetails.csproj" />
     <ProjectReference Include="..\ProjectDetails\ProjectDetails.csproj" />
+    <ProjectReference Include="..\ScheduledDataDetails\ScheduledDataDetails.csproj" />
     <ProjectReference Include="..\SectionDetails\SectionDetails.csproj" />
     <ProjectReference Include="..\StoreDetails\StoreDetails.csproj" />
     <ProjectReference Include="..\SubSectionDetails\SubSectionDetails.csproj" />

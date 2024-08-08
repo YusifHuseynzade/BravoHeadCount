@@ -27,6 +27,7 @@ namespace Infrastructure
         public DbSet<Section> Sections { get; set; }
         public DbSet<SubSection> SubSections { get; set; }
         public DbSet<Store> Stores { get; set; }
+        public DbSet<ScheduledData> ScheduledDatas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
