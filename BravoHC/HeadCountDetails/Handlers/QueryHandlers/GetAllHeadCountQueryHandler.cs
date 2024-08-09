@@ -26,11 +26,23 @@ namespace HeadCountDetails.Handlers.QueryHandlers
         {
             var headCountsQuery = _repository.GetAll(x => true);
 
-            headCountsQuery = request.ProjectId.HasValue ? headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value) : headCountsQuery;
+            if (request.ProjectId.HasValue)
+            {
+                headCountsQuery = headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value);
+            }
+
+            // Sıralama işlemi sadece HCNumber'a göre
+            headCountsQuery = request.OrderBy?.ToLower() switch
+            {
+                "asc" => headCountsQuery.OrderBy(x => x.HCNumber),
+                "desc" => headCountsQuery.OrderByDescending(x => x.HCNumber),
+                _ => headCountsQuery.OrderBy(x => x.HCNumber), 
+            };
 
             var headCounts = headCountsQuery.ToList();
 
             var response = _mapper.Map<List<GetAllHeadCountQueryResponse>>(headCounts);
+
             if (request.ShowMore != null)
             {
                 response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
@@ -42,13 +54,14 @@ namespace HeadCountDetails.Handlers.QueryHandlers
                    new PaginationListDto<GetAllHeadCountQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);
 
             return new List<GetHeadCountListResponse>
-            {
-                new GetHeadCountListResponse
-                {
-                    TotalHeadCount = totalCount,
-                    HeadCounts = model.Items
-                }
-            };
+    {
+        new GetHeadCountListResponse
+        {
+            TotalHeadCount = totalCount,
+            HeadCounts = model.Items
         }
+    };
+        }
+
     }
 }

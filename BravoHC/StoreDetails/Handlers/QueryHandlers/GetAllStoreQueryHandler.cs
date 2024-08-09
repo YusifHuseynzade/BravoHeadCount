@@ -24,7 +24,15 @@ namespace StoreDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllStoreListQueryResponse>> Handle(GetAllStoreQueryRequest request, CancellationToken cancellationToken)
         {
-            var stores = _repository.GetAll(x => true);
+            // ProjectId ile filtreleme
+            var storesQuery = _repository.GetAll(x => true);
+
+            if (request.ProjectId.HasValue)
+            {
+                storesQuery = storesQuery.Where(x => x.ProjectId == request.ProjectId.Value);
+            }
+
+            var stores = storesQuery.ToList();
             var response = _mapper.Map<List<GetAllStoreQueryResponse>>(stores);
 
             if (request.ShowMore != null)

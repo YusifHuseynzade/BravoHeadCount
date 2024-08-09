@@ -98,7 +98,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     parentHeadCountId = parentHeadCount.Id;
                 }
 
-                // HeadCount güncelleme
+            
                 var headCount = await _headCountRepository.GetAsync(d => d.Id == request.Id);
                 if (headCount == null)
                 {

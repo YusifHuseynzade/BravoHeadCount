@@ -15,6 +15,6 @@ public class UpdateHeadCountCommandRequest : IRequest<UpdateHeadCountCommandResp
     public int HCNumber { get; set; }
     public int? ParentId { get; set; }
     public bool IsVacant { get; set; }
-    public string RecruiterComment { get; set; }
+    public string? RecruiterComment { get; set; }
 
 }
