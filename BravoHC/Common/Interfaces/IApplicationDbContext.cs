@@ -17,6 +17,7 @@ namespace Common.Interfaces
         public DbSet<SubSection> SubSections { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<ScheduledData> ScheduledDatas { get; set; }
+        public DbSet<ResidentalArea> ResidentalAreas { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

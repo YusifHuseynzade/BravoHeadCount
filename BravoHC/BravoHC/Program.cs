@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PositionDetails;
 using ProjectDetails;
+using ResidentalAreaDetails;
 using ScheduledDataDetails;
 using SectionDetails;
 using StoreDetails;
@@ -32,7 +33,7 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Bravo Head Count ", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Head Count Management", Version = "v1" });
 
     // File upload operation filter
 
@@ -99,6 +100,7 @@ builder.Services.AddStoreServices();
 builder.Services.AddEmployeeServices();
 builder.Services.AddHeadCountServices();
 builder.Services.AddScheduledDataServices();
+builder.Services.AddResidentalAreaServices();
 
 
 

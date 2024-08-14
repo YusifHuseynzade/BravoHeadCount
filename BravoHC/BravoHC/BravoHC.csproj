@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\PositionDetails\PositionDetails.csproj" />
     <ProjectReference Include="..\ProjectDetails\ProjectDetails.csproj" />
+    <ProjectReference Include="..\ResidentalAreaDetails\ResidentalAreaDetails.csproj" />
     <ProjectReference Include="..\ScheduledDataDetails\ScheduledDataDetails.csproj" />
     <ProjectReference Include="..\SectionDetails\SectionDetails.csproj" />
     <ProjectReference Include="..\StoreDetails\StoreDetails.csproj" />

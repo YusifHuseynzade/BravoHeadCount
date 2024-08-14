@@ -28,7 +28,7 @@ namespace Infrastructure
         public DbSet<SubSection> SubSections { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<ScheduledData> ScheduledDatas { get; set; }
-
+        public DbSet<ResidentalArea> ResidentalAreas { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

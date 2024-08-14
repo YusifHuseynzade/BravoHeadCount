@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240808054215_UpdateHeadCountTableAndDetails")]
-    partial class UpdateHeadCountTableAndDetails
+    [Migration("20240813131051_initialized")]
+    partial class initialized
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,14 +103,25 @@ namespace Infrastructure.Migrations
                     b.Property<int>("FunctionalAreaId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<int>("PositionId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ResidentalAreaId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("SectionId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("SubSectionId")
                         .HasColumnType("integer");
@@ -122,6 +133,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("PositionId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("ResidentalAreaId");
 
                     b.HasIndex("SectionId");
 
@@ -275,6 +288,24 @@ namespace Infrastructure.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ResidentalArea", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResidentalAreas");
+                });
+
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -291,6 +322,51 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduledData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValue(new DateTime(2024, 8, 13, 17, 10, 51, 353, DateTimeKind.Utc).AddTicks(1324));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Fact")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("GraduationBalance")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("GraduationSchedule")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("HolidayBalance")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Plan")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ScheduledDatas");
                 });
 
             modelBuilder.Entity("Domain.Entities.Section", b =>
@@ -427,6 +503,10 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.ResidentalArea", "ResidentalArea")
+                        .WithMany("Employees")
+                        .HasForeignKey("ResidentalAreaId");
+
                     b.HasOne("Domain.Entities.Section", "Section")
                         .WithMany("Employees")
                         .HasForeignKey("SectionId")
@@ -442,6 +522,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Position");
 
                     b.Navigation("Project");
+
+                    b.Navigation("ResidentalArea");
 
                     b.Navigation("Section");
 
@@ -506,6 +588,25 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("FunctionalArea");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduledData", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("ScheduledDatas")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany("ScheduledDatas")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Domain.Entities.Section", b =>
@@ -577,6 +678,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("Section");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("ScheduledDatas");
+                });
+
             modelBuilder.Entity("Domain.Entities.Format", b =>
                 {
                     b.Navigation("Stores");
@@ -598,7 +704,14 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Employees");
 
+                    b.Navigation("ScheduledDatas");
+
                     b.Navigation("Sections");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ResidentalArea", b =>
+                {
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>

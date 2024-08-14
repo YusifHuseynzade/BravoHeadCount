@@ -21,6 +21,10 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(t => t.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
             builder.HasOne(e => e.FunctionalArea)
               .WithMany(s => s.Employees)
               .HasForeignKey(e => e.FunctionalAreaId);
@@ -40,6 +44,10 @@ namespace Infrastructure.Configurations
             builder.HasOne(e => e.Position)
               .WithMany(s => s.Employees)
               .HasForeignKey(e => e.PositionId);
+
+            builder.HasOne(e => e.ResidentalArea)
+             .WithMany(s => s.Employees)
+             .HasForeignKey(e => e.ResidentalAreaId);
 
             builder.HasMany(s => s.ScheduledDatas)
             .WithOne(e => e.Employee)

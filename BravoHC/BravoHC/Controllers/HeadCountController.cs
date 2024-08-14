@@ -23,11 +23,27 @@ namespace BravoHC.Controllers
         {
             return Ok(await _mediator.Send(request));
         }
+
+        [HttpDelete("bulk-delete")]
+        public async Task<IActionResult> BulkDelete([FromBody] BulkDeleteHeadCountCommandRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
+        }
+
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] UpdateHeadCountCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
+
+        [HttpPut("bulk-update")]
+        public async Task<IActionResult> BulkUpdate([FromBody] BulkUpdateHeadCountCommandRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllHeadCountQueryRequest request)
         {

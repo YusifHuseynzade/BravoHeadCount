@@ -12,7 +12,20 @@ public class HeadCountMapper : Profile
     {
         _httpAccessor = httpAccessor;
 
-        CreateMap<HeadCount, GetAllHeadCountQueryResponse>().ReverseMap();
+        // HeadCount -> GetAllHeadCountQueryResponse
+        CreateMap<HeadCount, GetAllHeadCountQueryResponse>()
+            .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee))
+            .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
+            .ReverseMap();
+
+        // Employee -> EmployeeResponse
+        CreateMap<Employee, EmployeeResponse>()
+            .ForMember(dest => dest.ResidentalArea, opt => opt.MapFrom(src => src.ResidentalArea))
+            .ReverseMap();
+
+        // ResidentalArea -> ResidentalAreaResponse
+        CreateMap<ResidentalArea, ResidentalAreaResponse>()
+            .ReverseMap();
         CreateMap<HeadCount, GetByIdHeadCountQueryResponse>().ReverseMap();
     }
 }

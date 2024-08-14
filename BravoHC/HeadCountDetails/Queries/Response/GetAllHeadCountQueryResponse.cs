@@ -14,7 +14,7 @@ public class GetAllHeadCountQueryResponse
     public int SectionId { get; set; }
     public int SubSectionId { get; set; }
     public int PositionId { get; set; }
-    public int EmployeeId { get; set; }
+    public EmployeeResponse Employee { get; set; }
     public int ParentId { get; set; }
     public bool IsVacant { get; set; }
     public string RecruiterComment { get; set; }

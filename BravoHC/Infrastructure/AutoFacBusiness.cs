@@ -12,6 +12,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
+using ResidentalAreaDetails.Profiles;
 using SectionDetails.Profiles;
 using StoreDetails.Profiles;
 using SubSectionDetails.Profiles;
@@ -33,6 +34,7 @@ namespace Infrastructure
             builder.RegisterType<SectionRepository>().As<ISectionRepository>();
             builder.RegisterType<StoreRepository>().As<IStoreRepository>();
             builder.RegisterType<SubSectionRepository>().As<ISubSectionRepository>();
+            builder.RegisterType<ResidentalAreaRepository>().As<IResidentalAreaRepository>();
             builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
 
@@ -52,6 +54,7 @@ namespace Infrastructure
                     cfg.AddProfile(new StoreMapper(httpContextAccessor));
                     cfg.AddProfile(new EmployeeMapper(httpContextAccessor));
                     cfg.AddProfile(new HeadCountMapper(httpContextAccessor));
+                    cfg.AddProfile(new ResidentalAreaMapper(httpContextAccessor));
 
                 });
 
