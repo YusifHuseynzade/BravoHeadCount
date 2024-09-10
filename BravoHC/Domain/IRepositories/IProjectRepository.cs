@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IProjectRepository : IRepository<Project>
     {
+        Task<int?> GetIdByNameAsync(string projectName);
     }
 }

@@ -10,6 +10,7 @@ namespace Domain.Entities
     {
         public string FullName { get; set; }
         public string Badge { get; set; }
+        public string FIN { get; set; }
         public string PhoneNumber { get; set; }
         public int? ResidentalAreaId { get; set; }
         public ResidentalArea? ResidentalArea { get; set; }
@@ -24,6 +25,7 @@ namespace Domain.Entities
         public int? SubSectionId { get; set; }
         public SubSection? SubSection { get; set; }
         public DateTime StartedDate { get; set; }
+        public DateTime ContractEndDate { get; set; }
         public List<ScheduledData> ScheduledDatas { get; set; }
     }
 }

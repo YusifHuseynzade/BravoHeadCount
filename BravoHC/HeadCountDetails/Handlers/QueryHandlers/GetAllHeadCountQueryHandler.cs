@@ -31,7 +31,6 @@ namespace HeadCountDetails.Handlers.QueryHandlers
                 headCountsQuery = headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value);
             }
 
-            // Sıralama işlemi sadece HCNumber'a göre
             headCountsQuery = request.OrderBy?.ToLower() switch
             {
                 "asc" => headCountsQuery.OrderBy(x => x.HCNumber),

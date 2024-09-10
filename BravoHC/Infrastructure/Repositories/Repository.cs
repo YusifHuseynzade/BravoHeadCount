@@ -53,6 +53,28 @@ namespace Infrastructure.Repositories
             return query.Where(exp);
         }
 
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate = null, params string[] includes)
+        {
+            var query = _context.Set<TEntity>().AsQueryable();
+
+            // Include işlemleri
+            if (includes != null && includes.Length > 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            // Eğer bir predicate varsa, Where koşulunu uygula
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            // Sonuçları asenkron olarak listele
+            return await query.ToListAsync();
+        }
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> exp, params string[] includes)
         {
             var query = _context.Set<TEntity>().AsQueryable();

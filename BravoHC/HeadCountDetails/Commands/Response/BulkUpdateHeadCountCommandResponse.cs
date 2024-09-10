@@ -9,6 +9,8 @@ namespace HeadCountDetails.Commands.Response
     public class BulkUpdateHeadCountCommandResponse
     {
         public bool IsSuccess { get; set; }
-        public List<UpdateHeadCountResult> Results { get; set; }
+        public string Message { get; set; }
+        public int UpdatedCount { get; set; }
+        public int CreatedCount { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IStoreRepository _storeRepository;
         private readonly IFunctionalAreaRepository _functionalAreaRepository;
+        private readonly IResidentalAreaRepository _residentalAreaRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPositionRepository _positionRepository;
         private readonly ISectionRepository _sectionRepository;
@@ -21,6 +22,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             IEmployeeRepository employeeRepository,
             IStoreRepository storeRepository,
             IFunctionalAreaRepository functionalAreaRepository,
+            IResidentalAreaRepository residentalAreaRepository,
             IProjectRepository projectRepository,
             IPositionRepository positionRepository,
             ISectionRepository sectionRepository,
@@ -29,6 +31,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             _employeeRepository = employeeRepository;
             _storeRepository = storeRepository;
             _functionalAreaRepository = functionalAreaRepository;
+            _residentalAreaRepository = residentalAreaRepository;
             _projectRepository = projectRepository;
             _positionRepository = positionRepository;
             _sectionRepository = sectionRepository;
@@ -39,12 +42,20 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         {
             try
             {
-                // Validasyon
                 if (string.IsNullOrWhiteSpace(request.FullName))
                     throw new BadRequestException("FullName is required.");
 
                 if (string.IsNullOrWhiteSpace(request.Badge))
                     throw new BadRequestException("Badge is required.");
+
+                if (string.IsNullOrWhiteSpace(request.FIN))
+                    throw new BadRequestException("FIN is required.");
+
+                if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+                    throw new BadRequestException("PhoneNumber is required.");
+
+                if (request.ResidentalAreaId <= 0)
+                    throw new BadRequestException("ResidentalAreaId is required and must be greater than 0.");
 
                 if (request.FunctionalAreaId <= 0)
                     throw new BadRequestException("FunctionalAreaId is required and must be greater than 0.");
@@ -59,6 +70,9 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     throw new BadRequestException("SectionId is required and must be greater than 0.");
 
                 // Veritabanı kontrolü
+                var residentalAreaExists = await _residentalAreaRepository.IsExistAsync(d => d.Id == request.ResidentalAreaId);
+                if (!residentalAreaExists)
+                    throw new BadRequestException($"ResidentalArea with ID {request.ResidentalAreaId} does not exist.");
 
                 var functionalAreaExists = await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId);
                 if (!functionalAreaExists)
@@ -87,11 +101,16 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 {
                     FullName = request.FullName,
                     Badge = request.Badge,
+                    FIN = request.FIN,
+                    PhoneNumber = request.PhoneNumber,
+                    ResidentalAreaId = request.ResidentalAreaId,
                     FunctionalAreaId = request.FunctionalAreaId,
                     ProjectId = request.ProjectId,
                     PositionId = request.PositionId,
                     SectionId = request.SectionId,
-                    SubSectionId = request.SubSectionId
+                    SubSectionId = request.SubSectionId,
+                    StartedDate = (DateTime)request.StartedDate,
+                    ContractEndDate = (DateTime)request.ContractEndDate,
                 };
 
                 await _employeeRepository.AddAsync(employee);

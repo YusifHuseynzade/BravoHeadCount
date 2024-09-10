@@ -6,7 +6,9 @@ using EmployeeDetails;
 using FluentValidation.AspNetCore;
 using FormatDetails;
 using FunctionalAreaDetails;
+using HeadCountBackGroundColorDetails;
 using HeadCountDetails;
+using HeadCountDetails.ExcelImportService;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +38,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Head Count Management", Version = "v1" });
 
     // File upload operation filter
-
+    options.OperationFilter<FileUploadOperation>();
     // Security definition
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
@@ -47,6 +49,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 
 });
+
+builder.Services.AddTransient<HeadCountImportService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -101,6 +105,7 @@ builder.Services.AddEmployeeServices();
 builder.Services.AddHeadCountServices();
 builder.Services.AddScheduledDataServices();
 builder.Services.AddResidentalAreaServices();
+builder.Services.AddColorServices();
 
 
 

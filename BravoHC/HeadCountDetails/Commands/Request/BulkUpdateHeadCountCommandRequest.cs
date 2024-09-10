@@ -10,6 +10,11 @@ namespace HeadCountDetails.Commands.Request
 {
     public class BulkUpdateHeadCountCommandRequest : IRequest<BulkUpdateHeadCountCommandResponse>
     {
-        public List<UpdateHeadCountCommandRequest> HeadCounts { get; set; }
+        public int ProjectId { get; set; }
+        public int FunctionalAreaId { get; set; }
+        public int SectionId { get; set; }
+        public int? SubSectionId { get; set; }
+        public int PositionId { get; set; }
+        public int Count { get; set; }
     }
 }

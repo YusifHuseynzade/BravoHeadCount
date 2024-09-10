@@ -11,6 +11,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IStoreRepository _storeRepository;
         private readonly IFunctionalAreaRepository _functionalAreaRepository;
+        private readonly IResidentalAreaRepository _residentalAreaRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPositionRepository _positionRepository;
         private readonly ISectionRepository _sectionRepository;
@@ -20,6 +21,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             IEmployeeRepository employeeRepository,
             IStoreRepository storeRepository,
             IFunctionalAreaRepository functionalAreaRepository,
+            IResidentalAreaRepository residentalAreaRepository,
             IProjectRepository projectRepository,
             IPositionRepository positionRepository,
             ISectionRepository sectionRepository,
@@ -28,6 +30,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             _employeeRepository = employeeRepository;
             _storeRepository = storeRepository;
             _functionalAreaRepository = functionalAreaRepository;
+            _residentalAreaRepository = residentalAreaRepository;
             _projectRepository = projectRepository;
             _positionRepository = positionRepository;
             _sectionRepository = sectionRepository;
@@ -48,6 +51,16 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 if (string.IsNullOrWhiteSpace(request.Badge))
                     throw new BadRequestException("Badge is required.");
 
+
+                if (string.IsNullOrWhiteSpace(request.FIN))
+                    throw new BadRequestException("FIN is required.");
+
+                if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+                    throw new BadRequestException("PhoneNumber is required.");
+
+                if (request.ResidentalAreaId <= 0)
+                    throw new BadRequestException("ResidentalAreaId is required and must be greater than 0.");
+
                 if (request.FunctionalAreaId <= 0)
                     throw new BadRequestException("FunctionalAreaId is required and must be greater than 0.");
 
@@ -64,6 +77,10 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 var employeeExists = await _employeeRepository.IsExistAsync(d => d.Id == request.Id);
                 if (!employeeExists)
                     throw new BadRequestException($"Employee with ID {request.Id} does not exist.");
+
+                var residentalAreaExists = await _residentalAreaRepository.IsExistAsync(d => d.Id == request.ResidentalAreaId);
+                if (!residentalAreaExists)
+                    throw new BadRequestException($"ResidentalArea with ID {request.ResidentalAreaId} does not exist.");
 
 
                 var functionalAreaExists = await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId);
@@ -98,11 +115,17 @@ namespace EmployeeDetails.Handlers.CommandHandlers
 
                 employee.FullName = request.FullName;
                 employee.Badge = request.Badge;
+                employee.FIN = request.FIN;
+                employee.PhoneNumber = request.PhoneNumber;
+                employee.ResidentalAreaId = request.ResidentalAreaId;
                 employee.FunctionalAreaId = request.FunctionalAreaId;
                 employee.ProjectId = request.ProjectId;
                 employee.PositionId = request.PositionId;
                 employee.SectionId = request.SectionId;
                 employee.SubSectionId = request.SubSectionId;
+                employee.StartedDate = (DateTime)request.StartedDate;
+                employee.ContractEndDate = (DateTime)request.ContractEndDate;
+
 
                 await _employeeRepository.UpdateAsync(employee);
 

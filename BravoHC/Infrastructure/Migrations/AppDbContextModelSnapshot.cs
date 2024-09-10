@@ -93,6 +93,13 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<DateTime>("ContractEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FIN")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -185,6 +192,9 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("EmployeeId")
                         .HasColumnType("integer");
 
@@ -217,6 +227,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ColorId");
+
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("FunctionalAreaId");
@@ -232,6 +244,24 @@ namespace Infrastructure.Migrations
                     b.HasIndex("SubSectionId");
 
                     b.ToTable("HeadCounts");
+                });
+
+            modelBuilder.Entity("Domain.Entities.HeadCountBackgroundColor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorHexCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HeadCountBackgroundColors");
                 });
 
             modelBuilder.Entity("Domain.Entities.Position", b =>
@@ -333,7 +363,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 8, 13, 17, 10, 51, 353, DateTimeKind.Utc).AddTicks(1324));
+                        .HasDefaultValue(new DateTime(2024, 9, 4, 12, 46, 35, 593, DateTimeKind.Utc).AddTicks(5832));
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("integer");
@@ -530,6 +560,10 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.HeadCount", b =>
                 {
+                    b.HasOne("Domain.Entities.HeadCountBackgroundColor", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId");
+
                     b.HasOne("Domain.Entities.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId");
@@ -561,6 +595,8 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.SubSection", "SubSection")
                         .WithMany()
                         .HasForeignKey("SubSectionId");
+
+                    b.Navigation("Color");
 
                     b.Navigation("Employee");
 

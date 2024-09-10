@@ -10,6 +10,7 @@ namespace Domain.IRepositories
     public interface IRepository<TEntity>
     {
         Task AddAsync(TEntity entity);
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate = null, params string[] includes);
         IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> exp, params string[] includes);
         Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> exp, params string[] includes);
         TEntity Get(Expression<Func<TEntity, bool>> exp, params string[] includes);

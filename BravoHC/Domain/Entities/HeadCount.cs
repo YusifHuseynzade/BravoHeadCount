@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,8 +9,10 @@ namespace Domain.Entities
 {
     public class HeadCount : BaseEntity
     {
-        public bool? IsVacant { get; set; }
+        public bool? IsVacant { get; set; } = true;
         public string? RecruiterComment { get; set; }
+        public int? ColorId { get; set; }
+        public HeadCountBackgroundColor Color { get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
         public int FunctionalAreaId { get; set; }

@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IFunctionalAreaRepository : IRepository<FunctionalArea>
     {
+        Task<int?> GetIdByNameAsync(string functionalAreaName);
     }
 }

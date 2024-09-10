@@ -13,6 +13,7 @@ public class GetAllHeadCountQueryResponse
     public int FunctionalAreaId { get; set; }
     public int SectionId { get; set; }
     public int SubSectionId { get; set; }
+    public int ColorId { get; set; }
     public int PositionId { get; set; }
     public EmployeeResponse Employee { get; set; }
     public int ParentId { get; set; }

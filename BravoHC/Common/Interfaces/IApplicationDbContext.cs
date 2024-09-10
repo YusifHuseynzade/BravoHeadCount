@@ -18,6 +18,7 @@ namespace Common.Interfaces
         public DbSet<Store> Stores { get; set; }
         public DbSet<ScheduledData> ScheduledDatas { get; set; }
         public DbSet<ResidentalArea> ResidentalAreas { get; set; }
+        public DbSet<HeadCountBackgroundColor> HeadCountBackgroundColors { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

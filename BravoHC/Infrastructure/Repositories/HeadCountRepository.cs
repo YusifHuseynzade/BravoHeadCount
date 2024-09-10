@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,10 @@ namespace Infrastructure.Repositories
         public HeadCountRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<HeadCount> GetByIdAsync(int id)
+        {
+            return await _context.HeadCounts.FirstOrDefaultAsync(h => h.Id == id);
         }
     }
 }

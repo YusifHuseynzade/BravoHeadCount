@@ -49,7 +49,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet("ResidentalAreaEmployees")]
-        public async Task<IActionResult> GetFunctionalAreaProjects([FromQuery] GetResidentalAreaEmployeesQueryRequest request)
+        public async Task<IActionResult> GetResidentalAreaEmployees([FromQuery] GetResidentalAreaEmployeesQueryRequest request)
         {
             var employees = await _mediator.Send(request);
 

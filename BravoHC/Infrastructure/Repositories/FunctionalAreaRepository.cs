@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,14 @@ namespace Infrastructure.Repositories
         public FunctionalAreaRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<int?> GetIdByNameAsync(string functionalAreaName)
+        {
+            var functionalArea = await _context.FunctionalAreas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Name == functionalAreaName);
+
+            return functionalArea?.Id; // Eğer proje yoksa null dönecektir
         }
     }
 }

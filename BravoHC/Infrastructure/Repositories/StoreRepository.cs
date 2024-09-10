@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,25 @@ namespace Infrastructure.Repositories
         public StoreRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<Store> GetByProjectIdAsync(int projectId)
+        {
+            // Veritabanından ProjectId'ye göre Store bulmaya çalışıyoruz
+            var store = await _context.Stores
+                .Include(s => s.Project)               
+                .Include(s => s.FunctionalArea)       
+                .Include(s => s.Format)              
+                .FirstOrDefaultAsync(s => s.ProjectId == projectId);
+
+            // Eğer proje ID'sine göre mağaza bulunamazsa bir hata fırlatıyoruz
+            if (store == null)
+            {
+                throw new Exception($"No store found with ProjectId {projectId}");
+            }
+
+            // Bulunan mağazayı döndürüyoruz
+            return store;
         }
     }
 }

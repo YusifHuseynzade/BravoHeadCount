@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IStoreRepository : IRepository<Store>
     {
+        Task<Store> GetByProjectIdAsync(int projectId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,14 @@ namespace Infrastructure.Repositories
         public ProjectRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<int?> GetIdByNameAsync(string projectName)
+        {
+            var project = await _context.Projects
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProjectName == projectName);
+
+            return project?.Id; // Eğer proje yoksa null dönecektir
         }
     }
 }

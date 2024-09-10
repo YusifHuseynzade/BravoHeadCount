@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface ISubSectionRepository : IRepository<SubSection>
     {
+        Task<int?> GetIdByNameAsync(string subSectionName);
     }
 }

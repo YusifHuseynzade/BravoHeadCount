@@ -39,22 +39,6 @@ namespace StoreDetails.Handlers.CommandHandlers
         {
             try
             {
-                // Validasyon
-                if (request.Id <= 0)
-                    throw new BadRequestException("Id is required and must be greater than 0.");
-
-                if (request.ProjectId <= 0)
-                    throw new BadRequestException("ProjectId is required and must be greater than 0.");
-
-                if (request.FunctionalAreaId <= 0)
-                    throw new BadRequestException("FunctionalAreaId is required and must be greater than 0.");
-
-                if (request.FormatId <= 0)
-                    throw new BadRequestException("FormatId is required and must be greater than 0.");
-
-                if (request.HeadCountNumber < 0)
-                    throw new BadRequestException("HeadCountNumber is required and must not be negative.");
-
                 // Veritabanı kontrolü
                 var storeExists = await _storeRepository.IsExistAsync(d => d.Id == request.Id);
                 if (!storeExists)

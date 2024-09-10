@@ -19,6 +19,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         private readonly ISubSectionRepository _subSectionRepository;
         private readonly IPositionRepository _positionRepository;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IHeadCountBackgroundColorRepository _headCountBackgroundColorRepository;
 
         public UpdateHeadCountCommandHandler(
             IHeadCountRepository headCountRepository,
@@ -27,7 +28,8 @@ namespace HeadCountDetails.Handlers.CommandHandlers
             ISectionRepository sectionRepository,
             ISubSectionRepository subSectionRepository,
             IPositionRepository positionRepository,
-            IEmployeeRepository employeeRepository)
+            IEmployeeRepository employeeRepository,
+            IHeadCountBackgroundColorRepository headCountBackgroundColorRepository)
         {
             _headCountRepository = headCountRepository;
             _projectRepository = projectRepository;
@@ -36,6 +38,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
             _subSectionRepository = subSectionRepository;
             _positionRepository = positionRepository;
             _employeeRepository = employeeRepository;
+            _headCountBackgroundColorRepository = headCountBackgroundColorRepository;
         }
 
         public async Task<UpdateHeadCountCommandResponse> Handle(UpdateHeadCountCommandRequest request, CancellationToken cancellationToken)
@@ -44,6 +47,8 @@ namespace HeadCountDetails.Handlers.CommandHandlers
             {
                 // Validasyon
                 if (request.Id <= 0)
+                    throw new BadRequestException("Id is required and must be greater than 0.");
+                if (request.ColorId <= 0)
                     throw new BadRequestException("Id is required and must be greater than 0.");
 
                 if (request.ProjectId <= 0)
@@ -89,6 +94,13 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                         throw new BadRequestException($"Employee with ID {request.EmployeeId.Value} does not exist.");
                 }
 
+                if (request.ColorId.HasValue)
+                {
+                    var colorExists = await _headCountBackgroundColorRepository.IsExistAsync(d => d.Id == request.ColorId);
+                    if (!colorExists)
+                        throw new BadRequestException($"Employee with ID {request.ColorId.Value} does not exist.");
+                }
+
                 int? parentHeadCountId = null;
                 if (request.ParentId.HasValue)
                 {
@@ -115,6 +127,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 headCount.ParentId = parentHeadCountId;
                 headCount.IsVacant = request.IsVacant;
                 headCount.RecruiterComment = request.RecruiterComment;
+                headCount.ColorId = request.ColorId;
 
                 await _headCountRepository.UpdateAsync(headCount);
                 await _headCountRepository.CommitAsync();

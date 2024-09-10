@@ -6,6 +6,7 @@ using Domain.IServices;
 using EmployeeDetails.Profiles;
 using FormatDetails.Profiles;
 using FunctionalAreaDetails.Profiles;
+using HeadCountBackGroundColorDetails.Profiles;
 using HeadCountDetails.Profiles;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -35,6 +36,7 @@ namespace Infrastructure
             builder.RegisterType<StoreRepository>().As<IStoreRepository>();
             builder.RegisterType<SubSectionRepository>().As<ISubSectionRepository>();
             builder.RegisterType<ResidentalAreaRepository>().As<IResidentalAreaRepository>();
+            builder.RegisterType<HeadCountBackgroundColorRepository>().As<IHeadCountBackgroundColorRepository>();
             builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
 
@@ -55,6 +57,7 @@ namespace Infrastructure
                     cfg.AddProfile(new EmployeeMapper(httpContextAccessor));
                     cfg.AddProfile(new HeadCountMapper(httpContextAccessor));
                     cfg.AddProfile(new ResidentalAreaMapper(httpContextAccessor));
+                    cfg.AddProfile(new ColorMapper(httpContextAccessor));
 
                 });
 

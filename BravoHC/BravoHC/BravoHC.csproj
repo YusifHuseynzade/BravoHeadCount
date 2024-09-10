@@ -32,6 +32,7 @@
     <ProjectReference Include="..\EmployeeDetails\EmployeeDetails.csproj" />
     <ProjectReference Include="..\FormatDetails\FormatDetails.csproj" />
     <ProjectReference Include="..\FunctionalAreaDetails\FunctionalAreaDetails.csproj" />
+    <ProjectReference Include="..\HeadCountBackGroundColorDetails\HeadCountBackGroundColorDetails.csproj" />
     <ProjectReference Include="..\HeadCountDetails\HeadCountDetails.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\PositionDetails\PositionDetails.csproj" />
