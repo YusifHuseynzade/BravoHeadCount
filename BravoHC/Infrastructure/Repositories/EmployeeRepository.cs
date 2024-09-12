@@ -25,5 +25,10 @@ namespace Infrastructure.Repositories
 
             return employee?.Id; // Eğer proje yoksa null dönecektir
         }
+
+        public async Task<List<int>> GetAllEmployeeIdsAsync()
+        {
+            return await _context.Employees.Select(e => e.Id).ToListAsync();
+        }
     }
 }

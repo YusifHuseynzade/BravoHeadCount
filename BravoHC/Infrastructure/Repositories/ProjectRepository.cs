@@ -25,5 +25,11 @@ namespace Infrastructure.Repositories
 
             return project?.Id; // Eğer proje yoksa null dönecektir
         }
+        public async Task<Project> GetByNameAsync(string name)
+        {
+            return await _context.Projects
+                .Where(x => x.ProjectCode == name)
+                .FirstOrDefaultAsync();
+        }
     }
 }

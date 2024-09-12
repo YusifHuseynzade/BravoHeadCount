@@ -6,6 +6,7 @@ using HeadCountDetails.Commands.Response;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,8 +59,10 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         // Headcount'ları güncelleme fonksiyonu
         private async Task<int> UpdateHeadCountAsync(BulkUpdateHeadCountCommandRequest request)
         {
-            var existingHeadCounts = await _headCountRepository.GetAllAsync(hc =>
-                hc.ProjectId == request.ProjectId && hc.FunctionalAreaId == request.FunctionalAreaId);
+            // Var olan headcount'ları HCNumber'a göre küçükten büyüğe sırala
+            var existingHeadCounts = (await _headCountRepository.GetAllAsync(hc =>
+                hc.ProjectId == request.ProjectId && hc.FunctionalAreaId == request.FunctionalAreaId))
+                .OrderBy(hc => hc.HCNumber).ToList();
 
             int updatedCount = 0;
 
@@ -70,7 +73,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     headCount.SectionId = request.SectionId;
                     headCount.SubSectionId = request.SubSectionId;
                     headCount.PositionId = request.PositionId;
-                    headCount.IsVacant = false;
+                    headCount.IsVacant = true;
 
                     await _headCountRepository.UpdateAsync(headCount);
                     updatedCount++;
@@ -87,7 +90,10 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         // Yeni headcount oluşturma fonksiyonu
         private async Task<int> CreateHeadCountAsync(BulkUpdateHeadCountCommandRequest request, int remainingCount)
         {
-            var existingHeadCounts = await _headCountRepository.GetAllAsync(hc => hc.ProjectId == request.ProjectId);
+            // Var olan headcount'ları HCNumber'a göre sırala
+            var existingHeadCounts = (await _headCountRepository.GetAllAsync(hc => hc.ProjectId == request.ProjectId))
+                .OrderBy(hc => hc.HCNumber).ToList();
+
             var store = await _storeRepository.GetByProjectIdAsync(request.ProjectId);  // Fetch the store by project ID
 
             int maxHCNumber = existingHeadCounts.Any() ? existingHeadCounts.Max(hc => hc.HCNumber) : 0;
@@ -102,7 +108,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     SectionId = request.SectionId,
                     SubSectionId = request.SubSectionId,
                     PositionId = request.PositionId,
-                    IsVacant = false,
+                    IsVacant = true,
                     HCNumber = maxHCNumber + i + 1 // Increment HCNumber
                 };
 
@@ -120,8 +126,5 @@ namespace HeadCountDetails.Handlers.CommandHandlers
             await _headCountRepository.CommitAsync();
             return createdCount;
         }
-
-
-
     }
 }

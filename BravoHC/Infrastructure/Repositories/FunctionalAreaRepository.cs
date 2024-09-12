@@ -25,5 +25,12 @@ namespace Infrastructure.Repositories
 
             return functionalArea?.Id; // Eğer proje yoksa null dönecektir
         }
+
+        public async Task<FunctionalArea?> GetByNameAsync(string name)
+        {
+            return await _context.FunctionalAreas
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+        }
     }
 }

@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Interfaces;
 using EmployeeDetails;
+using EmployeeDetails.ExcelImportService;
 using FluentValidation.AspNetCore;
 using FormatDetails;
 using FunctionalAreaDetails;
@@ -51,6 +52,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddTransient<HeadCountImportService>();
+builder.Services.AddTransient<EmployeeImportService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

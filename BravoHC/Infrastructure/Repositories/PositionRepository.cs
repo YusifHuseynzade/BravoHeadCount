@@ -25,5 +25,12 @@ namespace Infrastructure.Repositories
 
             return position?.Id; // Eğer proje yoksa null dönecektir
         }
+
+        public async Task<Position?> GetByNameAsync(string name)
+        {
+            return await _context.Positions
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+        }
     }
 }

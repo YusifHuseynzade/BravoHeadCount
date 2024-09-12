@@ -20,5 +20,5 @@ public class GetAllEmployeeQueryResponse
     public int SectionId { get; set; }
     public int? SubSectionId { get; set; }
     public DateTime? StartedDate { get; set; }
-    public DateTime? ContractEndDate { get; set; }
+    public string? ContractEndDate { get; set; }
 }

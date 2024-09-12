@@ -10,5 +10,6 @@ namespace Domain.IRepositories
     public interface IEmployeeRepository : IRepository<Employee>
     {
         Task<int?> GetIdByNameAsync(string employeeName);
+        Task<List<int>> GetAllEmployeeIdsAsync();
     }
 }

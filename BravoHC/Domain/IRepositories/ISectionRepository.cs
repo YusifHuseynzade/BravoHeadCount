@@ -10,5 +10,6 @@ namespace Domain.IRepositories
     public interface ISectionRepository : IRepository<Section>
     {
         Task<int?> GetIdByNameAsync(string sectionName);
+        Task<Section> GetByNameAsync(string name);
     }
 }

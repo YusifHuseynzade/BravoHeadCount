@@ -25,5 +25,12 @@ namespace Infrastructure.Repositories
 
             return section?.Id; // Eğer proje yoksa null dönecektir
         }
+
+        public async Task<Section> GetByNameAsync(string name)
+        {
+            return await _context.Sections
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+        }
     }
 }

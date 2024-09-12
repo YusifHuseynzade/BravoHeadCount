@@ -110,7 +110,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     SectionId = request.SectionId,
                     SubSectionId = request.SubSectionId,
                     StartedDate = (DateTime)request.StartedDate,
-                    ContractEndDate = (DateTime)request.ContractEndDate,
+                    ContractEndDate = request.ContractEndDate,
                 };
 
                 await _employeeRepository.AddAsync(employee);

@@ -4,6 +4,7 @@ using Domain.IRepositories;
 using HeadCountDetails.Queries.Request;
 using HeadCountDetails.Queries.Response;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,7 +25,8 @@ namespace HeadCountDetails.Handlers.QueryHandlers
 
         public async Task<List<GetHeadCountListResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
         {
-            var headCountsQuery = _repository.GetAll(x => true);
+            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Employee)
+                                 .ThenInclude(e => e.ResidentalArea).AsQueryable();
 
             if (request.ProjectId.HasValue)
             {
@@ -53,8 +55,8 @@ namespace HeadCountDetails.Handlers.QueryHandlers
                    new PaginationListDto<GetAllHeadCountQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);
 
             return new List<GetHeadCountListResponse>
-    {
-        new GetHeadCountListResponse
+        {
+            new GetHeadCountListResponse
         {
             TotalHeadCount = totalCount,
             HeadCounts = model.Items

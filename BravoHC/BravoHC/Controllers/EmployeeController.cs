@@ -1,5 +1,7 @@
 ﻿using EmployeeDetails.Commands.Request;
+using EmployeeDetails.ExcelImportService;
 using EmployeeDetails.Queries.Request;
+using HeadCountDetails.ExcelImportService;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +13,11 @@ namespace BravoHC.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public EmployeeController(IMediator mediator)
+        private readonly EmployeeImportService _importService;
+        public EmployeeController(IMediator mediator, EmployeeImportService importService)
         {
             _mediator = mediator;
+            _importService = importService;
         }
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateEmployeeCommandRequest request)
@@ -37,6 +41,14 @@ namespace BravoHC.Controllers
 
             return Ok(employees);
         }
+
+        [HttpGet("all-employee-ids")]
+        public async Task<IActionResult> GetAllEmployeeIds()
+        {
+            var employeeIds = await _mediator.Send(new GetAllEmployeeIdsQueryRequest());
+            return Ok(employeeIds);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,6 +58,26 @@ namespace BravoHC.Controllers
             return employee != null
                 ? (IActionResult)Ok(employee)
                 : NotFound(new { Message = "Employee not found." });
+        }
+
+        [HttpPost("importexceldata")]
+        public async Task<IActionResult> Import([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Please upload a valid Excel file.");
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            await _importService.ImportAsync(stream);
+
+            return Ok("File imported successfully.");
+        }
+
+        [HttpPut("update-headcount")]
+        public async Task<IActionResult> Update([FromBody] BulkUpdateEmployeeHeadCountCommandRequest request)
+        {
+            return Ok(await _mediator.Send(request));
         }
     }
 }

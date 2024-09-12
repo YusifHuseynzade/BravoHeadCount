@@ -25,5 +25,11 @@ namespace Infrastructure.Repositories
 
             return subSection?.Id;
         }
+        public async Task<SubSection?> GetByNameAsync(string name)
+        {
+            return await _context.SubSections
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+        }
     }
 }

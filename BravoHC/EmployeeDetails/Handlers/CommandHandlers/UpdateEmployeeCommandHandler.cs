@@ -124,7 +124,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 employee.SectionId = request.SectionId;
                 employee.SubSectionId = request.SubSectionId;
                 employee.StartedDate = (DateTime)request.StartedDate;
-                employee.ContractEndDate = (DateTime)request.ContractEndDate;
+                employee.ContractEndDate = request.ContractEndDate;
 
 
                 await _employeeRepository.UpdateAsync(employee);
