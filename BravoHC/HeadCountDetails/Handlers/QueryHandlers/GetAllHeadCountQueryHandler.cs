@@ -25,8 +25,14 @@ namespace HeadCountDetails.Handlers.QueryHandlers
 
         public async Task<List<GetHeadCountListResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
         {
-            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Employee)
-                                 .ThenInclude(e => e.ResidentalArea).AsQueryable();
+            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Project)                     
+            .Include(x => x.FunctionalArea)              
+            .Include(x => x.Section)                    
+            .Include(x => x.SubSection)                 
+            .Include(x => x.Position)                   
+            .Include(x => x.Color)                      
+            .Include(x => x.Employee)                  
+            .ThenInclude(e => e.ResidentalArea).AsQueryable();
 
             if (request.ProjectId.HasValue)
             {

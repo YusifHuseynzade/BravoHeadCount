@@ -3,29 +3,55 @@ using Domain.Entities;
 using HeadCountDetails.Queries.Response;
 using Microsoft.AspNetCore.Http;
 
-namespace HeadCountDetails.Profiles;
-
-public class HeadCountMapper : Profile
+namespace HeadCountDetails.Profiles
 {
-    private readonly IHttpContextAccessor _httpAccessor;
-    public HeadCountMapper(IHttpContextAccessor httpAccessor)
+    public class HeadCountMapper : Profile
     {
-        _httpAccessor = httpAccessor;
+        private readonly IHttpContextAccessor _httpAccessor;
+        public HeadCountMapper(IHttpContextAccessor httpAccessor)
+        {
+            _httpAccessor = httpAccessor;
 
-        // HeadCount -> GetAllHeadCountQueryResponse
-        CreateMap<HeadCount, GetAllHeadCountQueryResponse>()
-            .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee))
-            .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
-            .ReverseMap();
+            // HeadCount -> GetAllHeadCountQueryResponse
+            CreateMap<HeadCount, GetAllHeadCountQueryResponse>()
+                .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee))
+                .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
+                .ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.Project))  
+                .ForMember(dest => dest.FunctionalArea, opt => opt.MapFrom(src => src.FunctionalArea))  
+                .ForMember(dest => dest.Section, opt => opt.MapFrom(src => src.Section))  
+                .ForMember(dest => dest.SubSection, opt => opt.MapFrom(src => src.SubSection))  
+                .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))  
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color)) 
+                .ReverseMap();
 
-        // Employee -> EmployeeResponse
-        CreateMap<Employee, EmployeeResponse>()
-            .ForMember(dest => dest.ResidentalArea, opt => opt.MapFrom(src => src.ResidentalArea))
-            .ReverseMap();
 
-        // ResidentalArea -> ResidentalAreaResponse
-        CreateMap<ResidentalArea, ResidentalAreaResponse>()
-            .ReverseMap();
-        CreateMap<HeadCount, GetByIdHeadCountQueryResponse>().ReverseMap();
+            CreateMap<Employee, EmployeeResponse>()
+                .ForMember(dest => dest.ResidentalArea, opt => opt.MapFrom(src => src.ResidentalArea))
+                .ReverseMap();
+
+ 
+            CreateMap<ResidentalArea, ResidentalAreaResponse>()
+                .ReverseMap();
+
+            CreateMap<Project, ProjectResponse>()
+                .ReverseMap();
+
+            CreateMap<FunctionalArea, FunctionalAreaResponse>()
+                .ReverseMap();
+
+            CreateMap<Section, SectionResponse>()
+                .ReverseMap();
+
+            CreateMap<SubSection, SubSectionResponse>()
+                .ReverseMap();
+
+            CreateMap<Position, PositionResponse>()
+                .ReverseMap();
+
+            CreateMap<HeadCountBackgroundColor, ColorResponse>()
+                .ReverseMap();
+
+            CreateMap<HeadCount, GetByIdHeadCountQueryResponse>().ReverseMap();
+        }
     }
 }

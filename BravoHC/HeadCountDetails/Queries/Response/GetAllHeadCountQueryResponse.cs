@@ -9,12 +9,12 @@ namespace HeadCountDetails.Queries.Response;
 public class GetAllHeadCountQueryResponse
 {
 	public int Id { get; set; }
-    public int ProjectId { get; set; }
-    public int FunctionalAreaId { get; set; }
-    public int SectionId { get; set; }
-    public int SubSectionId { get; set; }
-    public int ColorId { get; set; }
-    public int PositionId { get; set; }
+    public ProjectResponse Project { get; set; }
+    public FunctionalAreaResponse FunctionalArea { get; set; }
+    public SectionResponse Section { get; set; }
+    public SubSectionResponse SubSection{ get; set; }
+    public ColorResponse Color { get; set; }
+    public PositionResponse Position { get; set; }
     public EmployeeResponse Employee { get; set; }
     public int ParentId { get; set; }
     public bool IsVacant { get; set; }

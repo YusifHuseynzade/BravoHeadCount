@@ -79,5 +79,12 @@ namespace BravoHC.Controllers
         {
             return Ok(await _mediator.Send(request));
         }
+
+        [HttpPut("update-parentid")]
+        public async Task<IActionResult> UpdateParentId([FromBody] AddParentIdCommandRequest request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
+
     }
 }
