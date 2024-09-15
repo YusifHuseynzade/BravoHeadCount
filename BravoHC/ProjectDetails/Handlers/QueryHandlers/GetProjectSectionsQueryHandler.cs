@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Common.Constants;
 using Domain.IRepositories;
 using MediatR;
 using ProjectDetails.Queries.Request;
@@ -13,27 +12,30 @@ namespace ProjectDetails.Handlers.QueryHandlers
 {
     public class GetProjectSectionsQueryHandler : IRequestHandler<GetProjectSectionQueryRequest, List<GetProjectSectionListQueryResponse>>
     {
-        private readonly IProjectRepository _repository;
+        private readonly IProjectSectionsRepository _projectSectionsRepository;
         private readonly IMapper _mapper;
 
-        public GetProjectSectionsQueryHandler(IProjectRepository repository, IMapper mapper)
+        public GetProjectSectionsQueryHandler(IProjectSectionsRepository projectSectionsRepository, IMapper mapper)
         {
-            _repository = repository;
+            _projectSectionsRepository = projectSectionsRepository;
             _mapper = mapper;
         }
 
         public async Task<List<GetProjectSectionListQueryResponse>> Handle(GetProjectSectionQueryRequest request, CancellationToken cancellationToken)
         {
-            var project = await _repository.FirstOrDefaultAsync(x => x.Id == request.ProjectId, "Sections");
+            // ProjectSections üzerinden ProjectId'ye göre section'ları getir
+            var projectSections = await _projectSectionsRepository.GetAllAsync(ps => ps.ProjectId == request.ProjectId, "Section");
 
-            if (project == null)
+            if (projectSections == null || !projectSections.Any())
             {
                 return null;
             }
 
-            var sections = project.Sections;
+            // ProjectSections'tan Section'ları map'le
+            var sections = projectSections.Select(ps => ps.Section).ToList();
             var sectionResponse = _mapper.Map<List<GetProjectSectionQueryResponse>>(sections);
 
+            // Pagination işlemi
             if (request.ShowMore != null)
             {
                 sectionResponse = sectionResponse.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
@@ -41,15 +43,12 @@ namespace ProjectDetails.Handlers.QueryHandlers
 
             var totalCount = sections.Count();
 
-            PaginationListDto<GetProjectSectionQueryResponse> model =
-                   new PaginationListDto<GetProjectSectionQueryResponse>(sectionResponse, request.Page, request.ShowMore?.Take ?? sectionResponse.Count, totalCount);
-
             return new List<GetProjectSectionListQueryResponse>
             {
                 new GetProjectSectionListQueryResponse
                 {
                     TotalProjectSectionCount = totalCount,
-                    Sections = model.Items
+                    Sections = sectionResponse
                 }
             };
         }

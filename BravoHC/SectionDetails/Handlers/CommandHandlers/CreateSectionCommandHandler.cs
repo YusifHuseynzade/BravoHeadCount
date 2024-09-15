@@ -18,7 +18,7 @@ public class CreateSectionCommandHandler : IRequestHandler<CreateSectionCommandR
     }
     public async Task<CreateSectionCommandResponse> Handle(CreateSectionCommandRequest request, CancellationToken cancellationToken)
     {
-        if (await _repository.IsExistAsync(d => d.Name == request.Name && d.ProjectId == request.ProjectId))
+        if (await _repository.IsExistAsync(d => d.Name == request.Name))
         {
             return new CreateSectionCommandResponse
             {
@@ -26,11 +26,7 @@ public class CreateSectionCommandHandler : IRequestHandler<CreateSectionCommandR
             };
         }
 
-        var section = new Section
-        {
-            ProjectId = request.ProjectId
-        };
-
+        var section = new Section();
         section.SetDetail(request.Name);
 
         await _repository.AddAsync(section);

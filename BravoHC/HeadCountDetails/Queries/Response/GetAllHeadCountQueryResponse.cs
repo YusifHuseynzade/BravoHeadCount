@@ -16,7 +16,7 @@ public class GetAllHeadCountQueryResponse
     public ColorResponse Color { get; set; }
     public PositionResponse Position { get; set; }
     public EmployeeResponse Employee { get; set; }
-    public int ParentId { get; set; }
+    public ManagerResponse ParentName { get; set; }
     public bool IsVacant { get; set; }
     public string RecruiterComment { get; set; }
     public int HCNumber { get; set; }

@@ -11,4 +11,5 @@ public class UpdateProjectCommandRequest : IRequest<UpdateProjectCommandResponse
     public bool IsStore { get; set; }
     public bool IsHeadOffice { get; set; }
     public int FunctionalAreaId { get; set; }
+    public List<int> SectionIds { get; set; }
 }

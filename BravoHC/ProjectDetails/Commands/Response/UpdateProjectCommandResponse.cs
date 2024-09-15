@@ -9,5 +9,6 @@ namespace ProjectDetails.Commands.Response
 	public class UpdateProjectCommandResponse
 	{
 		public bool IsSuccess { get; set; }
-	}
+        public string Message { get; set; }
+    }
 }

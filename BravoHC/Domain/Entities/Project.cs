@@ -14,7 +14,7 @@ namespace Domain.Entities
         public bool? IsHeadOffice { get; set; }
         public int FunctionalAreaId { get; set; }
         public FunctionalArea FunctionalArea { get; set; }
-        public List<Section> Sections { get; set; }
+        public List<ProjectSections> ProjectSections { get; set; }
         public List<Employee> Employees { get; set; }
         public List<ScheduledData> ScheduledDatas { get; set; }
         public void SetDetails(string projectCode, string projectName, bool? isStore, bool? isHeadOffice)

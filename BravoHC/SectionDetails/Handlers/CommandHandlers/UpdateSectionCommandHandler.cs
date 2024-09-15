@@ -38,18 +38,8 @@ public class UpdateSectionCommandHandler : IRequestHandler<UpdateSectionCommandR
                 IsSuccess = false
             };
         }
-        // Əgər tələbədə göndərilən DepartmentId varsa, onun mövcudluğunu yoxlayın
-        if (request.ProjectId != 0 && !await _departmentRepository.IsExistAsync(p => p.Id == request.ProjectId))
-        {
-            return new UpdateSectionCommandResponse
-            {
-                IsSuccess = false
-            };
-        }
 
         existingSection.SetDetail(request.Name);
-        existingSection.ProjectId = request.ProjectId;
-
         // Update edilmiş Projecti yadda saxlamaq
         await _repository.UpdateAsync(existingSection);
         await _repository.CommitAsync();

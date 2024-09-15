@@ -33,6 +33,7 @@ namespace Infrastructure
             builder.RegisterType<PositionRepository>().As<IPositionRepository>();
             builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
             builder.RegisterType<SectionRepository>().As<ISectionRepository>();
+            builder.RegisterType<ProjectSectionsRepository>().As<IProjectSectionsRepository>();
             builder.RegisterType<StoreRepository>().As<IStoreRepository>();
             builder.RegisterType<SubSectionRepository>().As<ISubSectionRepository>();
             builder.RegisterType<ResidentalAreaRepository>().As<IResidentalAreaRepository>();

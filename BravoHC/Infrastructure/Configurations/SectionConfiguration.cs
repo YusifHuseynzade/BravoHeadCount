@@ -17,9 +17,9 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.HasOne(s => s.Project)
-                .WithMany(d => d.Sections)
-                .HasForeignKey(s => s.ProjectId);
+            builder.HasMany(u => u.ProjectSections)
+                   .WithOne(ur => ur.Section)
+                   .HasForeignKey(ur => ur.SectionId);
 
             builder.HasMany(s => s.SubSections)
                 .WithOne(ss => ss.Section)

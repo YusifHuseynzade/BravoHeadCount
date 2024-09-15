@@ -28,9 +28,9 @@ namespace Infrastructure.Configurations
              .WithMany(fa => fa.Projects)
              .HasForeignKey(d => d.FunctionalAreaId);
 
-            builder.HasMany(d => d.Sections)    
-                .WithOne(s => s.Project)
-                .HasForeignKey(s => s.ProjectId);
+            builder.HasMany(u => u.ProjectSections)
+                 .WithOne(ur => ur.Project)
+                 .HasForeignKey(ur => ur.ProjectId);
 
             builder.HasMany(s => s.Employees)
              .WithOne(e => e.Project)

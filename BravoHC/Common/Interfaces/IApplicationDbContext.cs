@@ -14,6 +14,7 @@ namespace Common.Interfaces
         public DbSet<Position> Positions { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Section> Sections { get; set; }
+        public DbSet<ProjectSections> ProjectSections { get; set; }
         public DbSet<SubSection> SubSections { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<ScheduledData> ScheduledDatas { get; set; }
