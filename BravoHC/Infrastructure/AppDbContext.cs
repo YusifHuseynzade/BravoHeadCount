@@ -19,8 +19,6 @@ namespace Infrastructure
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<Format> Formats { get; set; }
-        public DbSet<FunctionalArea> FunctionalAreas { get; set; }
         public DbSet<HeadCount> HeadCounts { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Project> Projects { get; set; }
@@ -30,7 +28,13 @@ namespace Infrastructure
         public DbSet<Store> Stores { get; set; }
         public DbSet<ScheduledData> ScheduledDatas { get; set; }
         public DbSet<ResidentalArea> ResidentalAreas { get; set; }
+        public DbSet<BakuDistrict> BakuDistricts { get; set; }
+        public DbSet<BakuTarget> BakuTargets { get; set; }
+        public DbSet<BakuMetro> BakuMetros { get; set; }
         public DbSet<HeadCountBackgroundColor> HeadCountBackgroundColors { get; set; }
+        public DbSet<StoreHistory> StoreHistories { get; set; }
+        public DbSet<ProjectHistory> ProjectHistories { get; set; }
+        public DbSet<HeadCountHistory> HeadCountHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

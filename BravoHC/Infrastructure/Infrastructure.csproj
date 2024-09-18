@@ -23,10 +23,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationUserDetails\ApplicationUserDetails.csproj" />
+    <ProjectReference Include="..\BakuDistrictDetails\BakuDistrictDetails.csproj" />
+    <ProjectReference Include="..\BakuMetroDetails\BakuMetroDetails.csproj" />
+    <ProjectReference Include="..\BakuTargetDetails\BakuTargetDetails.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\EmployeeDetails\EmployeeDetails.csproj" />
-    <ProjectReference Include="..\FormatDetails\FormatDetails.csproj" />
-    <ProjectReference Include="..\FunctionalAreaDetails\FunctionalAreaDetails.csproj" />
     <ProjectReference Include="..\HeadCountBackGroundColorDetails\HeadCountBackGroundColorDetails.csproj" />
     <ProjectReference Include="..\HeadCountDetails\HeadCountDetails.csproj" />
     <ProjectReference Include="..\PositionDetails\PositionDetails.csproj" />

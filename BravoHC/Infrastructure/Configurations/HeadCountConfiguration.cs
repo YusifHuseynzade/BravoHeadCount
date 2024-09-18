@@ -16,7 +16,7 @@ namespace Infrastructure.Configurations
 
             builder.Property(t => t.HCNumber).IsRequired();
             builder.Property(t => t.IsVacant).IsRequired(false);
-            builder.Property(t => t.RecruiterComment).IsRequired(false);
+          
         }
     }
 }

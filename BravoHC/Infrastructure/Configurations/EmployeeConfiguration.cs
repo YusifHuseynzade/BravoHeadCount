@@ -25,9 +25,9 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasOne(e => e.FunctionalArea)
-              .WithMany(s => s.Employees)
-              .HasForeignKey(e => e.FunctionalAreaId);
+            builder.Property(t => t.RecruiterComment)
+                .IsRequired(false)
+                .HasMaxLength(1000);
 
             builder.HasOne(e => e.Project)
               .WithMany(s => s.Employees)

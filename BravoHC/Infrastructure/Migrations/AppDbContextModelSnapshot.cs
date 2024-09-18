@@ -80,6 +80,60 @@ namespace Infrastructure.Migrations
                     b.ToTable("AppUsers");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BakuDistrict", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(35)
+                        .HasColumnType("character varying(35)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BakuDistricts");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BakuMetro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(35)
+                        .HasColumnType("character varying(35)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BakuMetros");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BakuTarget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(35)
+                        .HasColumnType("character varying(35)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BakuTargets");
+                });
+
             modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -92,6 +146,15 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("BakuDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("BakuMetroId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("BakuTargetId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ContractEndDate")
                         .IsRequired()
@@ -106,9 +169,6 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int>("FunctionalAreaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -119,6 +179,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("RecruiterComment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int?>("ResidentalAreaId")
                         .HasColumnType("integer");
@@ -134,7 +198,11 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FunctionalAreaId");
+                    b.HasIndex("BakuDistrictId");
+
+                    b.HasIndex("BakuMetroId");
+
+                    b.HasIndex("BakuTargetId");
 
                     b.HasIndex("PositionId");
 
@@ -149,42 +217,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Format", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Formats");
-                });
-
-            modelBuilder.Entity("Domain.Entities.FunctionalArea", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FunctionalAreas");
-                });
-
             modelBuilder.Entity("Domain.Entities.HeadCount", b =>
                 {
                     b.Property<int>("Id")
@@ -196,10 +228,10 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ColorId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("FunctionalAreaId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("integer");
 
                     b.Property<int>("HCNumber")
@@ -207,6 +239,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<bool?>("IsVacant")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("integer");
@@ -216,9 +251,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("RecruiterComment")
-                        .HasColumnType("text");
 
                     b.Property<int?>("SectionId")
                         .HasColumnType("integer");
@@ -231,8 +263,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ColorId");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("FunctionalAreaId");
 
                     b.HasIndex("ParentId");
 
@@ -265,6 +295,19 @@ namespace Infrastructure.Migrations
                     b.ToTable("HeadCountBackgroundColors");
                 });
 
+            modelBuilder.Entity("Domain.Entities.HeadCountHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HeadCountHistories");
+                });
+
             modelBuilder.Entity("Domain.Entities.Position", b =>
                 {
                     b.Property<int>("Id")
@@ -291,14 +334,52 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FunctionalAreaId")
-                        .HasColumnType("integer");
+                    b.Property<string>("AreaManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AreaManagerBadge")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AreaManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DirectorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FunctionalArea")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<bool?>("IsHeadOffice")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("IsStore")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OperationDirector")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OperationDirectorMail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ProjectCode")
                         .IsRequired()
@@ -310,11 +391,126 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Recruiter")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RecruiterEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StoreClosedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("StoreManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StoreOpeningDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FunctionalAreaId");
-
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProjectHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NewAreaManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewAreaManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewDirector")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewDirectorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewFormat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewFunctionalArea")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("NewIsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("NewRecruiter")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewRecruiterEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewStoreManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldAreaManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldAreaManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldDirector")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldDirectorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldFormat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldFunctionalArea")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("OldIsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("OldRecruiter")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldRecruiterEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldStoreManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectHistories");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProjectSections", b =>
@@ -350,8 +546,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(35)
+                        .HasColumnType("character varying(35)");
 
                     b.HasKey("Id");
 
@@ -366,10 +562,18 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("RoleLevel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RoleType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -387,7 +591,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 9, 15, 2, 19, 7, 258, DateTimeKind.Utc).AddTicks(7684));
+                        .HasDefaultValue(new DateTime(2024, 9, 18, 18, 46, 10, 978, DateTimeKind.Utc).AddTicks(7021));
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("integer");
@@ -447,20 +651,8 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AreaManagerId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DirectorId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("FormatId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("FunctionalAreaId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("HeadCountNumber")
                         .HasColumnType("integer");
@@ -471,29 +663,38 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ProjectId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RecruiterId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Stores");
+                });
+
+            modelBuilder.Entity("Domain.Entities.StoreHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.Property<int?>("StoreManagerId")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("NewHeadCountNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OldHeadCountNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StoreId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AreaManagerId");
+                    b.HasIndex("StoreId");
 
-                    b.HasIndex("DirectorId");
-
-                    b.HasIndex("FormatId");
-
-                    b.HasIndex("FunctionalAreaId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("RecruiterId");
-
-                    b.HasIndex("StoreManagerId");
-
-                    b.ToTable("Stores");
+                    b.ToTable("StoreHistories");
                 });
 
             modelBuilder.Entity("Domain.Entities.SubSection", b =>
@@ -532,11 +733,17 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
-                    b.HasOne("Domain.Entities.FunctionalArea", "FunctionalArea")
+                    b.HasOne("Domain.Entities.BakuDistrict", "BakuDistrict")
                         .WithMany("Employees")
-                        .HasForeignKey("FunctionalAreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BakuDistrictId");
+
+                    b.HasOne("Domain.Entities.BakuMetro", "BakuMetro")
+                        .WithMany("Employees")
+                        .HasForeignKey("BakuMetroId");
+
+                    b.HasOne("Domain.Entities.BakuTarget", "BakuTarget")
+                        .WithMany("Employees")
+                        .HasForeignKey("BakuTargetId");
 
                     b.HasOne("Domain.Entities.Position", "Position")
                         .WithMany("Employees")
@@ -564,7 +771,11 @@ namespace Infrastructure.Migrations
                         .WithMany("Employees")
                         .HasForeignKey("SubSectionId");
 
-                    b.Navigation("FunctionalArea");
+                    b.Navigation("BakuDistrict");
+
+                    b.Navigation("BakuMetro");
+
+                    b.Navigation("BakuTarget");
 
                     b.Navigation("Position");
 
@@ -586,12 +797,6 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId");
-
-                    b.HasOne("Domain.Entities.FunctionalArea", "FunctionalArea")
-                        .WithMany()
-                        .HasForeignKey("FunctionalAreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("Domain.Entities.HeadCount", "Parent")
                         .WithMany()
@@ -619,8 +824,6 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Employee");
 
-                    b.Navigation("FunctionalArea");
-
                     b.Navigation("Parent");
 
                     b.Navigation("Position");
@@ -632,15 +835,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("SubSection");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Project", b =>
+            modelBuilder.Entity("Domain.Entities.ProjectHistory", b =>
                 {
-                    b.HasOne("Domain.Entities.FunctionalArea", "FunctionalArea")
-                        .WithMany("Projects")
-                        .HasForeignKey("FunctionalAreaId")
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FunctionalArea");
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProjectSections", b =>
@@ -683,49 +886,22 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Store", b =>
                 {
-                    b.HasOne("Domain.Entities.Employee", "AreaManager")
-                        .WithMany()
-                        .HasForeignKey("AreaManagerId");
-
-                    b.HasOne("Domain.Entities.Employee", "Director")
-                        .WithMany()
-                        .HasForeignKey("DirectorId");
-
-                    b.HasOne("Domain.Entities.Format", "Format")
-                        .WithMany("Stores")
-                        .HasForeignKey("FormatId");
-
-                    b.HasOne("Domain.Entities.FunctionalArea", "FunctionalArea")
-                        .WithMany()
-                        .HasForeignKey("FunctionalAreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId");
 
-                    b.HasOne("Domain.Entities.Employee", "Recruiter")
-                        .WithMany()
-                        .HasForeignKey("RecruiterId");
-
-                    b.HasOne("Domain.Entities.Employee", "StoreManager")
-                        .WithMany()
-                        .HasForeignKey("StoreManagerId");
-
-                    b.Navigation("AreaManager");
-
-                    b.Navigation("Director");
-
-                    b.Navigation("Format");
-
-                    b.Navigation("FunctionalArea");
-
                     b.Navigation("Project");
+                });
 
-                    b.Navigation("Recruiter");
+            modelBuilder.Entity("Domain.Entities.StoreHistory", b =>
+                {
+                    b.HasOne("Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("StoreManager");
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("Domain.Entities.SubSection", b =>
@@ -739,21 +915,24 @@ namespace Infrastructure.Migrations
                     b.Navigation("Section");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BakuDistrict", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BakuMetro", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BakuTarget", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
             modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
                     b.Navigation("ScheduledDatas");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Format", b =>
-                {
-                    b.Navigation("Stores");
-                });
-
-            modelBuilder.Entity("Domain.Entities.FunctionalArea", b =>
-                {
-                    b.Navigation("Employees");
-
-                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("Domain.Entities.Position", b =>

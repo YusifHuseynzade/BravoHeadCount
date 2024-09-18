@@ -1,10 +1,16 @@
-﻿using EmployeeDetails.Commands.Request;
+﻿using Common.Interfaces;
+using EmployeeDetails.Commands.Request;
 using EmployeeDetails.Queries.Request;
 using HeadCountDetails.Commands.Request;
 using HeadCountDetails.ExcelImportService;
+using HeadCountDetails.HeadCountExportedService;
 using HeadCountDetails.Queries.Request;
+using Infrastructure;
+using Infrastructure.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace BravoHC.Controllers
@@ -15,10 +21,16 @@ namespace BravoHC.Controllers
     {
         private readonly IMediator _mediator;
         private readonly HeadCountImportService _importService;
-        public HeadCountController(IMediator mediator, HeadCountImportService importService)
+        private readonly HeadCountExportService _headCountExportService;
+        private readonly IApplicationDbContext _appDbContext;
+        public HeadCountController(IMediator mediator, HeadCountImportService importService, HeadCountExportService headCountExportService, IApplicationDbContext appDbContext)
         {
             _mediator = mediator;
             _importService = importService;
+            _headCountExportService = headCountExportService;
+            _appDbContext = appDbContext;
+
+
         }
      
         [HttpDelete]
@@ -91,5 +103,32 @@ namespace BravoHC.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpGet("export-headcounts")]
+        public async Task<IActionResult> ExportHeadCountsToExcel([FromQuery] int? projectId = null)
+        {
+            // Tüm HeadCount kayıtlarını çekiyoruz (filtreleme serviste yapılacak).
+            var headCounts = await _appDbContext.HeadCounts
+                .Include(hc => hc.Project)
+                .Include(hc => hc.Section)
+                .Include(hc => hc.SubSection)
+                .Include(hc => hc.Position)
+                .Include(hc => hc.Employee)
+                .ToListAsync();
+
+            if (!headCounts.Any())
+            {
+                return NotFound("No HeadCount found to export.");
+            }
+
+            // Filtreleme işlemi servis tarafında yapılacak
+            var fileContent = await _headCountExportService.ExportHeadCountsToExcelAsync(headCounts, projectId);
+
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "HeadCounts.xlsx");
+        }
+
+
+
+
     }
 }

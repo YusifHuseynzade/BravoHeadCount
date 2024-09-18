@@ -1,7 +1,4 @@
-﻿
-using FormatDetails.Commands.Request;
-using FormatDetails.Queries.Request;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PositionDetails.Commands.Request;
 using PositionDetails.Queries.Request;

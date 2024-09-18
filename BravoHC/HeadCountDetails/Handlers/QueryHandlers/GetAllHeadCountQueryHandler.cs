@@ -25,8 +25,7 @@ namespace HeadCountDetails.Handlers.QueryHandlers
 
         public async Task<List<GetHeadCountListResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
         {
-            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Project)                     
-            .Include(x => x.FunctionalArea)              
+            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Project)                                 
             .Include(x => x.Section)                    
             .Include(x => x.SubSection)                 
             .Include(x => x.Position)                   
@@ -34,9 +33,29 @@ namespace HeadCountDetails.Handlers.QueryHandlers
             .Include(x => x.Employee)                  
             .ThenInclude(e => e.ResidentalArea).AsQueryable();
 
-            if (request.ProjectId.HasValue)
+            headCountsQuery = request.ProjectId.HasValue
+            ? headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value)
+            : headCountsQuery;
+
+            // SectionId filtreleme
+            headCountsQuery = (request.SectionIds != null && request.SectionIds.Any())
+                ? headCountsQuery.Where(x => request.SectionIds.Contains(x.SectionId ?? 0))
+                : headCountsQuery;
+
+            // PositionId filtreleme
+            headCountsQuery = (request.PositionIds != null && request.PositionIds.Any())
+                ? headCountsQuery.Where(x => request.PositionIds.Contains(x.PositionId ?? 0))
+                : headCountsQuery;
+
+            if (request.IsVacant.HasValue)
             {
-                headCountsQuery = headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value);
+                headCountsQuery = headCountsQuery.Where(x => x.IsVacant == request.IsVacant.Value);
+            }
+
+            // ExcessStaff filtreleme (boolean, sarı renk için)
+            if (request.ExcessStaff.HasValue && request.ExcessStaff.Value)
+            {
+                headCountsQuery = headCountsQuery.Where(x => x.Color.ColorHexCode == "#FFFF00");
             }
 
             headCountsQuery = request.OrderBy?.ToLower() switch

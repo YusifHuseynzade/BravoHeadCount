@@ -9,6 +9,8 @@ namespace Domain.Entities
     public class Role : BaseEntity
     {
         public string RoleName { get; set; }
+        public string RoleType { get; set; }
+        public string RoleLevel { get; set; }
         public List<AppUser>? AppUsers { get; set; }
         public void SetDetail(string name)
         {

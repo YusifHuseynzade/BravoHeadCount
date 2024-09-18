@@ -10,7 +10,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IStoreRepository _storeRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly IResidentalAreaRepository _residentalAreaRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPositionRepository _positionRepository;
@@ -20,7 +19,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         public UpdateEmployeeCommandHandler(
             IEmployeeRepository employeeRepository,
             IStoreRepository storeRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
             IResidentalAreaRepository residentalAreaRepository,
             IProjectRepository projectRepository,
             IPositionRepository positionRepository,
@@ -29,7 +27,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         {
             _employeeRepository = employeeRepository;
             _storeRepository = storeRepository;
-            _functionalAreaRepository = functionalAreaRepository;
             _residentalAreaRepository = residentalAreaRepository;
             _projectRepository = projectRepository;
             _positionRepository = positionRepository;
@@ -83,10 +80,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     throw new BadRequestException($"ResidentalArea with ID {request.ResidentalAreaId} does not exist.");
 
 
-                var functionalAreaExists = await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId);
-                if (!functionalAreaExists)
-                    throw new BadRequestException($"FunctionalArea with ID {request.FunctionalAreaId} does not exist.");
-
                 var projectExists = await _projectRepository.IsExistAsync(d => d.Id == request.ProjectId);
                 if (!projectExists)
                     throw new BadRequestException($"Project with ID {request.ProjectId} does not exist.");
@@ -118,7 +111,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 employee.FIN = request.FIN;
                 employee.PhoneNumber = request.PhoneNumber;
                 employee.ResidentalAreaId = request.ResidentalAreaId;
-                employee.FunctionalAreaId = request.FunctionalAreaId;
                 employee.ProjectId = request.ProjectId;
                 employee.PositionId = request.PositionId;
                 employee.SectionId = request.SectionId;

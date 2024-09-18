@@ -10,7 +10,7 @@ namespace Infrastructure.Configurations
         {
             builder.Property(t => t.Name)
                  .IsRequired()
-                 .HasMaxLength(100);
+                 .HasMaxLength(35);
 
             builder.HasMany(s => s.Employees)
                .WithOne(e => e.ResidentalArea)

@@ -12,7 +12,6 @@ namespace EmployeeDetails.ExcelImportService
     public class EmployeeImportService
     {
         private readonly IResidentalAreaRepository _residentalAreaRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPositionRepository _positionRepository;
         private readonly ISectionRepository _sectionRepository;
@@ -21,7 +20,6 @@ namespace EmployeeDetails.ExcelImportService
 
         public EmployeeImportService(
             IResidentalAreaRepository residentalAreaRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
             IProjectRepository projectRepository,
             IPositionRepository positionRepository,
             ISectionRepository sectionRepository,
@@ -29,7 +27,6 @@ namespace EmployeeDetails.ExcelImportService
             IEmployeeRepository employeeRepository) // Employee repository inject ediliyor
         {
             _residentalAreaRepository = residentalAreaRepository;
-            _functionalAreaRepository = functionalAreaRepository;
             _projectRepository = projectRepository;
             _positionRepository = positionRepository;
             _sectionRepository = sectionRepository;
@@ -70,16 +67,6 @@ namespace EmployeeDetails.ExcelImportService
                         residentalAreaId = residentalArea.Id;
                     }
                 }
-
-                // FunctionalArea kontrolü (isimle karşılaştırma)
-                var functionalAreaName = worksheet.Cells[row, 6].Text;
-                var functionalArea = await _functionalAreaRepository.GetByNameAsync(functionalAreaName);
-                if (functionalArea == null)
-                {
-                    errors.Add($"Functional Area '{functionalAreaName}' not found at row {row}.");
-                    continue;
-                }
-                var functionalAreaId = functionalArea.Id;
 
                 // Project kontrolü (isimle karşılaştırma)
                 var projectName = worksheet.Cells[row, 7].Text;
@@ -145,7 +132,6 @@ namespace EmployeeDetails.ExcelImportService
                     FIN = fin,
                     PhoneNumber = phoneNumber,
                     ResidentalAreaId = residentalAreaId,
-                    FunctionalAreaId = functionalAreaId,
                     ProjectId = projectId,
                     PositionId = positionId,
                     SectionId = sectionId,

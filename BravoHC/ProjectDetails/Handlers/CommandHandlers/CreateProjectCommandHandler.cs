@@ -12,18 +12,15 @@ namespace ProjectDetails.Handlers.CommandHandlers
     public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommandRequest, CreateProjectCommandResponse>
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly ISectionRepository _sectionRepository;
         private readonly IProjectSectionsRepository _projectSectionsRepository;
 
         public CreateProjectCommandHandler(
             IProjectRepository projectRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
             ISectionRepository sectionRepository,
             IProjectSectionsRepository projectSectionsRepository)
         {
             _projectRepository = projectRepository;
-            _functionalAreaRepository = functionalAreaRepository;
             _sectionRepository = sectionRepository;
             _projectSectionsRepository = projectSectionsRepository;
         }
@@ -40,22 +37,24 @@ namespace ProjectDetails.Handlers.CommandHandlers
                 };
             }
 
-            // FunctionalArea'nın var olup olmadığını kontrol et
-            if (request.FunctionalAreaId != 0 && !await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId))
-            {
-                return new CreateProjectCommandResponse
-                {
-                    IsSuccess = false,
-                    Message = "Functional area not found."
-                };
-            }
-
             // Yeni bir proje oluştur ve detayları ayarla
             var project = new Project
             {
-                FunctionalAreaId = request.FunctionalAreaId
+                ProjectCode = request.ProjectCode,
+                ProjectName = request.ProjectName,
+                IsStore = request.IsStore,
+                IsHeadOffice = request.IsHeadOffice,
+                IsActive = request.IsActive,
+                Format = request.Format,
+                FunctionalArea = request.FunctionalArea,
+                OperationDirector = request.Director,
+                DirectorEmail = request.DirectorEmail,
+                AreaManager = request.AreaManager,
+                AreaManagerEmail = request.AreaManagerEmail,
+                StoreManagerEmail = request.StoreManagerEmail,
+                Recruiter = request.Recruiter,
+                RecruiterEmail = request.RecruiterEmail
             };
-            project.SetDetails(request.ProjectCode, request.ProjectName, request.IsStore, request.IsHeadOffice);
 
             // Projeyi veritabanına ekle
             await _projectRepository.AddAsync(project);

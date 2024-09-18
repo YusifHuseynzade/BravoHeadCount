@@ -12,10 +12,15 @@ namespace Domain.Entities
         public string Badge { get; set; }
         public string FIN { get; set; }
         public string PhoneNumber { get; set; }
+        public string? RecruiterComment { get; set; }
         public int? ResidentalAreaId { get; set; }
         public ResidentalArea? ResidentalArea { get; set; }
-        public int FunctionalAreaId { get; set; }
-        public FunctionalArea FunctionalArea { get; set; }
+        public int? BakuDistrictId { get; set; }
+        public BakuDistrict? BakuDistrict { get; set; }
+        public int? BakuMetroId { get; set; }
+        public BakuMetro? BakuMetro { get; set; }
+        public int? BakuTargetId { get; set; }
+        public BakuTarget? BakuTarget { get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
         public int PositionId { get; set; }
@@ -26,6 +31,6 @@ namespace Domain.Entities
         public SubSection? SubSection { get; set; }
         public DateTime StartedDate { get; set; }
         public string ContractEndDate { get; set; }
-        public List<ScheduledData> ScheduledDatas { get; set; }
+        public List<ScheduledData> ScheduledDatas { get; set; } 
     }
 }

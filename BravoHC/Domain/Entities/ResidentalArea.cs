@@ -9,8 +9,9 @@ namespace Domain.Entities
     public class ResidentalArea: BaseEntity
     {
         public string Name { get; set; }
-        public List<Employee>? Employees { get; set; }
-        public void SetDetail(string name)
+        public List<Employee> Employees { get; set; }
+
+        public void SetDetail(string name) 
         {
             this.Name = name;
         }

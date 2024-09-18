@@ -18,7 +18,6 @@ namespace HeadCountDetails.ExcelImportService
         private readonly IPositionRepository _positionRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IProjectRepository _projectRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly ISectionRepository _sectionRepository;
 
         public HeadCountImportService(
@@ -27,7 +26,6 @@ namespace HeadCountDetails.ExcelImportService
             IPositionRepository positionRepository,
             IEmployeeRepository employeeRepository,
             IProjectRepository projectRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
             ISectionRepository sectionRepository)
         {
             _mediator = mediator;
@@ -35,7 +33,6 @@ namespace HeadCountDetails.ExcelImportService
             _positionRepository = positionRepository;
             _employeeRepository = employeeRepository;
             _projectRepository = projectRepository;
-            _functionalAreaRepository = functionalAreaRepository;
             _sectionRepository = sectionRepository;
         }
 
@@ -60,16 +57,6 @@ namespace HeadCountDetails.ExcelImportService
                     continue;
                 }
 
-                // FunctionalAreaName -> FunctionalAreaId
-                var functionalAreaNameFromExcel = worksheet.Cells[row, 3].Text;
-                var functionalAreaId = await _functionalAreaRepository.GetIdByNameAsync(functionalAreaNameFromExcel);
-
-                if (functionalAreaId == null)
-                {
-                    errors.Add($"Functional Area '{functionalAreaNameFromExcel}' not found at row {row}.");
-                    continue;
-                }
-
                 // Mevcut headcount verisini getir
                 var headCountId = int.Parse(worksheet.Cells[row, 1].Text);
                 var existingHeadCount = await _headCountRepository.GetByIdAsync(headCountId);
@@ -87,11 +74,6 @@ namespace HeadCountDetails.ExcelImportService
                     continue;
                 }
 
-                if (existingHeadCount.FunctionalAreaId != functionalAreaId.Value)
-                {
-                    errors.Add($"FunctionalAreaId mismatch for HeadCount ID {headCountId}. Database value: {existingHeadCount.FunctionalAreaId}, Excel value: {functionalAreaId.Value}");
-                    continue;
-                }
 
                 // SectionName -> SectionId
                 var sectionNameFromExcel = worksheet.Cells[row, 4].Text;
@@ -158,7 +140,6 @@ namespace HeadCountDetails.ExcelImportService
                 {
                     Id = headCountId,
                     ProjectId = existingHeadCount.ProjectId,
-                    FunctionalAreaId = existingHeadCount.FunctionalAreaId,
                     SectionId = sectionId,
                     SubSectionId = subSectionId,
                     PositionId = positionId,

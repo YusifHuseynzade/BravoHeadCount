@@ -1,4 +1,5 @@
-﻿using Domain.IRepositories;
+﻿using Domain.Entities;
+using Domain.IRepositories;
 using EmployeeDetails.Commands.Request;
 using EmployeeDetails.Commands.Response;
 using MediatR;
@@ -14,24 +15,32 @@ namespace EmployeeDetails.Handlers.CommandHandlers
     {
         private readonly IHeadCountRepository _headCountRepository;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IStoreRepository _storeRepository;
+        private readonly IHeadCountBackgroundColorRepository _colorRepository;
 
-        public BulkUpdateEmployeeHeadCountCommandHandler(IHeadCountRepository headCountRepository, IEmployeeRepository employeeRepository)
+        public BulkUpdateEmployeeHeadCountCommandHandler(
+            IHeadCountRepository headCountRepository,
+            IEmployeeRepository employeeRepository,
+            IStoreRepository storeRepository,
+            IHeadCountBackgroundColorRepository colorRepository)
         {
             _headCountRepository = headCountRepository;
             _employeeRepository = employeeRepository;
+            _storeRepository = storeRepository;
+            _colorRepository = colorRepository;
         }
 
         public async Task<BulkUpdateEmployeeHeadCountCommandResponse> Handle(BulkUpdateEmployeeHeadCountCommandRequest request, CancellationToken cancellationToken)
         {
             var failedEmployeeIds = new List<int>();
             int updatedCount = 0;
+            int createdCount = 0;
 
             try
             {
-                // Her employee için headcount güncelle
+                // Her employee için işlem yap
                 foreach (var employeeId in request.EmployeeIds)
                 {
-                    // İlgili employee'yi al
                     var employee = await _employeeRepository.GetAsync(e => e.Id == employeeId);
                     if (employee == null)
                     {
@@ -39,30 +48,22 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                         continue;
                     }
 
-                    // Employee'nin daha önce headcount'a eklenip eklenmediğini kontrol et
-                    var existingHeadCount = await _headCountRepository.FirstOrDefaultAsync(hc => hc.EmployeeId == employeeId);
-                    if (existingHeadCount != null)
-                    {
-                        // Employee zaten bir headcount'a eklenmişse işlem başarısız oldu
-                        failedEmployeeIds.Add(employeeId);
-                        continue;
-                    }
+                    // Employee'nin ProjectId'sine göre store bilgisini al
+                    var store = await _storeRepository.GetByProjectIdAsync(employee.ProjectId);
 
-                    // HeadCount'ta uygun kaydı bul ve HCNumber'a göre sırala (vacant olan)
+                    // Employee'ye uygun vacant olan headcount'ları al
                     var availableHeadCounts = await _headCountRepository.GetAllAsync(hc =>
                         hc.ProjectId == employee.ProjectId &&
-                        hc.FunctionalAreaId == employee.FunctionalAreaId &&
                         hc.SectionId == employee.SectionId &&
                         hc.PositionId == employee.PositionId &&
                         hc.SubSectionId == employee.SubSectionId &&
-                        hc.IsVacant == true);  // Yalnızca boş (vacant) olan headcount'lar
+                        hc.IsVacant == true);
 
-                    // Headcount'ları HCNumber'a göre küçükten büyüğe sırala
                     var sortedHeadCounts = availableHeadCounts.OrderBy(hc => hc.HCNumber).ToList();
 
                     if (sortedHeadCounts.Any())
                     {
-                        // İlk uygun headcount'u al ve employee'yi ekle
+                        // Mevcut headcount'u güncelle
                         var headCount = sortedHeadCounts.First();
                         headCount.EmployeeId = employeeId;
                         headCount.IsVacant = false;
@@ -72,19 +73,19 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     }
                     else
                     {
-                        // Eğer uygun bir headcount yoksa, bu employee için işlem başarısız oldu
-                        failedEmployeeIds.Add(employeeId);
+                        // Yeni headcount oluştur
+                        createdCount += await CreateNewHeadCountAsync(employee, store);
                     }
                 }
 
-                // Commit işlemi
                 await _headCountRepository.CommitAsync();
 
                 return new BulkUpdateEmployeeHeadCountCommandResponse
                 {
                     IsSuccess = true,
-                    Message = $"{updatedCount} headcount güncellendi. {failedEmployeeIds.Count} employee eşleşmedi.",
+                    Message = $"{updatedCount} headcount güncellendi, {createdCount} yeni headcount oluşturuldu. {failedEmployeeIds.Count} employee eşleşmedi.",
                     UpdatedCount = updatedCount,
+                    CreatedCount = createdCount,
                     FailedEmployeeIds = failedEmployeeIds
                 };
             }
@@ -98,5 +99,33 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 };
             }
         }
+
+        private async Task<int> CreateNewHeadCountAsync(Employee employee, Store store)
+        {
+            // Mevcut HCNumber'ları al
+            var existingHeadCounts = await _headCountRepository.GetAllAsync(hc => hc.ProjectId == employee.ProjectId);
+            int maxHCNumber = existingHeadCounts.Any() ? existingHeadCounts.Max(hc => hc.HCNumber) : 0;
+
+            var newHeadCount = new HeadCount
+            {
+                ProjectId = employee.ProjectId,
+                SectionId = employee.SectionId,
+                SubSectionId = employee.SubSectionId,
+                PositionId = employee.PositionId,
+                EmployeeId = employee.Id,
+                IsVacant = false,
+                HCNumber = maxHCNumber + 1 // Yeni HCNumber belirle
+            };
+
+            // Eğer yeni HCNumber store'daki HeadCountNumber'dan büyükse, rengi sarı yap
+            if (newHeadCount.HCNumber > store.HeadCountNumber)
+            {
+                newHeadCount.ColorId = await _colorRepository.GetYellowColorIdAsync();
+            }
+
+            await _headCountRepository.AddAsync(newHeadCount);
+            return 1;
+        }
+
     }
 }

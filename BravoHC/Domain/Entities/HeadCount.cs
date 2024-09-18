@@ -10,13 +10,10 @@ namespace Domain.Entities
     public class HeadCount : BaseEntity
     {
         public bool? IsVacant { get; set; } = true;
-        public string? RecruiterComment { get; set; }
         public int? ColorId { get; set; }
         public HeadCountBackgroundColor Color { get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
-        public int FunctionalAreaId { get; set; }
-        public FunctionalArea FunctionalArea { get; set; }
         public int? SectionId { get; set; }
         public Section? Section { get; set; }
         public int? SubSectionId { get; set; }
@@ -28,15 +25,14 @@ namespace Domain.Entities
         public int HCNumber { get; set; }
         public int? ParentId { get; set; }
         public HeadCount? Parent { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow.AddHours(4);
+        public DateTime LastModifiedDate { get; set; } = DateTime.UtcNow.AddHours(4);
 
-        public void SetDetails(bool? isVacant, string? recruiterComment,int projectId, Project project, int functionalAreaId, FunctionalArea functionalArea, int sectionId, Section section, int subSectionId, SubSection subSection, int positionId, Position position, int employeeId, Employee employee, int hcNumber, int? parentId)
+        public void SetDetails(bool? isVacant, int projectId, Project project, int sectionId, Section section, int subSectionId, SubSection subSection, int positionId, Position position, int employeeId, Employee employee, int hcNumber, int? parentId)
         {
             IsVacant = isVacant;
-            RecruiterComment = recruiterComment;
             ProjectId = projectId;
             Project = project;
-            FunctionalAreaId = functionalAreaId;
-            FunctionalArea = functionalArea;
             SectionId = sectionId;
             Section = section;
             SubSectionId = subSectionId;

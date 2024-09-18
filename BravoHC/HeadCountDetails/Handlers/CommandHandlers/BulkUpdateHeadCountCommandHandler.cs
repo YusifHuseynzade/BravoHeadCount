@@ -19,8 +19,9 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         private readonly IHeadCountBackgroundColorRepository _colorRepository;
 
         public BulkUpdateHeadCountCommandHandler(
-            IHeadCountRepository headCountRepository, IStoreRepository storeRepository, IHeadCountBackgroundColorRepository colorRepository
-           )
+            IHeadCountRepository headCountRepository,
+            IStoreRepository storeRepository,
+            IHeadCountBackgroundColorRepository colorRepository)
         {
             _headCountRepository = headCountRepository;
             _storeRepository = storeRepository;
@@ -31,6 +32,16 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         {
             try
             {
+                // Eğer count 0 veya sıfırdan küçükse işlem yapılmasın
+                if (request.Count <= 0)
+                {
+                    return new BulkUpdateHeadCountCommandResponse
+                    {
+                        IsSuccess = false,
+                        Message = "Geçersiz Count değeri: Count 0 veya sıfırdan küçük olamaz."
+                    };
+                }
+
                 // Headcount'ları güncelle
                 int updatedCount = await UpdateHeadCountAsync(request);
 
@@ -61,7 +72,7 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         {
             // Var olan headcount'ları HCNumber'a göre küçükten büyüğe sırala
             var existingHeadCounts = (await _headCountRepository.GetAllAsync(hc =>
-                hc.ProjectId == request.ProjectId && hc.FunctionalAreaId == request.FunctionalAreaId))
+                hc.ProjectId == request.ProjectId))
                 .OrderBy(hc => hc.HCNumber).ToList();
 
             int updatedCount = 0;
@@ -78,7 +89,8 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     await _headCountRepository.UpdateAsync(headCount);
                     updatedCount++;
 
-                    // Eğer gerekli sayıda güncelleme yapıldıysa dur
+                    // Eğer gerekli sayıda güncelleme yapıldıysa d
+                    // ur
                     if (updatedCount == request.Count)
                         break;
                 }
@@ -101,10 +113,15 @@ namespace HeadCountDetails.Handlers.CommandHandlers
 
             for (int i = 0; i < remainingCount; i++)
             {
+                // HCNumber store'daki HeadCountNumber'a eşit veya büyükse yeni headcount oluşturmayı durdur
+                if (maxHCNumber + i + 1 > store.HeadCountNumber)
+                {
+                    break; // Artık create işlemi yapılmamalıdır
+                }
+
                 var newHeadCount = new HeadCount
                 {
                     ProjectId = request.ProjectId,
-                    FunctionalAreaId = request.FunctionalAreaId,
                     SectionId = request.SectionId,
                     SubSectionId = request.SubSectionId,
                     PositionId = request.PositionId,
@@ -112,11 +129,10 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     HCNumber = maxHCNumber + i + 1 // Increment HCNumber
                 };
 
-                // Compare with the store's HeadCountNumber
+                // Eğer HCNumber store'daki HeadCountNumber'dan büyükse rengi sarı yap
                 if (newHeadCount.HCNumber > store.HeadCountNumber)
                 {
-                    // Set the background color to yellow (make sure you have a yellow color ID)
-                    newHeadCount.ColorId = await _colorRepository.GetYellowColorIdAsync(); // Implement GetYellowColorIdAsync() to return the ID of yellow color
+                    newHeadCount.ColorId = await _colorRepository.GetYellowColorIdAsync();
                 }
 
                 await _headCountRepository.AddAsync(newHeadCount);

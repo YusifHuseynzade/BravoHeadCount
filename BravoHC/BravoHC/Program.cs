@@ -1,12 +1,11 @@
 ﻿using AppUserDetails;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using BakuTargetDetails;
 using Common.Interfaces;
 using EmployeeDetails;
 using EmployeeDetails.ExcelImportService;
 using FluentValidation.AspNetCore;
-using FormatDetails;
-using FunctionalAreaDetails;
 using HeadCountBackGroundColorDetails;
 using HeadCountDetails;
 using HeadCountDetails.ExcelImportService;
@@ -54,6 +53,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddTransient<HeadCountImportService>();
 builder.Services.AddTransient<EmployeeImportService>();
 
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -96,18 +96,19 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddAppUserServices();
-builder.Services.AddFunctionalAreaServices();
 builder.Services.AddSectionServices();
 builder.Services.AddSubSectionServices();
 builder.Services.AddPositionServices();
 builder.Services.AddProjectServices();
-builder.Services.AddFormatServices();
 builder.Services.AddStoreServices();
 builder.Services.AddEmployeeServices();
 builder.Services.AddHeadCountServices();
 builder.Services.AddScheduledDataServices();
 builder.Services.AddResidentalAreaServices();
 builder.Services.AddColorServices();
+builder.Services.AddBakuDistrictServices();
+builder.Services.AddBakuMetroServices();
+builder.Services.AddBakuTargetServices();
 
 
 

@@ -15,10 +15,6 @@ namespace Infrastructure.Configurations
         {
             builder.Property(t => t.HeadCountNumber)
                 .IsRequired();
-
-            builder.HasOne(e => e.Format)
-               .WithMany(s => s.Stores)
-               .HasForeignKey(e => e.FormatId);
         }
     }
 }

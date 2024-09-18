@@ -12,18 +12,18 @@ namespace ProjectDetails.Handlers.CommandHandlers
     public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommandRequest, UpdateProjectCommandResponse>
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
+        private readonly IProjectHistoryRepository _projectHistoryRepository;
         private readonly ISectionRepository _sectionRepository;
         private readonly IProjectSectionsRepository _projectSectionsRepository;
 
         public UpdateProjectCommandHandler(
             IProjectRepository projectRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
+            IProjectHistoryRepository projectHistoryRepository,
             ISectionRepository sectionRepository,
             IProjectSectionsRepository projectSectionsRepository)
         {
             _projectRepository = projectRepository;
-            _functionalAreaRepository = functionalAreaRepository;
+            _projectHistoryRepository = projectHistoryRepository;
             _sectionRepository = sectionRepository;
             _projectSectionsRepository = projectSectionsRepository;
         }
@@ -32,7 +32,6 @@ namespace ProjectDetails.Handlers.CommandHandlers
         {
             var project = await _projectRepository.GetAsync(x => x.Id == request.Id);
 
-            // Eğer proje bulunamazsa
             if (project == null)
             {
                 return new UpdateProjectCommandResponse
@@ -42,29 +41,38 @@ namespace ProjectDetails.Handlers.CommandHandlers
                 };
             }
 
-            // Aynı ProjectCode'a sahip başka bir proje olup olmadığını kontrol et
-            if (await _projectRepository.IsExistAsync(d => d.ProjectCode == request.ProjectCode && d.Id != request.Id))
+            // Eski proje bilgilerini sakla
+            var oldProject = new Project
             {
-                return new UpdateProjectCommandResponse
-                {
-                    IsSuccess = false,
-                    Message = "Project code already exists."
-                };
-            }
-
-            // FunctionalArea'nın var olup olmadığını kontrol et
-            if (request.FunctionalAreaId != 0 && !await _functionalAreaRepository.IsExistAsync(p => p.Id == request.FunctionalAreaId))
-            {
-                return new UpdateProjectCommandResponse
-                {
-                    IsSuccess = false,
-                    Message = "Functional area not found."
-                };
-            }
+                IsActive = project.IsActive,
+                Format = project.Format,
+                FunctionalArea = project.FunctionalArea,
+                OperationDirector = project.OperationDirector,
+                DirectorEmail = project.DirectorEmail,
+                AreaManager = project.AreaManager,
+                AreaManagerEmail = project.AreaManagerEmail,
+                StoreManagerEmail = project.StoreManagerEmail,
+                Recruiter = project.Recruiter,
+                RecruiterEmail = project.RecruiterEmail
+            };
 
             // Proje bilgilerini güncelle
-            project.SetDetails(request.ProjectCode, request.ProjectName, request.IsStore, request.IsHeadOffice);
-            project.FunctionalAreaId = request.FunctionalAreaId;
+            project.SetDetails(
+                request.ProjectCode,
+                request.ProjectName,
+                request.IsStore,
+                request.IsHeadOffice,
+                request.IsActive,
+                request.Format,
+                request.FunctionalArea,
+                request.Director,
+                request.DirectorEmail,
+                request.AreaManager,
+                request.AreaManagerEmail,
+                request.StoreManagerEmail,
+                request.Recruiter,
+                request.RecruiterEmail
+            );
 
             // Mevcut ProjectSections ilişkilerini kaldır
             var existingProjectSections = await _projectSectionsRepository.GetAllAsync(ps => ps.ProjectId == project.Id);
@@ -94,15 +102,63 @@ namespace ProjectDetails.Handlers.CommandHandlers
                 await _projectSectionsRepository.CommitAsync();
             }
 
-            // Projeyi güncelle ve veritabanına kaydet
+            // Proje güncellemesi
             await _projectRepository.UpdateAsync(project);
             await _projectRepository.CommitAsync();
+
+            // Eğer belirli alanlar değiştiyse ProjectHistory kaydı oluştur
+            if (HasProjectChanged(oldProject, project))
+            {
+                var projectHistory = new ProjectHistory
+                {
+                    ProjectId = project.Id,
+                    OldIsActive = oldProject.IsActive,
+                    NewIsActive = project.IsActive,
+                    OldFormat = oldProject.Format,
+                    NewFormat = project.Format,
+                    OldFunctionalArea = oldProject.FunctionalArea,
+                    NewFunctionalArea = project.FunctionalArea,
+                    OldDirector = oldProject.OperationDirector,
+                    NewDirector = project.OperationDirector,
+                    OldDirectorEmail = oldProject.DirectorEmail,
+                    NewDirectorEmail = project.DirectorEmail,
+                    OldAreaManager = oldProject.AreaManager,
+                    NewAreaManager = project.AreaManager,
+                    OldAreaManagerEmail = oldProject.AreaManagerEmail,
+                    NewAreaManagerEmail = project.AreaManagerEmail,
+                    OldStoreManagerEmail = oldProject.StoreManagerEmail,
+                    NewStoreManagerEmail = project.StoreManagerEmail,
+                    OldRecruiter = oldProject.Recruiter,
+                    NewRecruiter = project.Recruiter,
+                    OldRecruiterEmail = oldProject.RecruiterEmail,
+                    NewRecruiterEmail = project.RecruiterEmail,
+                    ModifiedDate = DateTime.UtcNow,
+                };
+
+                await _projectHistoryRepository.AddAsync(projectHistory);
+                await _projectHistoryRepository.CommitAsync();
+            }
 
             return new UpdateProjectCommandResponse
             {
                 IsSuccess = true,
                 Message = "Project updated successfully."
             };
+        }
+
+        // Projedeki önemli değişiklikleri kontrol eden bir metot
+        private bool HasProjectChanged(Project oldProject, Project newProject)
+        {
+            return oldProject.IsActive != newProject.IsActive ||
+                   oldProject.Format != newProject.Format ||
+                   oldProject.FunctionalArea != newProject.FunctionalArea ||
+                   oldProject.OperationDirector != newProject.OperationDirector ||
+                   oldProject.DirectorEmail != newProject.DirectorEmail ||
+                   oldProject.AreaManager != newProject.AreaManager ||
+                   oldProject.AreaManagerEmail != newProject.AreaManagerEmail ||
+                   oldProject.StoreManagerEmail != newProject.StoreManagerEmail ||
+                   oldProject.Recruiter != newProject.Recruiter ||
+                   oldProject.RecruiterEmail != newProject.RecruiterEmail;
         }
     }
 }

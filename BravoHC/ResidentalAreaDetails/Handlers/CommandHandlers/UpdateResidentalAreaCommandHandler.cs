@@ -22,8 +22,6 @@ public class UpdateResidentalAreaCommandHandler : IRequestHandler<UpdateResident
         if (residentalArea != null)
         {
             residentalArea.SetDetail(request.Name);
-
-
             await _repository.UpdateAsync(residentalArea);
 
             return new UpdateResidentalAreaCommandResponse

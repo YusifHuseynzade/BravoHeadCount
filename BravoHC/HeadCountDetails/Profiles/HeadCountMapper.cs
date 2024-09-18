@@ -17,7 +17,6 @@ namespace HeadCountDetails.Profiles
            .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee))
            .ForMember(dest => dest.ParentName, opt => opt.MapFrom(src => src.Parent != null ? new ManagerResponse { Id = src.Parent.Employee.Id, FullName = src.Parent.Employee.FullName } : null))
            .ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.Project))
-           .ForMember(dest => dest.FunctionalArea, opt => opt.MapFrom(src => src.FunctionalArea))
            .ForMember(dest => dest.Section, opt => opt.MapFrom(src => src.Section))
            .ForMember(dest => dest.SubSection, opt => opt.MapFrom(src => src.SubSection))
            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
@@ -35,9 +34,6 @@ namespace HeadCountDetails.Profiles
                 .ReverseMap();
 
             CreateMap<Project, ProjectResponse>()
-                .ReverseMap();
-
-            CreateMap<FunctionalArea, FunctionalAreaResponse>()
                 .ReverseMap();
 
             CreateMap<Section, SectionResponse>()

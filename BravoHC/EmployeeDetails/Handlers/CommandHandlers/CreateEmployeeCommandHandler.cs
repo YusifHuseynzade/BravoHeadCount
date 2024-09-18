@@ -11,7 +11,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IStoreRepository _storeRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly IResidentalAreaRepository _residentalAreaRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPositionRepository _positionRepository;
@@ -21,7 +20,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         public CreateEmployeeCommandHandler(
             IEmployeeRepository employeeRepository,
             IStoreRepository storeRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
             IResidentalAreaRepository residentalAreaRepository,
             IProjectRepository projectRepository,
             IPositionRepository positionRepository,
@@ -30,7 +28,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         {
             _employeeRepository = employeeRepository;
             _storeRepository = storeRepository;
-            _functionalAreaRepository = functionalAreaRepository;
             _residentalAreaRepository = residentalAreaRepository;
             _projectRepository = projectRepository;
             _positionRepository = positionRepository;
@@ -74,9 +71,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 if (!residentalAreaExists)
                     throw new BadRequestException($"ResidentalArea with ID {request.ResidentalAreaId} does not exist.");
 
-                var functionalAreaExists = await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId);
-                if (!functionalAreaExists)
-                    throw new BadRequestException($"FunctionalArea with ID {request.FunctionalAreaId} does not exist.");
 
                 var projectExists = await _projectRepository.IsExistAsync(d => d.Id == request.ProjectId);
                 if (!projectExists)
@@ -104,7 +98,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     FIN = request.FIN,
                     PhoneNumber = request.PhoneNumber,
                     ResidentalAreaId = request.ResidentalAreaId,
-                    FunctionalAreaId = request.FunctionalAreaId,
                     ProjectId = request.ProjectId,
                     PositionId = request.PositionId,
                     SectionId = request.SectionId,

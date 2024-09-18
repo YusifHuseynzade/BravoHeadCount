@@ -23,9 +23,7 @@ namespace Infrastructure.Repositories
         {
             // Veritabanından ProjectId'ye göre Store bulmaya çalışıyoruz
             var store = await _context.Stores
-                .Include(s => s.Project)               
-                .Include(s => s.FunctionalArea)       
-                .Include(s => s.Format)              
+                .Include(s => s.Project)                            
                 .FirstOrDefaultAsync(s => s.ProjectId == projectId);
 
             // Eğer proje ID'sine göre mağaza bulunamazsa bir hata fırlatıyoruz

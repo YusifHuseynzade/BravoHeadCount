@@ -14,7 +14,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
     {
         private readonly IHeadCountRepository _headCountRepository;
         private readonly IProjectRepository _projectRepository;
-        private readonly IFunctionalAreaRepository _functionalAreaRepository;
         private readonly ISectionRepository _sectionRepository;
         private readonly ISubSectionRepository _subSectionRepository;
         private readonly IPositionRepository _positionRepository;
@@ -24,7 +23,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         public UpdateHeadCountCommandHandler(
             IHeadCountRepository headCountRepository,
             IProjectRepository projectRepository,
-            IFunctionalAreaRepository functionalAreaRepository,
             ISectionRepository sectionRepository,
             ISubSectionRepository subSectionRepository,
             IPositionRepository positionRepository,
@@ -33,7 +31,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
         {
             _headCountRepository = headCountRepository;
             _projectRepository = projectRepository;
-            _functionalAreaRepository = functionalAreaRepository;
             _sectionRepository = sectionRepository;
             _subSectionRepository = subSectionRepository;
             _positionRepository = positionRepository;
@@ -69,9 +66,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 if (!projectExists)
                     throw new BadRequestException($"Project with ID {request.ProjectId} does not exist.");
 
-                var functionalAreaExists = await _functionalAreaRepository.IsExistAsync(d => d.Id == request.FunctionalAreaId);
-                if (!functionalAreaExists)
-                    throw new BadRequestException($"FunctionalArea with ID {request.FunctionalAreaId} does not exist.");
 
                 if (request.SectionId.HasValue)
                 {
@@ -118,7 +112,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 }
 
                 headCount.ProjectId = request.ProjectId;
-                headCount.FunctionalAreaId = request.FunctionalAreaId;
                 headCount.SectionId = request.SectionId;
                 headCount.SubSectionId = request.SubSectionId;
                 headCount.PositionId = request.PositionId;
@@ -126,7 +119,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 headCount.HCNumber = request.HCNumber;
                 headCount.ParentId = parentHeadCountId;
                 headCount.IsVacant = request.IsVacant;
-                headCount.RecruiterComment = request.RecruiterComment;
                 headCount.ColorId = request.ColorId;
 
                 await _headCountRepository.UpdateAsync(headCount);
