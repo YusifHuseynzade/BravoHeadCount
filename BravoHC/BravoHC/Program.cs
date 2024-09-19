@@ -5,6 +5,7 @@ using BakuTargetDetails;
 using Common.Interfaces;
 using EmployeeDetails;
 using EmployeeDetails.ExcelImportService;
+using EmployeeDetails.Handlers.CommandHandlers;
 using FluentValidation.AspNetCore;
 using HeadCountBackGroundColorDetails;
 using HeadCountDetails;
@@ -16,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PositionDetails;
 using ProjectDetails;
+using ProjectDetails.ExcelImportService;
 using ResidentalAreaDetails;
 using ScheduledDataDetails;
 using SectionDetails;
@@ -52,7 +54,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddTransient<HeadCountImportService>();
 builder.Services.AddTransient<EmployeeImportService>();
+builder.Services.AddTransient<ProjectImportService>();
 
+builder.Services.AddHostedService<EmployeeHeadCountService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -109,8 +113,6 @@ builder.Services.AddColorServices();
 builder.Services.AddBakuDistrictServices();
 builder.Services.AddBakuMetroServices();
 builder.Services.AddBakuTargetServices();
-
-
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(

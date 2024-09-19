@@ -3,9 +3,6 @@ using Domain.IRepositories;
 using MediatR;
 using ProjectDetails.Commands.Request;
 using ProjectDetails.Commands.Response;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace ProjectDetails.Handlers.CommandHandlers
 {
@@ -48,12 +45,15 @@ namespace ProjectDetails.Handlers.CommandHandlers
                 Format = project.Format,
                 FunctionalArea = project.FunctionalArea,
                 OperationDirector = project.OperationDirector,
-                DirectorEmail = project.DirectorEmail,
+                OperationDirectorMail = project.OperationDirectorMail,
                 AreaManager = project.AreaManager,
-                AreaManagerEmail = project.AreaManagerEmail,
-                StoreManagerEmail = project.StoreManagerEmail,
+                AreaManagerBadge = request.AreaManagerBadge,
+                AreaManagerMail = project.AreaManagerMail,
+                StoreManagerMail = project.StoreManagerMail,
                 Recruiter = project.Recruiter,
-                RecruiterEmail = project.RecruiterEmail
+                RecruiterMail = project.RecruiterMail,
+                StoreOpeningDate = project.StoreOpeningDate,  
+                StoreClosedDate = project.StoreClosedDate     
             };
 
             // Proje bilgilerini güncelle
@@ -65,14 +65,18 @@ namespace ProjectDetails.Handlers.CommandHandlers
                 request.IsActive,
                 request.Format,
                 request.FunctionalArea,
-                request.Director,
-                request.DirectorEmail,
+                request.OperationDirector,
+                request.OperationDirectorMail,
                 request.AreaManager,
-                request.AreaManagerEmail,
-                request.StoreManagerEmail,
+                request.AreaManagerMail,
+                request.StoreManagerMail,
                 request.Recruiter,
-                request.RecruiterEmail
+                request.RecruiterMail
             );
+
+            // StoreOpeningDate ve StoreClosedDate güncelleniyor
+            project.StoreOpeningDate = request.StoreOpeningDate ?? project.StoreOpeningDate;
+            project.StoreClosedDate = request.StoreClosedDate ?? project.StoreClosedDate;
 
             // Mevcut ProjectSections ilişkilerini kaldır
             var existingProjectSections = await _projectSectionsRepository.GetAllAsync(ps => ps.ProjectId == project.Id);
@@ -120,18 +124,18 @@ namespace ProjectDetails.Handlers.CommandHandlers
                     NewFunctionalArea = project.FunctionalArea,
                     OldDirector = oldProject.OperationDirector,
                     NewDirector = project.OperationDirector,
-                    OldDirectorEmail = oldProject.DirectorEmail,
-                    NewDirectorEmail = project.DirectorEmail,
+                    OldDirectorEmail = oldProject.OperationDirectorMail,
+                    NewDirectorEmail = project.OperationDirectorMail,
                     OldAreaManager = oldProject.AreaManager,
                     NewAreaManager = project.AreaManager,
-                    OldAreaManagerEmail = oldProject.AreaManagerEmail,
-                    NewAreaManagerEmail = project.AreaManagerEmail,
-                    OldStoreManagerEmail = oldProject.StoreManagerEmail,
-                    NewStoreManagerEmail = project.StoreManagerEmail,
+                    OldAreaManagerEmail = oldProject.AreaManagerMail,
+                    NewAreaManagerEmail = project.AreaManagerMail,
+                    OldStoreManagerEmail = oldProject.StoreManagerMail,
+                    NewStoreManagerEmail = project.StoreManagerMail,
                     OldRecruiter = oldProject.Recruiter,
                     NewRecruiter = project.Recruiter,
-                    OldRecruiterEmail = oldProject.RecruiterEmail,
-                    NewRecruiterEmail = project.RecruiterEmail,
+                    OldRecruiterEmail = oldProject.RecruiterMail,
+                    NewRecruiterEmail = project.RecruiterMail,
                     ModifiedDate = DateTime.UtcNow,
                 };
 
@@ -153,12 +157,12 @@ namespace ProjectDetails.Handlers.CommandHandlers
                    oldProject.Format != newProject.Format ||
                    oldProject.FunctionalArea != newProject.FunctionalArea ||
                    oldProject.OperationDirector != newProject.OperationDirector ||
-                   oldProject.DirectorEmail != newProject.DirectorEmail ||
+                   oldProject.OperationDirectorMail != newProject.OperationDirectorMail ||
                    oldProject.AreaManager != newProject.AreaManager ||
-                   oldProject.AreaManagerEmail != newProject.AreaManagerEmail ||
-                   oldProject.StoreManagerEmail != newProject.StoreManagerEmail ||
+                   oldProject.AreaManagerMail != newProject.AreaManagerMail ||
+                   oldProject.StoreManagerMail != newProject.StoreManagerMail ||
                    oldProject.Recruiter != newProject.Recruiter ||
-                   oldProject.RecruiterEmail != newProject.RecruiterEmail;
+                   oldProject.RecruiterMail != newProject.RecruiterMail;
         }
     }
 }

@@ -51,9 +51,6 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                 if (request.ProjectId <= 0)
                     throw new BadRequestException("ProjectId is required and must be greater than 0.");
 
-                if (request.FunctionalAreaId <= 0)
-                    throw new BadRequestException("FunctionalAreaId is required and must be greater than 0.");
-
                 if (request.HCNumber < 0)
                     throw new BadRequestException("HCNumber is required and must not be negative.");
 

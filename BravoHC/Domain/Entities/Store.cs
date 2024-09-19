@@ -18,7 +18,7 @@ namespace Domain.Entities
             ProjectId = projectId;
             Project = project;
             HeadCountNumber = headCountNumber;
-            ModifiedDate = DateTime.UtcNow.AddHours(4); // Her detay ayarlandığında modified date güncellenir
+            ModifiedDate = DateTime.UtcNow.AddHours(4); 
         }
     }
 }

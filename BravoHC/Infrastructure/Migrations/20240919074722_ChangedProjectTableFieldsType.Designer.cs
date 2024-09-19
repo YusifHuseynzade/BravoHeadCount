@@ -3,6 +3,7 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240919074722_ChangedProjectTableFieldsType")]
+    partial class ChangedProjectTableFieldsType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -342,12 +344,16 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AreaManagerMail")
+                    b.Property<string>("AreaManagerEmail")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DirectorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Format")
                         .IsRequired()
@@ -391,14 +397,14 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RecruiterMail")
+                    b.Property<string>("RecruiterEmail")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("StoreClosedDate")
                         .HasColumnType("text");
 
-                    b.Property<string>("StoreManagerMail")
+                    b.Property<string>("StoreManagerEmail")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -587,7 +593,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 9, 19, 11, 58, 27, 214, DateTimeKind.Utc).AddTicks(277));
+                        .HasDefaultValue(new DateTime(2024, 9, 19, 11, 47, 21, 864, DateTimeKind.Utc).AddTicks(2558));
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("integer");

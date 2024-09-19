@@ -31,5 +31,10 @@ namespace Infrastructure.Repositories
                 .Where(x => x.ProjectCode == name)
                 .FirstOrDefaultAsync();
         }
+        public async Task<Project> GetByProjectCodeAsync(string projectCode)
+        {
+            return await _context.Projects
+                                 .FirstOrDefaultAsync(p => p.ProjectCode == projectCode);
+        }
     }
 }

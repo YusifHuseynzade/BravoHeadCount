@@ -3,9 +3,9 @@ using Domain.IRepositories;
 using MediatR;
 using ProjectDetails.Commands.Request;
 using ProjectDetails.Commands.Response;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace ProjectDetails.Handlers.CommandHandlers
 {
@@ -47,13 +47,16 @@ namespace ProjectDetails.Handlers.CommandHandlers
                 IsActive = request.IsActive,
                 Format = request.Format,
                 FunctionalArea = request.FunctionalArea,
-                OperationDirector = request.Director,
-                DirectorEmail = request.DirectorEmail,
+                OperationDirector = request.OperationDirector,
+                OperationDirectorMail = request.OperationDirectorMail,
                 AreaManager = request.AreaManager,
-                AreaManagerEmail = request.AreaManagerEmail,
-                StoreManagerEmail = request.StoreManagerEmail,
+                AreaManagerBadge = request.AreaManagerBadge,
+                AreaManagerMail = request.AreaManagerMail,
+                StoreManagerMail = request.StoreManagerMail,
                 Recruiter = request.Recruiter,
-                RecruiterEmail = request.RecruiterEmail
+                RecruiterMail = request.RecruiterMail,
+                StoreOpeningDate = request.StoreOpeningDate,  
+                StoreClosedDate = request.StoreClosedDate 
             };
 
             // Projeyi veritabanına ekle

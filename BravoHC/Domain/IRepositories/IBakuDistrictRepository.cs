@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IBakuDistrictRepository : IRepository<BakuDistrict>
     {
+        Task<BakuDistrict> GetByNameAsync(string name);
     }
 }

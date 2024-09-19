@@ -11,5 +11,6 @@ namespace Domain.IRepositories
     {
         Task<int?> GetIdByNameAsync(string projectName);
         Task<Project> GetByNameAsync(string name);
+        Task<Project> GetByProjectCodeAsync(string projectCode);
     }
 }

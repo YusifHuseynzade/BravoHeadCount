@@ -1,9 +1,5 @@
 ﻿using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmployeeDetails.Commands.Request
 {
@@ -14,7 +10,10 @@ namespace EmployeeDetails.Commands.Request
         public string FIN { get; set; }
         public string PhoneNumber { get; set; }
         public int? ResidentalAreaId { get; set; }
-        public int FunctionalAreaId { get; set; }
+        public int? BakuDistrictId { get; set; }
+        public int? BakuMetroId { get; set; }
+        public int? BakuTargetId { get; set; }
+        public string? RecruiterComment { get; set; }
         public int ProjectId { get; set; }
         public int PositionId { get; set; }
         public int SectionId { get; set; }

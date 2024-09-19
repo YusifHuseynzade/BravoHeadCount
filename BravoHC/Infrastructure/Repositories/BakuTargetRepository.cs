@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,13 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task<BakuTarget?> GetByNameAsync(string name)
+        {
+            return await _context.BakuTargets
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+        }
+
     }
 } 

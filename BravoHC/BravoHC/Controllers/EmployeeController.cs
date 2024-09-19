@@ -86,5 +86,25 @@ namespace BravoHC.Controllers
             return Ok(await _mediator.Send(request));
         }
 
+        // Yeni endpoint: RecruiterComment güncelleme
+        [HttpPut("update-recruiter-comment")]
+        public async Task<IActionResult> UpdateRecruiterComment([FromBody] UpdateRecruiterCommentCommandRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.IsSuccess)
+                return Ok(result);
+            return BadRequest(result.Message);
+        }
+
+        // Yeni endpoint: EmployeeLocation güncelleme
+        [HttpPut("update-employee-location")]
+        public async Task<IActionResult> UpdateEmployeeLocation([FromBody] UpdateEmployeeLocationCommandRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.IsSuccess)
+                return Ok(result);
+            return BadRequest(result.Message);
+        }
+
     }
 }

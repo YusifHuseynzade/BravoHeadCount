@@ -16,6 +16,9 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         private readonly IPositionRepository _positionRepository;
         private readonly ISectionRepository _sectionRepository;
         private readonly ISubSectionRepository _subSectionRepository;
+        private readonly IBakuDistrictRepository _bakuDistrictRepository;
+        private readonly IBakuMetroRepository _bakuMetroRepository;
+        private readonly IBakuTargetRepository _bakuTargetRepository;
 
         public CreateEmployeeCommandHandler(
             IEmployeeRepository employeeRepository,
@@ -24,7 +27,10 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             IProjectRepository projectRepository,
             IPositionRepository positionRepository,
             ISectionRepository sectionRepository,
-            ISubSectionRepository subSectionRepository)
+            ISubSectionRepository subSectionRepository,
+            IBakuDistrictRepository bakuDistrictRepository,
+            IBakuMetroRepository bakuMetroRepository,
+            IBakuTargetRepository bakuTargetRepository)
         {
             _employeeRepository = employeeRepository;
             _storeRepository = storeRepository;
@@ -33,12 +39,16 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             _positionRepository = positionRepository;
             _sectionRepository = sectionRepository;
             _subSectionRepository = subSectionRepository;
+            _bakuDistrictRepository = bakuDistrictRepository;
+            _bakuMetroRepository = bakuMetroRepository;
+            _bakuTargetRepository = bakuTargetRepository;
         }
 
         public async Task<CreateEmployeeCommandResponse> Handle(CreateEmployeeCommandRequest request, CancellationToken cancellationToken)
         {
             try
             {
+                // Zorunlu alanların kontrolü
                 if (string.IsNullOrWhiteSpace(request.FullName))
                     throw new BadRequestException("FullName is required.");
 
@@ -51,12 +61,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 if (string.IsNullOrWhiteSpace(request.PhoneNumber))
                     throw new BadRequestException("PhoneNumber is required.");
 
-                if (request.ResidentalAreaId <= 0)
-                    throw new BadRequestException("ResidentalAreaId is required and must be greater than 0.");
-
-                if (request.FunctionalAreaId <= 0)
-                    throw new BadRequestException("FunctionalAreaId is required and must be greater than 0.");
-
                 if (request.ProjectId <= 0)
                     throw new BadRequestException("ProjectId is required and must be greater than 0.");
 
@@ -67,22 +71,33 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     throw new BadRequestException("SectionId is required and must be greater than 0.");
 
                 // Veritabanı kontrolü
-                var residentalAreaExists = await _residentalAreaRepository.IsExistAsync(d => d.Id == request.ResidentalAreaId);
-                if (!residentalAreaExists)
-                    throw new BadRequestException($"ResidentalArea with ID {request.ResidentalAreaId} does not exist.");
+                if (request.ResidentalAreaId.HasValue)
+                {
+                    var residentalAreaExists = await _residentalAreaRepository.IsExistAsync(d => d.Id == request.ResidentalAreaId);
+                    if (!residentalAreaExists)
+                        throw new BadRequestException($"ResidentalArea with ID {request.ResidentalAreaId} does not exist.");
+                }
 
+                if (request.BakuDistrictId.HasValue)
+                {
+                    var bakuDistrictExists = await _bakuDistrictRepository.IsExistAsync(d => d.Id == request.BakuDistrictId);
+                    if (!bakuDistrictExists)
+                        throw new BadRequestException($"BakuDistrict with ID {request.BakuDistrictId} does not exist.");
+                }
 
-                var projectExists = await _projectRepository.IsExistAsync(d => d.Id == request.ProjectId);
-                if (!projectExists)
-                    throw new BadRequestException($"Project with ID {request.ProjectId} does not exist.");
+                if (request.BakuMetroId.HasValue)
+                {
+                    var bakuMetroExists = await _bakuMetroRepository.IsExistAsync(d => d.Id == request.BakuMetroId);
+                    if (!bakuMetroExists)
+                        throw new BadRequestException($"BakuMetro with ID {request.BakuMetroId} does not exist.");
+                }
 
-                var positionExists = await _positionRepository.IsExistAsync(d => d.Id == request.PositionId);
-                if (!positionExists)
-                    throw new BadRequestException($"Position with ID {request.PositionId} does not exist.");
-
-                var sectionExists = await _sectionRepository.IsExistAsync(d => d.Id == request.SectionId);
-                if (!sectionExists)
-                    throw new BadRequestException($"Section with ID {request.SectionId} does not exist.");
+                if (request.BakuTargetId.HasValue)
+                {
+                    var bakuTargetExists = await _bakuTargetRepository.IsExistAsync(d => d.Id == request.BakuTargetId);
+                    if (!bakuTargetExists)
+                        throw new BadRequestException($"BakuTarget with ID {request.BakuTargetId} does not exist.");
+                }
 
                 if (request.SubSectionId.HasValue)
                 {
@@ -98,11 +113,15 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     FIN = request.FIN,
                     PhoneNumber = request.PhoneNumber,
                     ResidentalAreaId = request.ResidentalAreaId,
+                    BakuDistrictId = request.BakuDistrictId,
+                    BakuMetroId = request.BakuMetroId,
+                    BakuTargetId = request.BakuTargetId,
+                    RecruiterComment = request.RecruiterComment,
                     ProjectId = request.ProjectId,
                     PositionId = request.PositionId,
                     SectionId = request.SectionId,
                     SubSectionId = request.SubSectionId,
-                    StartedDate = (DateTime)request.StartedDate,
+                    StartedDate = request.StartedDate,
                     ContractEndDate = request.ContractEndDate,
                 };
 

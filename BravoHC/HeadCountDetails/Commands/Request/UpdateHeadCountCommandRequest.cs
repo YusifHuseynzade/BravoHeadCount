@@ -7,7 +7,6 @@ public class UpdateHeadCountCommandRequest : IRequest<UpdateHeadCountCommandResp
 {
     public int Id { get; set; }
     public int ProjectId { get; set; }
-    public int FunctionalAreaId { get; set; }
     public int? SectionId { get; set; }
     public int? SubSectionId { get; set; }
     public int? PositionId { get; set; }

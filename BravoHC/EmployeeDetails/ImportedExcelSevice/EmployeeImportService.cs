@@ -16,7 +16,10 @@ namespace EmployeeDetails.ExcelImportService
         private readonly IPositionRepository _positionRepository;
         private readonly ISectionRepository _sectionRepository;
         private readonly ISubSectionRepository _subSectionRepository;
-        private readonly IEmployeeRepository _employeeRepository; // Employee repository inject ediliyor
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IBakuDistrictRepository _bakuDistrictRepository;
+        private readonly IBakuMetroRepository _bakuMetroRepository;
+        private readonly IBakuTargetRepository _bakuTargetRepository;
 
         public EmployeeImportService(
             IResidentalAreaRepository residentalAreaRepository,
@@ -24,7 +27,10 @@ namespace EmployeeDetails.ExcelImportService
             IPositionRepository positionRepository,
             ISectionRepository sectionRepository,
             ISubSectionRepository subSectionRepository,
-            IEmployeeRepository employeeRepository) // Employee repository inject ediliyor
+            IEmployeeRepository employeeRepository,
+            IBakuDistrictRepository bakuDistrictRepository,
+            IBakuMetroRepository bakuMetroRepository,
+            IBakuTargetRepository bakuTargetRepository)
         {
             _residentalAreaRepository = residentalAreaRepository;
             _projectRepository = projectRepository;
@@ -32,6 +38,9 @@ namespace EmployeeDetails.ExcelImportService
             _sectionRepository = sectionRepository;
             _subSectionRepository = subSectionRepository;
             _employeeRepository = employeeRepository;
+            _bakuDistrictRepository = bakuDistrictRepository;
+            _bakuMetroRepository = bakuMetroRepository;
+            _bakuTargetRepository = bakuTargetRepository;
         }
 
         public async Task ImportAsync(Stream excelStream)
@@ -65,6 +74,18 @@ namespace EmployeeDetails.ExcelImportService
                     if (residentalArea != null)
                     {
                         residentalAreaId = residentalArea.Id;
+                    }
+                }
+
+                // BakuDistrict kontrolü
+                var bakuDistrictName = worksheet.Cells[row, 6].Text;
+                int? bakuDistrictId = null;
+                if (!string.IsNullOrEmpty(bakuDistrictName))
+                {
+                    var bakuDistrict = await _bakuDistrictRepository.GetByNameAsync(bakuDistrictName);
+                    if (bakuDistrict != null)
+                    {
+                        bakuDistrictId = bakuDistrict.Id;
                     }
                 }
 
@@ -110,15 +131,42 @@ namespace EmployeeDetails.ExcelImportService
                     }
                 }
 
+                // BakuMetro kontrolü
+                var bakuMetroName = worksheet.Cells[row, 11].Text;
+                int? bakuMetroId = null;
+                if (!string.IsNullOrEmpty(bakuMetroName))
+                {
+                    var bakuMetro = await _bakuMetroRepository.GetByNameAsync(bakuMetroName);
+                    if (bakuMetro != null)
+                    {
+                        bakuMetroId = bakuMetro.Id;
+                    }
+                }
+
+                // BakuTarget kontrolü
+                var bakuTargetName = worksheet.Cells[row, 12].Text;
+                int? bakuTargetId = null;
+                if (!string.IsNullOrEmpty(bakuTargetName))
+                {
+                    var bakuTarget = await _bakuTargetRepository.GetByNameAsync(bakuTargetName);
+                    if (bakuTarget != null)
+                    {
+                        bakuTargetId = bakuTarget.Id;
+                    }
+                }
+
+                // RecruiterComment kontrolü
+                var recruiterComment = worksheet.Cells[row, 13].Text; // RecruiterComment sütunu ekleniyor
+
                 // StartedDate kontrolü (null olamaz)
-                if (!DateTime.TryParse(worksheet.Cells[row, 11].Text, out DateTime startedDate))
+                if (!DateTime.TryParse(worksheet.Cells[row, 14].Text, out DateTime startedDate))
                 {
                     errors.Add($"Invalid or missing Started Date at row {row}.");
                     continue;
                 }
 
                 // ContractEndDate nullable olabilir
-                var contractEndDate = worksheet.Cells[row, 12].Text;
+                var contractEndDate = worksheet.Cells[row, 15].Text;
                 if (string.IsNullOrEmpty(contractEndDate))
                 {
                     contractEndDate = null;
@@ -132,6 +180,10 @@ namespace EmployeeDetails.ExcelImportService
                     FIN = fin,
                     PhoneNumber = phoneNumber,
                     ResidentalAreaId = residentalAreaId,
+                    BakuDistrictId = bakuDistrictId,
+                    BakuMetroId = bakuMetroId,
+                    BakuTargetId = bakuTargetId,
+                    RecruiterComment = recruiterComment,  // RecruiterComment alana ekleniyor
                     ProjectId = projectId,
                     PositionId = positionId,
                     SectionId = sectionId,
@@ -144,10 +196,10 @@ namespace EmployeeDetails.ExcelImportService
                 await _employeeRepository.AddAsync(employee);
             }
 
-            // Eğer hata yoksa, işlemleri commit ediyoruz
+            // Eğer hata varsa, işlem durdurulur
             if (errors.Any())
             {
-                throw new ValidationException(errors); // Hatalar varsa işlem durdurulur
+                throw new ValidationException(errors);
             }
 
             // Tüm işlemleri commit ediyoruz

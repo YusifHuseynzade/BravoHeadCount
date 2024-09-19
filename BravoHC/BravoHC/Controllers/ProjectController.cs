@@ -1,7 +1,9 @@
-﻿using MediatR;
+﻿using HeadCountDetails.ExcelImportService;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectDetails.Commands.Request;
+using ProjectDetails.ExcelImportService;
 using ProjectDetails.Queries.Request;
 
 namespace BravoHC.Controllers
@@ -11,9 +13,12 @@ namespace BravoHC.Controllers
 	public class ProjectController : ControllerBase
 	{
 		private readonly IMediator _mediator;
-		public ProjectController(IMediator mediator)
+        private readonly ProjectImportService _importService;
+
+        public ProjectController(IMediator mediator, ProjectImportService importService)
 		{
 			_mediator = mediator;
+			_importService = importService;
 		}
 		[HttpPost]
 		public async Task<IActionResult> Add([FromBody] CreateProjectCommandRequest request)
@@ -60,6 +65,20 @@ namespace BravoHC.Controllers
             }
 
             return Ok(section);
+        }
+
+        [HttpPost("importexceldata")]
+        public async Task<IActionResult> Import([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Please upload a valid Excel file.");
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            await _importService.ImportAsync(stream);
+
+            return Ok("File imported successfully.");
         }
 
     }

@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IBakuMetroRepository : IRepository<BakuMetro>
     {
+        Task<BakuMetro> GetByNameAsync(string name);
     }
 }

@@ -7,6 +7,7 @@ using BakuTargetDetails.Profiles;
 using Domain.Entities;
 using Domain.IRepositories;
 using Domain.IServices;
+using EmployeeDetails.Handlers.CommandHandlers;
 using EmployeeDetails.Profiles;
 using HeadCountBackGroundColorDetails.Profiles;
 using HeadCountDetails.HeadCountExportedService;
@@ -14,6 +15,7 @@ using HeadCountDetails.Profiles;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
@@ -46,6 +48,9 @@ namespace Infrastructure
             builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
+            builder.RegisterType<EmployeeHeadCountService>()
+               .As<IHostedService>()  // IHostedService olarak kaydet
+               .SingleInstance();
 
             builder.Register(ctx =>
             {

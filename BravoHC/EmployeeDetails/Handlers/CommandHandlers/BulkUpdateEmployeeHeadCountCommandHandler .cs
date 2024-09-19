@@ -99,7 +99,6 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                 };
             }
         }
-
         private async Task<int> CreateNewHeadCountAsync(Employee employee, Store store)
         {
             // Mevcut HCNumber'ları al
