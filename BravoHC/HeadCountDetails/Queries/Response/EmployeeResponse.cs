@@ -13,6 +13,7 @@ namespace HeadCountDetails.Queries.Response
         public string Badge { get; set; }
         public string FIN { get; set; }
         public string PhoneNumber { get; set; }
+        public string RecruiterComment { get; set; }
         public ResidentalAreaResponse ResidentalArea { get; set; }
         public BakuDistrictResponse BakuDistrict { get; set; }
         public BakuMetroResponse BakuMetro { get; set; }
