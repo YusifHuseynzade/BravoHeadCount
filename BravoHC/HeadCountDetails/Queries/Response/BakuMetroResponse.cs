@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace HeadCountDetails.Queries.Response
 {
-    public class ProjectResponse
+    public class BakuMetroResponse
     {
         public int Id { get; set; }
-        public string ProjectName { get; set; }
-        public string FunctionalArea { get; set; }
+        public string Name { get; set; }
     }
 }

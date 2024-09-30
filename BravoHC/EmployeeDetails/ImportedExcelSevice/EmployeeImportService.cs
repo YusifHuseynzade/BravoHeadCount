@@ -89,50 +89,8 @@ namespace EmployeeDetails.ExcelImportService
                     }
                 }
 
-                // Project kontrolü (isimle karşılaştırma)
-                var projectName = worksheet.Cells[row, 7].Text;
-                var project = await _projectRepository.GetByNameAsync(projectName);
-                if (project == null)
-                {
-                    errors.Add($"Project '{projectName}' not found at row {row}.");
-                    continue;
-                }
-                var projectId = project.Id;
-
-                // Position kontrolü (isimle karşılaştırma)
-                var positionName = worksheet.Cells[row, 8].Text;
-                var position = await _positionRepository.GetByNameAsync(positionName);
-                if (position == null)
-                {
-                    errors.Add($"Position '{positionName}' not found at row {row}.");
-                    continue;
-                }
-                var positionId = position.Id;
-
-                // Section kontrolü (isimle karşılaştırma)
-                var sectionName = worksheet.Cells[row, 9].Text;
-                var section = await _sectionRepository.GetByNameAsync(sectionName);
-                if (section == null)
-                {
-                    errors.Add($"Section '{sectionName}' not found at row {row}.");
-                    continue;
-                }
-                var sectionId = section.Id;
-
-                // SubSection kontrolü (isimle karşılaştırma)
-                var subSectionName = worksheet.Cells[row, 10].Text;
-                int? subSectionId = null;
-                if (!string.IsNullOrEmpty(subSectionName))
-                {
-                    var subSection = await _subSectionRepository.GetByNameAsync(subSectionName);
-                    if (subSection != null)
-                    {
-                        subSectionId = subSection.Id;
-                    }
-                }
-
                 // BakuMetro kontrolü
-                var bakuMetroName = worksheet.Cells[row, 11].Text;
+                var bakuMetroName = worksheet.Cells[row, 7].Text;
                 int? bakuMetroId = null;
                 if (!string.IsNullOrEmpty(bakuMetroName))
                 {
@@ -144,7 +102,7 @@ namespace EmployeeDetails.ExcelImportService
                 }
 
                 // BakuTarget kontrolü
-                var bakuTargetName = worksheet.Cells[row, 12].Text;
+                var bakuTargetName = worksheet.Cells[row, 8].Text;
                 int? bakuTargetId = null;
                 if (!string.IsNullOrEmpty(bakuTargetName))
                 {
@@ -156,12 +114,62 @@ namespace EmployeeDetails.ExcelImportService
                 }
 
                 // RecruiterComment kontrolü
-                var recruiterComment = worksheet.Cells[row, 13].Text; // RecruiterComment sütunu ekleniyor
+                var recruiterComment = worksheet.Cells[row, 9].Text; // RecruiterComment sütunu ekleniyor
 
-                // StartedDate kontrolü (null olamaz)
-                if (!DateTime.TryParse(worksheet.Cells[row, 14].Text, out DateTime startedDate))
+                // Project kontrolü (isimle karşılaştırma)
+                var projectName = worksheet.Cells[row, 10].Text;
+                var project = await _projectRepository.GetByNameAsync(projectName);
+                if (project == null)
                 {
-                    errors.Add($"Invalid or missing Started Date at row {row}.");
+                    errors.Add($"Project '{projectName}' not found at row {row}.");
+                    continue;
+                }
+                var projectId = project.Id;
+
+                // Position kontrolü (isimle karşılaştırma)
+                var positionName = worksheet.Cells[row, 11].Text;
+                var position = await _positionRepository.GetByNameAsync(positionName);
+                if (position == null)
+                {
+                    errors.Add($"Position '{positionName}' not found at row {row}.");
+                    continue;
+                }
+                var positionId = position.Id;
+
+                // Section kontrolü (isimle karşılaştırma)
+                var sectionName = worksheet.Cells[row, 12].Text;
+                var section = await _sectionRepository.GetByNameAsync(sectionName);
+                if (section == null)
+                {
+                    errors.Add($"Section '{sectionName}' not found at row {row}.");
+                    continue;
+                }
+                var sectionId = section.Id;
+
+                // SubSection kontrolü (isimle karşılaştırma)
+                var subSectionName = worksheet.Cells[row, 13].Text;
+                int? subSectionId = null;
+                if (!string.IsNullOrEmpty(subSectionName))
+                {
+                    var subSection = await _subSectionRepository.GetByNameAsync(subSectionName);
+                    if (subSection != null)
+                    {
+                        subSectionId = subSection.Id;
+                    }
+                }
+
+                // StartedDate kontrolü (null olamaz ve Excel serial date dönüşümü)
+                var startedDateText = worksheet.Cells[row, 14].Text;
+                DateTime startedDate;
+
+                if (double.TryParse(startedDateText, out double oaDate))
+                {
+                    // Excel tarih seri numarasını DateTime'e çevir
+                    startedDate = DateTime.FromOADate(oaDate);
+                }
+                else
+                {
+                    errors.Add($"Invalid or missing Started Date at row {row}. Value: {startedDateText}");
                     continue;
                 }
 

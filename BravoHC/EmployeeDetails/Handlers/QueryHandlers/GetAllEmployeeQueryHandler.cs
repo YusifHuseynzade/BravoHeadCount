@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Common.Constants;
+using Domain.Entities;
 using Domain.IRepositories;
 using EmployeeDetails.Queries.Request;
 using EmployeeDetails.Queries.Response;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,21 +26,47 @@ namespace EmployeeDetails.Handlers.QueryHandlers
 
         public async Task<List<GetEmployeeListResponse>> Handle(GetAllEmployeeQueryRequest request, CancellationToken cancellationToken)
         {
-            var employeesQuery = _repository.GetAll(x => true);
+            // Tüm ilişkisel entity'leri Include ederek sorguyu genişletiyoruz
+            IQueryable<Employee> employeesQuery = _repository.GetAll(x => true)
+                .Include(x => x.ResidentalArea)
+                .Include(x => x.BakuDistrict)
+                .Include(x => x.BakuMetro)
+                .Include(x => x.BakuTarget)
+                .Include(x => x.Project)
+                .Include(x => x.Position)
+                .Include(x => x.Section)
+                .Include(x => x.SubSection);
 
-            employeesQuery = !string.IsNullOrEmpty(request.Badge) ? employeesQuery.Where(x => x.Badge.Contains(request.Badge)) : employeesQuery;
-            employeesQuery = !string.IsNullOrEmpty(request.FullName) ? employeesQuery.Where(x => x.FullName.Contains(request.FullName)) : employeesQuery;
-
-            var employees = employeesQuery.ToList();
-
-            var response = _mapper.Map<List<GetAllEmployeeQueryResponse>>(employees);
-            if (request.ShowMore != null)
+            // Badge filtresi varsa
+            if (!string.IsNullOrEmpty(request.Badge))
             {
-                response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
+                employeesQuery = employeesQuery.Where(x => x.Badge.Contains(request.Badge));
             }
 
-            var totalCount = employees.Count();
+            // FullName filtresi varsa
+            if (!string.IsNullOrEmpty(request.FullName))
+            {
+                employeesQuery = employeesQuery.Where(x => x.FullName.Contains(request.FullName));
+            }
 
+            // Toplam çalışan sayısını hesaplıyoruz (filtrelere göre)
+            var totalCount = await employeesQuery.CountAsync(cancellationToken);
+
+            // Sayfalama işlemi yapılacaksa (ShowMore parametresi varsa)
+            if (request.ShowMore != null)
+            {
+                employeesQuery = employeesQuery
+                    .Skip((request.Page - 1) * request.ShowMore.Take)
+                    .Take(request.ShowMore.Take);
+            }
+
+            // Veritabanından sonuçları çekiyoruz
+            var employees = await employeesQuery.ToListAsync(cancellationToken);
+
+            // Elde edilen verileri DTO'ya mapliyoruz
+            var response = _mapper.Map<List<GetAllEmployeeQueryResponse>>(employees);
+
+            // Sonuç modelini oluşturuyoruz
             PaginationListDto<GetAllEmployeeQueryResponse> model =
                    new PaginationListDto<GetAllEmployeeQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);
 

@@ -27,6 +27,9 @@ namespace HeadCountDetails.Profiles
 
             CreateMap<Employee, EmployeeResponse>()
                 .ForMember(dest => dest.ResidentalArea, opt => opt.MapFrom(src => src.ResidentalArea))
+                .ForMember(dest => dest.BakuDistrict, opt => opt.MapFrom(src => src.BakuDistrict))
+                .ForMember(dest => dest.BakuMetro, opt => opt.MapFrom(src => src.BakuMetro))
+                .ForMember(dest => dest.BakuTarget, opt => opt.MapFrom(src => src.BakuTarget))
                 .ReverseMap();
 
  
@@ -46,9 +49,15 @@ namespace HeadCountDetails.Profiles
                 .ReverseMap();
 
             CreateMap<HeadCountBackgroundColor, ColorResponse>()
-                .ReverseMap();
+            .ForMember(dest => dest.ColorHexCode, opt => opt.MapFrom(src => src.ColorHexCode))
+            .ReverseMap();
 
             CreateMap<HeadCount, GetByIdHeadCountQueryResponse>().ReverseMap();
+
+            CreateMap<ResidentalArea, ResidentalAreaResponse>().ReverseMap();
+            CreateMap<BakuDistrict, BakuDistrictResponse>().ReverseMap();
+            CreateMap<BakuMetro, BakuMetroResponse>().ReverseMap();
+            CreateMap<BakuTarget, BakuTargetResponse>().ReverseMap();
         }
     }
 }

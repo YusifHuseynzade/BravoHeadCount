@@ -16,19 +16,22 @@ namespace EmployeeDetails.Handlers.CommandHandlers
         private readonly IHeadCountRepository _headCountRepository;
         private readonly IHeadCountBackgroundColorRepository _colorRepository;
         private readonly IStoreRepository _storeRepository;
+        private readonly IHeadCountHistoryRepository _headCountHistoryRepository;
 
         public EmployeeHeadCountService(
             IServiceProvider services,
             IEmployeeRepository employeeRepository,
             IHeadCountRepository headCountRepository,
             IHeadCountBackgroundColorRepository colorRepository,
-            IStoreRepository storeRepository)
+            IStoreRepository storeRepository,
+            IHeadCountHistoryRepository headCountHistoryRepository)
         {
             _services = services;
             _employeeRepository = employeeRepository;
             _headCountRepository = headCountRepository;
             _colorRepository = colorRepository;
             _storeRepository = storeRepository;
+            _headCountHistoryRepository = headCountHistoryRepository;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,9 +50,16 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                         foreach (var employee in employees)
                         {
                             // Mevcut headcount kontrolü
-                            var headCount = await _headCountRepository.GetAsync(hc => hc.EmployeeId == employee.Id);
+                            var oldHeadCount = await _headCountRepository.GetAsync(hc => hc.EmployeeId == employee.Id);
+                            var oldProjectId = oldHeadCount?.ProjectId;
 
-                            if (headCount == null || headCount.ProjectId != employee.ProjectId)
+                            // Eğer headcount varsa ve employee'nin projesi değiştiyse, HeadCountHistory kaydı oluştur
+                            if (oldHeadCount != null && oldProjectId != employee.ProjectId)
+                            {
+                                await AddHeadCountHistoryAsync(employee.Id, oldProjectId.Value, employee.ProjectId);
+                            }
+
+                            if (oldHeadCount == null || oldHeadCount.ProjectId != employee.ProjectId)
                             {
                                 // Employee'nin mevcut projede headcount'ı yok veya yanlış projede, düzelt
                                 await RemoveEmployeeFromOldHeadCountAsync(employee.Id);
@@ -130,7 +140,22 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             }
 
             await _headCountRepository.AddAsync(newHeadCount);
+            await _headCountRepository.CommitAsync();
             return 1;
+        }
+
+        private async Task AddHeadCountHistoryAsync(int employeeId, int fromProjectId, int toProjectId)
+        {
+            var headCountHistory = new HeadCountHistory
+            {
+                EmployeeId = employeeId,
+                FromProjectId = fromProjectId,
+                ToProjectId = toProjectId,
+                ChangeDate = DateTime.UtcNow.AddHours(4)
+            };
+
+            await _headCountHistoryRepository.AddAsync(headCountHistory);
+            await _headCountHistoryRepository.CommitAsync();
         }
     }
 }

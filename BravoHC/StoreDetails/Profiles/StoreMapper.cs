@@ -15,5 +15,7 @@ public class StoreMapper : Profile
         CreateMap<Store, GetAllStoreQueryResponse>().ReverseMap();
         CreateMap<Store, GetByIdStoreQueryResponse>().ReverseMap();
 
+        CreateMap<StoreHistory, GetStoreHistoryQueryResponse>().ReverseMap();
+
     }
 }

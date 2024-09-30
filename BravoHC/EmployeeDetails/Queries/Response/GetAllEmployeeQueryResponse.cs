@@ -13,15 +13,15 @@ public class GetAllEmployeeQueryResponse
     public string Badge { get; set; }
     public string FIN { get; set; }
     public string PhoneNumber { get; set; }
-    public int? ResidentalAreaId { get; set; }
-    public int? BakuDistrictId { get; set; }
-    public int? BakuMetroId { get; set; }
-    public int? BakuTargetId { get; set; }
     public string? RecruiterComment { get; set; }
-    public int ProjectId { get; set; }
-    public int PositionId { get; set; }
-    public int SectionId { get; set; }
-    public int? SubSectionId { get; set; }
+    public ResidentalAreaResponse? ResidentalArea { get; set; }
+    public BakuDistrictResponse? BakuDistrict { get; set; }
+    public BakuMetroResponse? BakuMetro { get; set; }
+    public BakuTargetResponse? BakuTarget { get; set; }
+    public ProjectResponse Project { get; set; }
+    public PositionResponse Position { get; set; }
+    public SectionResponse Section { get; set; }
+    public SubSectionResponse? SubSection { get; set; }
     public DateTime StartedDate { get; set; }
     public string? ContractEndDate { get; set; }
 }

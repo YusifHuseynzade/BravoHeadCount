@@ -81,5 +81,18 @@ namespace BravoHC.Controllers
             return Ok("File imported successfully.");
         }
 
+        [HttpGet("projecthistory")]
+        public async Task<IActionResult> GetProjectHistory([FromQuery] GetProjectHistoryQueryRequest request)
+        {
+            var projectHistory = await _mediator.Send(request);
+
+            if (projectHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(projectHistory);
+        }
+
     }
 }

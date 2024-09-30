@@ -10,7 +10,7 @@ public class GetAllHeadCountQueryRequest : IRequest<List<GetHeadCountListRespons
     public ShowMoreDto? ShowMore { get; set; }
     public int? ProjectId { get; set; }
     public List<int>?  SectionIds { get; set; }
-    public List<int>? PositionIds { get; set; }
+    public int? PositionId { get; set; }
     public bool? ExcessStaff { get; set; }
     public bool? IsVacant { get; set; }
     public string? OrderBy { get; set; }

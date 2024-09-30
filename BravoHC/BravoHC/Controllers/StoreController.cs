@@ -1,6 +1,7 @@
 ﻿using EmployeeDetails.Commands.Request;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using SectionDetails.Queries.Request;
 using StoreDetails.Commands.Request;
 using StoreDetails.Queries.Request;
 
@@ -47,6 +48,19 @@ namespace BravoHC.Controllers
             return store != null
                 ? (IActionResult)Ok(store)
                 : NotFound(new { Message = "Store not found." });
+        }
+
+        [HttpGet("storehistory")]
+        public async Task<IActionResult> GetHistory([FromQuery] GetStoreHistoryQueryRequest request)
+        {
+            var storeHistory = await _mediator.Send(request);
+
+            if (storeHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(storeHistory);
         }
     }
 }

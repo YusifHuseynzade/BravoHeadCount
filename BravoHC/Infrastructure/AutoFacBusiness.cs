@@ -33,8 +33,10 @@ namespace Infrastructure
             builder.RegisterType<RoleRepository>().As<IRoleRepository>();
             builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>();
             builder.RegisterType<HeadCountRepository>().As<IHeadCountRepository>();
+            builder.RegisterType<HeadCountHistoryRepository>().As<IHeadCountHistoryRepository>();
             builder.RegisterType<PositionRepository>().As<IPositionRepository>();
             builder.RegisterType<ProjectRepository>().As<IProjectRepository>();
+            builder.RegisterType<ProjectHistoryRepository>().As<IProjectHistoryRepository>();
             builder.RegisterType<SectionRepository>().As<ISectionRepository>();
             builder.RegisterType<ProjectSectionsRepository>().As<IProjectSectionsRepository>();
             builder.RegisterType<StoreRepository>().As<IStoreRepository>();

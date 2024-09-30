@@ -21,5 +21,14 @@ namespace Infrastructure.Repositories
         {
             return await _context.HeadCounts.FirstOrDefaultAsync(h => h.Id == id);
         }
+        public async Task<int> GetMaxHCNumberByProjectIdAsync(int projectId)
+        {
+            var maxHCNumber = await _context.HeadCounts
+                .Where(hc => hc.ProjectId == projectId)
+                .MaxAsync(hc => hc.HCNumber);
+
+            return maxHCNumber;
+        }
+
     }
 }

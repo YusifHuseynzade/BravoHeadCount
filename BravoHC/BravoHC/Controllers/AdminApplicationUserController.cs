@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BravoReport.Controllers
+namespace BravoHC.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,7 +21,7 @@ namespace BravoReport.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin, SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllAppUserQueryRequest request)
         {
             var appUsers = await _mediator.Send(request);
@@ -31,7 +31,7 @@ namespace BravoReport.Controllers
 
 
         [HttpPost("CreateUser")]
-        //[Authorize(Roles = "Admin, SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CreateAppUserCommandResponse>> CreateUser([FromQuery] CreateAppUserCommandRequest requestModel)
         {
             var response = await _mediator.Send(requestModel);

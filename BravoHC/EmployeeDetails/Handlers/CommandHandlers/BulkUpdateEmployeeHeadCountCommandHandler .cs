@@ -36,69 +36,92 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             int updatedCount = 0;
             int createdCount = 0;
 
-            try
+            // Genel bir try-catch bloğu eklemek yerine spesifik işlemleri yönetmek için her employee işleminde try-catch kullanacağız.
+            foreach (var employeeId in request.EmployeeIds)
             {
-                // Her employee için işlem yap
-                foreach (var employeeId in request.EmployeeIds)
+                try
                 {
                     var employee = await _employeeRepository.GetAsync(e => e.Id == employeeId);
                     if (employee == null)
                     {
+                        // Eğer employee bulunamazsa bu employee'yi atla ve bir sonrakine geç
                         failedEmployeeIds.Add(employeeId);
                         continue;
                     }
 
-                    // Employee'nin ProjectId'sine göre store bilgisini al
-                    var store = await _storeRepository.GetByProjectIdAsync(employee.ProjectId);
-
-                    // Employee'ye uygun vacant olan headcount'ları al
-                    var availableHeadCounts = await _headCountRepository.GetAllAsync(hc =>
-                        hc.ProjectId == employee.ProjectId &&
-                        hc.SectionId == employee.SectionId &&
-                        hc.PositionId == employee.PositionId &&
-                        hc.SubSectionId == employee.SubSectionId &&
-                        hc.IsVacant == true);
-
-                    var sortedHeadCounts = availableHeadCounts.OrderBy(hc => hc.HCNumber).ToList();
-
-                    if (sortedHeadCounts.Any())
+                    // Store'u alırken try-catch kullanacağız.
+                    try
                     {
-                        // Mevcut headcount'u güncelle
-                        var headCount = sortedHeadCounts.First();
-                        headCount.EmployeeId = employeeId;
-                        headCount.IsVacant = false;
+                        // Employee'nin ProjectId'sine göre store bilgisini al
+                        var store = await _storeRepository.GetByProjectIdAsync(employee.ProjectId);
 
-                        await _headCountRepository.UpdateAsync(headCount);
-                        updatedCount++;
+                        // Eğer store bulunamazsa, işlemi atla ve diğer employee'ye geç
+                        if (store == null)
+                        {
+                            // Store bulunamadı, bu employee'yi atlayarak bir sonrakine geç
+                            Console.WriteLine($"Store bulunamadı, employeeId: {employeeId} atlanıyor.");
+                            failedEmployeeIds.Add(employeeId);
+                            continue;
+                        }
+
+                        // Employee'ye uygun vacant olan headcount'ları al
+                        var availableHeadCounts = await _headCountRepository.GetAllAsync(hc =>
+                            hc.ProjectId == employee.ProjectId &&
+                            hc.SectionId == employee.SectionId &&
+                            hc.PositionId == employee.PositionId &&
+                            hc.SubSectionId == employee.SubSectionId &&
+                            hc.IsVacant == true);
+
+                        var sortedHeadCounts = availableHeadCounts.OrderBy(hc => hc.HCNumber).ToList();
+
+                        if (sortedHeadCounts.Any())
+                        {
+                            // Mevcut headcount'u güncelle
+                            var headCount = sortedHeadCounts.First();
+                            headCount.EmployeeId = employeeId;
+                            headCount.IsVacant = false;
+
+                            await _headCountRepository.UpdateAsync(headCount);
+                            updatedCount++;
+                        }
+                        else
+                        {
+                            // Yeni headcount oluştur
+                            createdCount += await CreateNewHeadCountAsync(employee, store);
+                        }
                     }
-                    else
+                    catch (Exception storeEx)
                     {
-                        // Yeni headcount oluştur
-                        createdCount += await CreateNewHeadCountAsync(employee, store);
+                        // Eğer store ile ilgili bir sorun olursa, log yaz ve employee'yi atla
+                        Console.WriteLine($"Store bulunurken hata oluştu, employeeId: {employeeId}. Hata: {storeEx.Message}");
+                        failedEmployeeIds.Add(employeeId);
+                        continue;
                     }
                 }
-
-                await _headCountRepository.CommitAsync();
-
-                return new BulkUpdateEmployeeHeadCountCommandResponse
+                catch (Exception empEx)
                 {
-                    IsSuccess = true,
-                    Message = $"{updatedCount} headcount güncellendi, {createdCount} yeni headcount oluşturuldu. {failedEmployeeIds.Count} employee eşleşmedi.",
-                    UpdatedCount = updatedCount,
-                    CreatedCount = createdCount,
-                    FailedEmployeeIds = failedEmployeeIds
-                };
+                    // Eğer employee ile ilgili bir sorun olursa, log yaz ve employee'yi atla
+                    Console.WriteLine($"Employee bulunurken hata oluştu, employeeId: {employeeId}. Hata: {empEx.Message}");
+                    failedEmployeeIds.Add(employeeId);
+                    continue;
+                }
             }
-            catch (Exception ex)
+
+            // İşlem sonunda CommitAsync çağırarak tüm işlemleri kaydet
+            await _headCountRepository.CommitAsync();
+
+            return new BulkUpdateEmployeeHeadCountCommandResponse
             {
-                return new BulkUpdateEmployeeHeadCountCommandResponse
-                {
-                    IsSuccess = false,
-                    Message = $"Headcount güncellenirken hata oluştu: {ex.Message}",
-                    FailedEmployeeIds = failedEmployeeIds
-                };
-            }
+                IsSuccess = true,
+                Message = $"{updatedCount} headcount güncellendi, {createdCount} yeni headcount oluşturuldu. {failedEmployeeIds.Count} employee için işlem gerçekleştirilemedi.",
+                UpdatedCount = updatedCount,
+                CreatedCount = createdCount,
+                FailedEmployeeIds = failedEmployeeIds
+            };
         }
+
+
+
         private async Task<int> CreateNewHeadCountAsync(Employee employee, Store store)
         {
             // Mevcut HCNumber'ları al
@@ -123,6 +146,7 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             }
 
             await _headCountRepository.AddAsync(newHeadCount);
+            await _headCountRepository.CommitAsync();
             return 1;
         }
 

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadCountDetails.Queries.Response
+namespace EmployeeDetails.Queries.Response
 {
     public class ProjectResponse
     {
         public int Id { get; set; }
-        public string ProjectName { get; set; }
+        public string ProjectCode { get; set; }
         public string FunctionalArea { get; set; }
     }
 }

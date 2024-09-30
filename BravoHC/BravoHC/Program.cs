@@ -23,6 +23,7 @@ using ScheduledDataDetails;
 using SectionDetails;
 using StoreDetails;
 using SubSubSectionDetails;
+using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,22 +36,27 @@ builder.Services.AddControllers(options =>
     .AddFluentValidation(v => v.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+// Swagger için security filter ekleyelim
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Head Count Management", Version = "v1" });
 
-    // File upload operation filter
+    // Dosya yükleme işlemi için filter
     options.OperationFilter<FileUploadOperation>();
-    // Security definition
+
+    // JWT Authentication Security Definition
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
-        Description = "Standard Authorization header using the Bearer scheme (\"Bearer {token}\")",
+        Description = "Standart Authorization başlığı kullanarak Bearer şeması (\"Bearer {token}\")",
         In = ParameterLocation.Header,
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
 
+    // Swagger'da tüm endpointlere güvenlik gereksinimi ekleme
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+
 
 builder.Services.AddTransient<HeadCountImportService>();
 builder.Services.AddTransient<EmployeeImportService>();

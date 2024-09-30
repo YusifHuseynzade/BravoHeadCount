@@ -1,7 +1,6 @@
 ﻿using ApplicationUserDetails.Commands.Request;
 using ApplicationUserDetails.Commands.Response;
 using Common.Interfaces;
-using Core.Helpers;
 using Domain.Entities;
 using Domain.IRepositories;
 using Domain.IServices;
@@ -21,44 +20,41 @@ namespace Application.ApplicationUserDetails.Commands
     {
         private readonly IConfiguration _configuration;
         private readonly IApplicationDbContext _context;
-        private readonly ISmsService _smsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LoginAppUserCommandHandler(IApplicationDbContext context,
                                           IConfiguration configuration,
-                                          ISmsService smsService)
-                                          
+                                          IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _configuration = configuration;
-            _smsService = smsService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<LoginAppUserCommandResponse> Handle(LoginAppUserCommandRequest request, CancellationToken cancellationToken)
         {
-            //Hash the password provided in the login request
-           var hashedPassword = request.Password;
+            // Kullanıcıyı e-posta ile veritabanından getir
+            var appUser = await _context.AppUsers.Include(m => m.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
 
-
-            //Retrieve the user from the database based on the provided username
-           var appUser = await _context.AppUsers.Include(m => m.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
-
-            //Check credentials and if the user is Active
+            // Kullanıcı kontrolü ve aktif olup olmadığını denetle
             if (appUser == null)
             {
-                return new LoginAppUserCommandResponse { IsSuccess = false, Message = "Account with this email doesn't exist" };
+                return new LoginAppUserCommandResponse { IsSuccess = false, Message = "Bu e-posta ile bir hesap bulunamadı." };
             }
-            
-            if (appUser.Password == hashedPassword)
+
+            if (appUser.Password == request.Password) // Şifre zaten hashlenmiş olarak kabul ediliyor
             {
-                string otpToken = (RandomGenerator.NextInt() % 10000).ToString("0000");
-                appUser.OTPToken = otpToken;
-                appUser.OTPTokenCreated = DateTime.Now.ToUniversalTime();
-                appUser.OTPTokenExpires = DateTime.Now.AddMinutes(5).ToUniversalTime();
+                if (!appUser.IsActive)
+                {
+                    appUser.IsActive = true; // Eğer kullanıcı aktif değilse aktif hale getir
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
 
-                //SMS servisini kullanarak OTP kodunu kullanıcıya gönder
-                await _smsService.SendOtpCode(appUser.PhoneNumber, otpToken);
+                // JWT Token oluştur
+                var jwtToken = GenerateJwtToken(appUser);
 
-                await _context.SaveChangesAsync(cancellationToken);
+                // Refresh Token oluştur
+                string refreshToken = await SetRefreshToken(appUser, cancellationToken);
 
                 return new LoginAppUserCommandResponse
                 {
@@ -68,10 +64,58 @@ namespace Application.ApplicationUserDetails.Commands
                     FullName = appUser.FullName,
                     Email = appUser.Email,
                     RoleId = appUser.RoleId,
+                    JwtToken = jwtToken,
+                    RefreshToken = refreshToken,
+                    Message = "Giriş başarılı"
                 };
             }
-            return new LoginAppUserCommandResponse { IsSuccess = false };
+
+            return new LoginAppUserCommandResponse { IsSuccess = false, Message = "Geçersiz kimlik bilgileri" };
         }
-       
+
+        private string GenerateJwtToken(AppUser appUser)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                    _configuration.GetSection("AppSettings:Token").Value));
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()),
+                new Claim(ClaimTypes.Name, appUser.Email),
+                new Claim(ClaimTypes.Role, appUser.Role.RoleName.ToString())
+            };
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+            var jwtToken = new JwtSecurityToken
+            (
+                    claims: claims,
+                    expires: DateTime.Now.AddYears(1),
+                    signingCredentials: creds
+            );
+            var jwt = tokenHandler.WriteToken(jwtToken);
+            return jwt;
+        }
+
+        private async Task<string> SetRefreshToken(AppUser appUser, CancellationToken cancellationToken)
+        {
+            string refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            DateTime refreshTokenExpireTime = DateTime.Now.AddDays(365).ToUniversalTime();
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshTokenExpireTime
+            };
+            _httpContextAccessor?.HttpContext?.Response
+                .Cookies.Append("refreshToken", refreshToken, cookieOptions);
+
+            appUser.RefreshToken = refreshToken;
+            //appUser.RefreshTokenCreated = DateTime.Now.ToUniversalTime();
+            //appUser.RefreshTokenExpires = refreshTokenExpireTime;
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return refreshToken;
+        }
     }
 }

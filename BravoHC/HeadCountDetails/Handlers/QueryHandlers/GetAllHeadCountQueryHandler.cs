@@ -31,7 +31,14 @@ namespace HeadCountDetails.Handlers.QueryHandlers
             .Include(x => x.Position)                   
             .Include(x => x.Color)                      
             .Include(x => x.Employee)                  
-            .ThenInclude(e => e.ResidentalArea).AsQueryable();
+            .ThenInclude(e => e.ResidentalArea)
+            .Include(x => x.Employee)
+            .ThenInclude(ra => ra.BakuDistrict)
+            .Include(x => x.Employee)
+            .ThenInclude(e => e.BakuMetro)
+            .Include(x => x.Employee)
+            .ThenInclude(e => e.BakuTarget)
+            .AsQueryable();
 
             headCountsQuery = request.ProjectId.HasValue
             ? headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value)
@@ -42,10 +49,9 @@ namespace HeadCountDetails.Handlers.QueryHandlers
                 ? headCountsQuery.Where(x => request.SectionIds.Contains(x.SectionId ?? 0))
                 : headCountsQuery;
 
-            // PositionId filtreleme
-            headCountsQuery = (request.PositionIds != null && request.PositionIds.Any())
-                ? headCountsQuery.Where(x => request.PositionIds.Contains(x.PositionId ?? 0))
-                : headCountsQuery;
+           headCountsQuery = request.PositionId.HasValue
+            ? headCountsQuery.Where(x => x.PositionId == request.PositionId.Value)
+            : headCountsQuery;
 
             if (request.IsVacant.HasValue)
             {

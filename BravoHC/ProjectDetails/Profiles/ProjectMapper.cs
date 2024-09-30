@@ -15,5 +15,6 @@ public class ProjectMapper : Profile
         CreateMap<Project, GetAllProjectQueryResponse>().ReverseMap();
         CreateMap<Project, GetByIdProjectQueryResponse>().ReverseMap();
         CreateMap<Section, GetProjectSectionQueryResponse>().ReverseMap();
+        CreateMap<ProjectHistory, GetProjectHistoryQueryResponse>().ReverseMap();
     }
 }
