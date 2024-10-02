@@ -31,7 +31,7 @@ namespace BravoHC.Controllers
 
 
         [HttpPost("CreateUser")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<CreateAppUserCommandResponse>> CreateUser([FromQuery] CreateAppUserCommandRequest requestModel)
         {
             var response = await _mediator.Send(requestModel);
