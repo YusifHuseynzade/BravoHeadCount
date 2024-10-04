@@ -1,5 +1,6 @@
 ﻿using HeadCountDetails.ExcelImportService;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectDetails.Commands.Request;
@@ -21,29 +22,34 @@ namespace BravoHC.Controllers
 			_importService = importService;
 		}
 		[HttpPost]
-		public async Task<IActionResult> Add([FromBody] CreateProjectCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Add([FromBody] CreateProjectCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpDelete]
-		public async Task<IActionResult> Delete([FromBody] DeleteProjectCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Delete([FromBody] DeleteProjectCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] UpdateProjectCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Update([FromBody] UpdateProjectCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpGet]
-		public async Task<IActionResult> GetAll([FromQuery] GetAllProjectQueryRequest request)
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllProjectQueryRequest request)
 		{
 			var projects = await _mediator.Send(request);
 
 			return Ok(projects);
 		}
 		[HttpGet("{id}")]
-		public async Task<IActionResult> GetById(int id)
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetById(int id)
 		{
 			var requestModel = new GetByIdProjectQueryRequest { Id = id };
 			var Project = await _mediator.Send(requestModel);
@@ -55,6 +61,7 @@ namespace BravoHC.Controllers
 
 
         [HttpGet("GetProjectSections")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetProjectSection([FromQuery] GetProjectSectionQueryRequest request)
         {
             var section = await _mediator.Send(request);
@@ -68,6 +75,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpPost("importexceldata")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Import([FromForm] IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -82,6 +90,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet("projecthistory")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetProjectHistory([FromQuery] GetProjectHistoryQueryRequest request)
         {
             var projectHistory = await _mediator.Send(request);

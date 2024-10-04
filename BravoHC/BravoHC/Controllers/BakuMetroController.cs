@@ -1,6 +1,7 @@
 ﻿using BakuMetroDetails.Commands.Request;
 using BakuMetroDetails.Queries.Request;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ResidentalAreaDetails.Commands.Request;
 using ResidentalAreaDetails.Queries.Request;
@@ -17,17 +18,20 @@ namespace BravoHC.Controllers
             _mediator = mediator;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Add([FromBody] CreateBakuMetroCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpDelete]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteBakuMetroCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllBakuMetroQueryRequest request)
         {
             var districts = await _mediator.Send(request);
@@ -35,11 +39,13 @@ namespace BravoHC.Controllers
             return Ok(districts);
         }
         [HttpPut]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromBody] UpdateBakuMetroCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdBakuMetroQueryRequest { Id = id };
@@ -51,6 +57,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet("BakuMetroEmployees")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetBakuMetroEmployees([FromQuery] GetBakuMetroEmployeesQueryRequest request)
         {
             var employees = await _mediator.Send(request);

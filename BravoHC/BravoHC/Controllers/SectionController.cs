@@ -1,5 +1,6 @@
 ﻿
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SectionDetails.Commands.Request;
@@ -17,29 +18,34 @@ namespace BravoHC.Controllers
 			_mediator = mediator;
 		}
 		[HttpPost]
-		public async Task<IActionResult> Add([FromBody] CreateSectionCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Add([FromBody] CreateSectionCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpDelete]
-		public async Task<IActionResult> Delete([FromBody] DeleteSectionCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Delete([FromBody] DeleteSectionCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] UpdateSectionCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Update([FromBody] UpdateSectionCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpGet]
-		public async Task<IActionResult> GetAll([FromQuery] GetAllSectionQueryRequest request)
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllSectionQueryRequest request)
 		{
 			var sections = await _mediator.Send(request);
 
 			return Ok(sections);
 		}
 		[HttpGet("{id}")]
-		public async Task<IActionResult> GetById(int id)
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetById(int id)
 		{
 			var requestModel = new GetByIdSectionQueryRequest { Id = id };
 			var section = await _mediator.Send(requestModel);
@@ -51,6 +57,7 @@ namespace BravoHC.Controllers
 
 
         [HttpGet("GetSectionSubSections")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetSectionSubSection([FromQuery] GetSectionSubSectionQueryRequest request)
         {
             var sectionSubSection = await _mediator.Send(request);

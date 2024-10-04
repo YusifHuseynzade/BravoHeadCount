@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SubSectionDetails.Commands.Request;
@@ -16,29 +17,34 @@ namespace BravoHC.Controllers
 			_mediator = mediator;
 		}
 		[HttpPost]
-		public async Task<IActionResult> Add([FromBody] CreateSubSectionCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Add([FromBody] CreateSubSectionCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpDelete]
-		public async Task<IActionResult> Delete([FromBody] DeleteSubSectionCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Delete([FromBody] DeleteSubSectionCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] UpdateSubSectionCommandRequest request)
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Update([FromBody] UpdateSubSectionCommandRequest request)
 		{
 			return Ok(await _mediator.Send(request));
 		}
 		[HttpGet]
-		public async Task<IActionResult> GetAll([FromQuery] GetAllSubSectionQueryRequest request)
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllSubSectionQueryRequest request)
 		{
 			var sections = await _mediator.Send(request);
 
 			return Ok(sections);
 		}
 		[HttpGet("{id}")]
-		public async Task<IActionResult> GetById(int id)
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetById(int id)
 		{
 			var requestModel = new GetByIdSubSectionQueryRequest { Id = id };
 			var subSection = await _mediator.Send(requestModel);

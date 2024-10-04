@@ -21,7 +21,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, HR Staff")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllAppUserQueryRequest request)
         {
             var appUsers = await _mediator.Send(request);
@@ -31,7 +31,7 @@ namespace BravoHC.Controllers
 
 
         [HttpPost("CreateUser")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CreateAppUserCommandResponse>> CreateUser([FromQuery] CreateAppUserCommandRequest requestModel)
         {
             var response = await _mediator.Send(requestModel);
@@ -47,7 +47,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "Admin, SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(UpdateAppUserCommandRequest requestModel)
         {
             try
@@ -70,7 +70,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpPut("ChangePassword")]
-        //[Authorize(Roles = "Admin, SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangePassword(ChangePasswordCommandRequest requestModel)
         {
             try
@@ -93,7 +93,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin, SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<DeleteAppUserCommandResponse>> DeleteUser(int id)
         {
             var requestModel = new DeleteAppUserCommandRequest { Id = id };
@@ -106,6 +106,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpPost("Login")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<ActionResult<LoginAppUserCommandResponse>> Login(LoginAppUserCommandRequest requestModel)
         {
             var response = await _mediator.Send(requestModel);

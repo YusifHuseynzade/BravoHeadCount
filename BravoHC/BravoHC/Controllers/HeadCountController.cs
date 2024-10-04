@@ -34,12 +34,14 @@ namespace BravoHC.Controllers
         }
      
         [HttpDelete]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteHeadCountCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpDelete("bulk-delete")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> BulkDelete([FromBody] BulkDeleteHeadCountCommandRequest request)
         {
             var response = await _mediator.Send(request);
@@ -47,12 +49,14 @@ namespace BravoHC.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromBody] UpdateHeadCountCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpPut("bulk-update")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> BulkUpdate([FromBody] BulkUpdateHeadCountCommandRequest request)
         {
             var response = await _mediator.Send(request);
@@ -60,6 +64,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllHeadCountQueryRequest request)
         {
             var headCount = await _mediator.Send(request);
@@ -67,6 +72,7 @@ namespace BravoHC.Controllers
             return Ok(headCount);
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdHeadCountQueryRequest { Id = id };
@@ -77,6 +83,7 @@ namespace BravoHC.Controllers
                 : NotFound(new { Message = "HeadCount not found." });
         }
         [HttpPost("importexceldata")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Import([FromForm] IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -91,6 +98,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpPut("update-hcnumber-order")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> UpdateHeadCountOrder([FromBody] BulkUpdateHCNumberCommandRequest request)
         {
             // MediatR ile handler'a yönlendiriyoruz
@@ -105,6 +113,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet("export-headcounts")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> ExportHeadCountsToExcel([FromQuery] int? projectId = null)
         {
             // Tüm HeadCount kayıtlarını çekiyoruz (filtreleme serviste yapılacak).
@@ -126,9 +135,5 @@ namespace BravoHC.Controllers
 
             return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "HeadCounts.xlsx");
         }
-
-
-
-
     }
 }

@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IAppUserRepository : IRepository<AppUser>
     {
+        Task<AppUser> GetLoggedInUserAsync(string email);
     }
 }

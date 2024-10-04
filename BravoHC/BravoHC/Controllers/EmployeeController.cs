@@ -3,6 +3,7 @@ using EmployeeDetails.ExcelImportService;
 using EmployeeDetails.Queries.Request;
 using HeadCountDetails.ExcelImportService;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -20,21 +21,25 @@ namespace BravoHC.Controllers
             _importService = importService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Add([FromBody] CreateEmployeeCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpDelete]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteEmployeeCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpPut]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromBody] UpdateEmployeeCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpGet]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllEmployeeQueryRequest request)
         {
             var employees = await _mediator.Send(request);
@@ -43,6 +48,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet("all-employee-ids")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAllEmployeeIds()
         {
             var employeeIds = await _mediator.Send(new GetAllEmployeeIdsQueryRequest());
@@ -50,6 +56,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdEmployeeQueryRequest { Id = id };
@@ -61,6 +68,7 @@ namespace BravoHC.Controllers
         }
 
         [HttpPost("importexceldata")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Import([FromForm] IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -75,12 +83,14 @@ namespace BravoHC.Controllers
         }
 
         [HttpPut("update-headcount")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromBody] BulkUpdateEmployeeHeadCountCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpPut("update-parentid")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> UpdateParentId([FromBody] AddParentIdCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
@@ -88,6 +98,7 @@ namespace BravoHC.Controllers
 
         // Yeni endpoint: RecruiterComment güncelleme
         [HttpPut("update-recruiter-comment")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> UpdateRecruiterComment([FromBody] UpdateRecruiterCommentCommandRequest request)
         {
             var result = await _mediator.Send(request);
@@ -98,6 +109,7 @@ namespace BravoHC.Controllers
 
         // Yeni endpoint: EmployeeLocation güncelleme
         [HttpPut("update-employee-location")]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> UpdateEmployeeLocation([FromBody] UpdateEmployeeLocationCommandRequest request)
         {
             var result = await _mediator.Send(request);

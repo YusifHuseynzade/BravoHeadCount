@@ -28,24 +28,28 @@ namespace BravoHC.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Add([FromBody] CreateColorCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteColorCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromBody] UpdateColorCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllColorQueryRequest request)
         {
             var headCount = await _mediator.Send(request);
@@ -53,6 +57,7 @@ namespace BravoHC.Controllers
             return Ok(headCount);
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdColorQueryRequest { Id = id };
