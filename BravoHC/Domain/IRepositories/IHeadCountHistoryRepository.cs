@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IHeadCountHistoryRepository : IRepository<HeadCountHistory>
     {
+        Task<HeadCountHistory> GetLatestHistoryByEmployeeIdAsync(int employeeId);
     }
 }

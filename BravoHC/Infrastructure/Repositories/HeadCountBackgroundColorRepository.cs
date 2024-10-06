@@ -49,5 +49,12 @@ namespace Infrastructure.Repositories
             // "Yellow" renginin Id'sini döndürüyoruz
             return yellowColor.Id;
         }
+
+        public async Task<int> GetBlueColorIdAsync()
+        {
+            var blueColor = await _context.HeadCountBackgroundColors
+                .FirstOrDefaultAsync(c => c.ColorHexCode == "#33FF57");
+            return blueColor?.Id ?? 0; // Varsayılan değer olarak 0
+        }
     }
 }

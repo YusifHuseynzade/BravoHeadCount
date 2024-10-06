@@ -11,5 +11,6 @@ namespace Domain.IRepositories
     {
         Task<int> GetYellowColorIdAsync();
         Task<int> GetWhiteColorIdAsync();
+        Task<int> GetBlueColorIdAsync();
     }
 }

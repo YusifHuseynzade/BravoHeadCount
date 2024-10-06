@@ -50,9 +50,9 @@ namespace Infrastructure
             builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
-            //builder.RegisterType<EmployeeHeadCountService>()
-            //   .As<IHostedService>()  // IHostedService olarak kaydet
-            //   .SingleInstance();
+            builder.RegisterType<EmployeeHeadCountService>()
+               .As<IHostedService>()  // IHostedService olarak kaydet
+               .SingleInstance();
 
             builder.Register(ctx =>
             {
