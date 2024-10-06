@@ -31,6 +31,8 @@ namespace Domain.Entities
         public SubSection? SubSection { get; set; }
         public DateTime StartedDate { get; set; }
         public string ContractEndDate { get; set; }
-        public List<ScheduledData> ScheduledDatas { get; set; } 
+        public List<HeadCount> HeadCounts { get; set; }
+        public List<ScheduledData> ScheduledDatas { get; set; }
+        
     }
 }

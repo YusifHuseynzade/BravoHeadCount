@@ -52,6 +52,11 @@ namespace Infrastructure.Configurations
             builder.HasMany(s => s.ScheduledDatas)
             .WithOne(e => e.Employee)
             .HasForeignKey(e => e.EmployeeId);
+
+            builder.HasMany(e => e.HeadCounts)
+              .WithOne(hc => hc.Employee)
+              .HasForeignKey(hc => hc.EmployeeId)
+               .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
