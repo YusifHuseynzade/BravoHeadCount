@@ -24,4 +24,5 @@ public class GetByIdEmployeeQueryResponse
     public SubSectionResponse? SubSection { get; set; }
     public DateTime StartedDate { get; set; }
     public string? ContractEndDate { get; set; }
+    public string? ImageUrl { get; set; }
 }

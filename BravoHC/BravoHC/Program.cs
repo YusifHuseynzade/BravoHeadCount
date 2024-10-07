@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using BakuTargetDetails;
 using Common.Interfaces;
+using Core.Helpers;
 using EmployeeDetails;
 using EmployeeDetails.ExcelImportService;
 using EmployeeDetails.Handlers.CommandHandlers;
@@ -96,6 +97,8 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod();
     });
 });
+
+builder.Services.Configure<FileSettings>(builder.Configuration.GetSection("FileSettings"));
 
 // JsonOptions yerine JsonSerializerOptions kullanarak yapılandırma
 builder.Services.AddControllers()

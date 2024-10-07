@@ -13,6 +13,7 @@ namespace Domain.Entities
         public string FIN { get; set; }
         public string PhoneNumber { get; set; }
         public string? RecruiterComment { get; set; }
+        public string? Image { get; set; }
         public int? ResidentalAreaId { get; set; }
         public ResidentalArea? ResidentalArea { get; set; }
         public int? BakuDistrictId { get; set; }

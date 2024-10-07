@@ -118,5 +118,15 @@ namespace BravoHC.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpPut("update-employee-image")]
+        //[Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> UpdateEmployeeImage([FromForm] UpdateEmployeeImageCommandRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.IsSuccess)
+                return Ok(result);
+            return BadRequest(result.Message);
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Core.Helpers;
 using Domain.Entities;
 using EmployeeDetails.Queries.Response;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,8 @@ namespace EmployeeDetails.Profiles
                 .ForMember(dest => dest.SubSection, opt => opt.MapFrom(src => src.SubSection))
                 .ForMember(dest => dest.StartedDate, opt => opt.MapFrom(src => src.StartedDate))
                 .ForMember(dest => dest.ContractEndDate, opt => opt.MapFrom(src => src.ContractEndDate))
+                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.Image) ? $"{RequestExtensions.BaseUrl(_httpAccessor.HttpContext)}/{src.Image}" : null))
                 .ReverseMap();
 
             CreateMap<Employee, GetByIdEmployeeQueryResponse>()
@@ -38,6 +41,8 @@ namespace EmployeeDetails.Profiles
                 .ForMember(dest => dest.SubSection, opt => opt.MapFrom(src => src.SubSection))
                 .ForMember(dest => dest.StartedDate, opt => opt.MapFrom(src => src.StartedDate))
                 .ForMember(dest => dest.ContractEndDate, opt => opt.MapFrom(src => src.ContractEndDate))
+                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.Image) ? $"{RequestExtensions.BaseUrl(_httpAccessor.HttpContext)}/{src.Image}" : null))
                 .ReverseMap();
 
             CreateMap<ResidentalArea, ResidentalAreaResponse>().ReverseMap();
