@@ -4,6 +4,7 @@ using AutoMapper;
 using BakuDistrictDetails.Profiles;
 using BakuMetroDetails.Profiles;
 using BakuTargetDetails.Profiles;
+using Domain.Entities;
 using Domain.IRepositories;
 using Domain.IServices;
 using EmployeeDetails.Handlers.CommandHandlers;
@@ -18,7 +19,9 @@ using Microsoft.Extensions.Hosting;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
+using ScheduledDataDetails.Handlers.CommandHandlers;
 using SectionDetails.Profiles;
+using SickLeaveDetails.Profiles;
 using StoreDetails.Profiles;
 using SubSectionDetails.Profiles;
 
@@ -47,11 +50,19 @@ namespace Infrastructure
             builder.RegisterType<BakuTargetRepository>().As<IBakuTargetRepository>();
             builder.RegisterType<HeadCountBackgroundColorRepository>().As<IHeadCountBackgroundColorRepository>();
             builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
+            builder.RegisterType<PlanRepository>().As<IPlanRepository>();
+            builder.RegisterType<SummaryRepository>().As<ISummaryRepository>();
+            builder.RegisterType<SickLeaveRepository>().As<ISickLeaveRepository>();
+            builder.RegisterType<MonthRepository>().As<IMonthRepository>();
+            builder.RegisterType<VacationScheduleRepository>().As<IVacationScheduleRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<EmployeeHeadCountService>()
                .As<IHostedService>()  // IHostedService olarak kaydet
                .SingleInstance();
+            //builder.RegisterType<ScheduledDataService>()
+            // .As<IHostedService>()  // IHostedService olarak kaydet
+            // .SingleInstance();
 
             builder.Register(ctx =>
             {
@@ -72,6 +83,7 @@ namespace Infrastructure
                     cfg.AddProfile(new BakuMetroMapper(httpContextAccessor));
                     cfg.AddProfile(new BakuTargetMapper(httpContextAccessor));
                     cfg.AddProfile(new ColorMapper(httpContextAccessor));
+                    cfg.AddProfile(new SickLeaveMapper(httpContextAccessor));
 
                 });
 

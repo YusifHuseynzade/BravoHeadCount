@@ -25,6 +25,7 @@ namespace Domain.Entities
         public string RecruiterMail { get; set; }
         public List<ProjectSections> ProjectSections { get; set; }
         public List<Employee> Employees { get; set; }
+        public List<Store> Stores { get; set; }
         public List<ScheduledData> ScheduledDatas { get; set; }
         public string? StoreOpeningDate { get; set; }
         public string? StoreClosedDate { get; set; }

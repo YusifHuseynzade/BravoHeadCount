@@ -9,6 +9,7 @@ namespace HeadCountDetails.Queries.Response
     public class ProjectResponse
     {
         public int Id { get; set; }
+        public string ProjectCode { get; set; }
         public string ProjectName { get; set; }
         public string FunctionalArea { get; set; }
     }

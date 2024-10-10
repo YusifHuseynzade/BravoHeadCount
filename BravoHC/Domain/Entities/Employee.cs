@@ -34,6 +34,8 @@ namespace Domain.Entities
         public string ContractEndDate { get; set; }
         public List<HeadCount> HeadCounts { get; set; }
         public List<ScheduledData> ScheduledDatas { get; set; }
-        
+        public List<Summary> Summaries { get; set; }
+        public List<SickLeave> SickLeaves { get; set; }
+        public List<VacationSchedule> VacationSchedules { get; set; }
     }
 }

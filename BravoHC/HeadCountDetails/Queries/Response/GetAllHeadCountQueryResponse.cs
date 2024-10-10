@@ -20,4 +20,5 @@ public class GetAllHeadCountQueryResponse
     public bool IsVacant { get; set; }
     public string RecruiterComment { get; set; }
     public int HCNumber { get; set; }
+    public int ParentId { get; set; }
 }

@@ -37,11 +37,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResidentalAreaDetails", "Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeadCountBackGroundColorDetails", "HeadCountBackGroundColorDetails\HeadCountBackGroundColorDetails.csproj", "{9F995767-5DFA-4155-9A1D-7DF3B5781A54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakuDistrictDetails", "BakuDistrictDetails\BakuDistrictDetails.csproj", "{02458D81-AA10-4F92-8F80-4C7CF4C07651}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BakuDistrictDetails", "BakuDistrictDetails\BakuDistrictDetails.csproj", "{02458D81-AA10-4F92-8F80-4C7CF4C07651}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakuMetroDetails", "BakuMetroDetails\BakuMetroDetails.csproj", "{98515856-3359-48D6-8761-428FF3A41F34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BakuMetroDetails", "BakuMetroDetails\BakuMetroDetails.csproj", "{98515856-3359-48D6-8761-428FF3A41F34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakuTargetDetails", "BakuTargetDetails\BakuTargetDetails.csproj", "{DD4791FD-4225-433A-A9AD-9B8640FE496B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BakuTargetDetails", "BakuTargetDetails\BakuTargetDetails.csproj", "{DD4791FD-4225-433A-A9AD-9B8640FE496B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VacationScheduleDetails", "VacationScheduleDetails\VacationScheduleDetails.csproj", "{C770DF96-C373-41C1-876D-C7D8BCFD0F39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SickLeaveDetails", "SickLeaveDetails\SickLeaveDetails.csproj", "{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +129,14 @@ Global
 		{DD4791FD-4225-433A-A9AD-9B8640FE496B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD4791FD-4225-433A-A9AD-9B8640FE496B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD4791FD-4225-433A-A9AD-9B8640FE496B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C770DF96-C373-41C1-876D-C7D8BCFD0F39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C770DF96-C373-41C1-876D-C7D8BCFD0F39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C770DF96-C373-41C1-876D-C7D8BCFD0F39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C770DF96-C373-41C1-876D-C7D8BCFD0F39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,6 +157,8 @@ Global
 		{02458D81-AA10-4F92-8F80-4C7CF4C07651} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 		{98515856-3359-48D6-8761-428FF3A41F34} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 		{DD4791FD-4225-433A-A9AD-9B8640FE496B} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
+		{C770DF96-C373-41C1-876D-C7D8BCFD0F39} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
+		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4379445D-F582-4EA4-AD1F-FF40A11DB40E}

@@ -15,7 +15,6 @@ namespace Common.Interfaces
         public DbSet<ProjectSections> ProjectSections { get; set; }
         public DbSet<SubSection> SubSections { get; set; }
         public DbSet<Store> Stores { get; set; }
-        public DbSet<ScheduledData> ScheduledDatas { get; set; }
         public DbSet<ResidentalArea> ResidentalAreas { get; set; }
         public DbSet<BakuDistrict> BakuDistricts { get; set; }
         public DbSet<BakuTarget> BakuTargets { get; set; }
@@ -24,6 +23,12 @@ namespace Common.Interfaces
         public DbSet<StoreHistory> StoreHistories { get; set; }
         public DbSet<ProjectHistory> ProjectHistories { get; set; }
         public DbSet<HeadCountHistory> HeadCountHistories { get; set; }
+        public DbSet<ScheduledData> ScheduledDatas { get; set; }
+        public DbSet<Summary> Summaries { get; set; }
+        public DbSet<SickLeave> SickLeaves { get; set; }
+        public DbSet<VacationSchedule> VacationSchedules { get; set; }
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<Month> Months { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

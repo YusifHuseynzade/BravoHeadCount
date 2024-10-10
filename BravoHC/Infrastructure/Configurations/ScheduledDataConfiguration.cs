@@ -2,10 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Configurations
 {
@@ -14,32 +10,37 @@ namespace Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<ScheduledData> builder)
         {
             builder.Property(sd => sd.Date)
-                .IsRequired()
-                .HasDefaultValue(DateTime.UtcNow.AddHours(4));
-
-            builder.Property(sd => sd.Plan)
-                .IsRequired();
+                .IsRequired(); // Date alanı zorunlu
 
             builder.Property(sd => sd.Fact)
-                .IsRequired();
+                .IsRequired(false); // Fact alanı nullable
 
-            builder.Property(sd => sd.GraduationSchedule)
-               .IsRequired()
-               .HasMaxLength(100); 
             builder.Property(sd => sd.HolidayBalance)
-                .IsRequired();
+                .IsRequired(false); // HolidayBalance alanı nullable
 
             builder.Property(sd => sd.GraduationBalance)
-                .IsRequired();
+                .IsRequired(false); // GraduationBalance alanı nullable
 
-            builder.HasOne(e => e.Project)
-              .WithMany(s => s.ScheduledDatas)
-              .HasForeignKey(e => e.ProjectId);
+            // Plan ile ilişki
+            builder.HasOne(sd => sd.Plan)
+                .WithMany(p => p.ScheduledDatas)
+                .HasForeignKey(sd => sd.PlanId);
 
-            builder.HasOne(e => e.Employee)
-              .WithMany(s => s.ScheduledDatas)
-              .HasForeignKey(e => e.EmployeeId);
+            // Employee ile ilişki
+            builder.HasOne(sd => sd.Employee)
+                .WithMany(e => e.ScheduledDatas)
+                .HasForeignKey(sd => sd.EmployeeId);
 
+            // Project ile ilişki
+            builder.HasOne(sd => sd.Project)
+                .WithMany(p => p.ScheduledDatas)
+                .HasForeignKey(sd => sd.ProjectId);
+
+            // VacationSchedule ile ilişki
+            builder.HasOne(sd => sd.VacationSchedule)
+                .WithMany(vs => vs.ScheduledDatas)
+                .HasForeignKey(sd => sd.VacationScheduleId)
+                .IsRequired(false); // VacationSchedule opsiyonel
         }
     }
 }

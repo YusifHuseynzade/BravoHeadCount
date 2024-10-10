@@ -25,7 +25,7 @@ namespace HeadCountDetails.Handlers.QueryHandlers
 
         public async Task<List<GetHeadCountListResponse>> Handle(GetAllHeadCountQueryRequest request, CancellationToken cancellationToken)
         {
-            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Project)                                 
+            var headCountsQuery = _repository.GetAll(x => true).Include(x => x.Project).ThenInclude(p => p.Stores)
             .Include(x => x.Section)                    
             .Include(x => x.SubSection)                 
             .Include(x => x.Position)                   
@@ -38,6 +38,7 @@ namespace HeadCountDetails.Handlers.QueryHandlers
             .ThenInclude(e => e.BakuMetro)
             .Include(x => x.Employee)
             .ThenInclude(e => e.BakuTarget)
+
             .AsQueryable();
 
             headCountsQuery = request.ProjectId.HasValue
@@ -61,7 +62,8 @@ namespace HeadCountDetails.Handlers.QueryHandlers
             // ExcessStaff filtreleme (boolean, sarı renk için)
             if (request.ExcessStaff.HasValue && request.ExcessStaff.Value)
             {
-                headCountsQuery = headCountsQuery.Where(x => x.Color.ColorHexCode == "#FFFF00");
+                headCountsQuery = headCountsQuery
+                    .Where(x => x.Project.Stores.Any(store => x.HCNumber > store.HeadCountNumber));
             }
 
             headCountsQuery = request.OrderBy?.ToLower() switch

@@ -329,6 +329,61 @@ namespace Infrastructure.Migrations
                     b.ToTable("HeadCountHistories");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Month", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Number")
+                        .HasMaxLength(2)
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Months");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Plan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Shift")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Plans");
+                });
+
             modelBuilder.Entity("Domain.Entities.Position", b =>
                 {
                     b.Property<int>("Id")
@@ -606,38 +661,38 @@ namespace Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 10, 7, 16, 12, 35, 434, DateTimeKind.Utc).AddTicks(6397));
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Fact")
+                    b.Property<DateTime?>("Fact")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("GraduationBalance")
+                    b.Property<int?>("GraduationBalance")
                         .HasColumnType("integer");
 
-                    b.Property<string>("GraduationSchedule")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("HolidayBalance")
+                    b.Property<int?>("HolidayBalance")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Plan")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("VacationScheduleId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
+                    b.HasIndex("PlanId");
+
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("VacationScheduleId");
 
                     b.ToTable("ScheduledDatas");
                 });
@@ -658,6 +713,30 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sections");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SickLeave", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("SickLeaves");
                 });
 
             modelBuilder.Entity("Domain.Entities.Store", b =>
@@ -735,6 +814,71 @@ namespace Infrastructure.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("SubSections");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Summary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AbsentDaysCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DayOffCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MonthId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SickDaysCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VacationDaysCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkdaysCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("MonthId");
+
+                    b.ToTable("Summaries");
+                });
+
+            modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("VacationSchedules");
                 });
 
             modelBuilder.Entity("Domain.Entities.AppUser", b =>
@@ -918,21 +1062,44 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Plan", "Plan")
+                        .WithMany("ScheduledDatas")
+                        .HasForeignKey("PlanId");
+
                     b.HasOne("Domain.Entities.Project", "Project")
                         .WithMany("ScheduledDatas")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.VacationSchedule", "VacationSchedule")
+                        .WithMany("ScheduledDatas")
+                        .HasForeignKey("VacationScheduleId");
+
                     b.Navigation("Employee");
 
+                    b.Navigation("Plan");
+
                     b.Navigation("Project");
+
+                    b.Navigation("VacationSchedule");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SickLeave", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("SickLeaves")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Domain.Entities.Store", b =>
                 {
                     b.HasOne("Domain.Entities.Project", "Project")
-                        .WithMany()
+                        .WithMany("Stores")
                         .HasForeignKey("ProjectId");
 
                     b.Navigation("Project");
@@ -960,6 +1127,36 @@ namespace Infrastructure.Migrations
                     b.Navigation("Section");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Summary", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("Summaries")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Month", "Month")
+                        .WithMany("Summaries")
+                        .HasForeignKey("MonthId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Month");
+                });
+
+            modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("VacationSchedules")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("Domain.Entities.BakuDistrict", b =>
                 {
                     b.Navigation("Employees");
@@ -980,6 +1177,22 @@ namespace Infrastructure.Migrations
                     b.Navigation("HeadCounts");
 
                     b.Navigation("ScheduledDatas");
+
+                    b.Navigation("SickLeaves");
+
+                    b.Navigation("Summaries");
+
+                    b.Navigation("VacationSchedules");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Month", b =>
+                {
+                    b.Navigation("Summaries");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Plan", b =>
+                {
+                    b.Navigation("ScheduledDatas");
                 });
 
             modelBuilder.Entity("Domain.Entities.Position", b =>
@@ -994,6 +1207,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("ProjectSections");
 
                     b.Navigation("ScheduledDatas");
+
+                    b.Navigation("Stores");
                 });
 
             modelBuilder.Entity("Domain.Entities.ResidentalArea", b =>
@@ -1018,6 +1233,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.SubSection", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
+                {
+                    b.Navigation("ScheduledDatas");
                 });
 #pragma warning restore 612, 618
         }
