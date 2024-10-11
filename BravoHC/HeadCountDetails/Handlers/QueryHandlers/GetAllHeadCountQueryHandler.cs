@@ -38,8 +38,16 @@ namespace HeadCountDetails.Handlers.QueryHandlers
             .ThenInclude(e => e.BakuMetro)
             .Include(x => x.Employee)
             .ThenInclude(e => e.BakuTarget)
-
             .AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.Searchbox))
+            {
+                var searchValue = request.Searchbox.ToLower();
+                headCountsQuery = headCountsQuery.Where(x =>
+                    x.Employee != null &&
+                    (x.Employee.FullName.ToLower().Contains(searchValue) || x.Employee.Badge.ToLower().Contains(searchValue))
+                );
+            }
 
             headCountsQuery = request.ProjectId.HasValue
             ? headCountsQuery.Where(x => x.ProjectId == request.ProjectId.Value)
