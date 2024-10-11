@@ -30,5 +30,18 @@ namespace Infrastructure.Repositories
                 .Where(sd => sd.Date >= startDate && sd.Date <= endDate)
                 .ToListAsync();
         }
+        public async Task<ScheduledData> GetByEmployeeAndDateAsync(int employeeId, DateTime date)
+        {
+            return await _context.ScheduledDatas
+                .FirstOrDefaultAsync(sd => sd.EmployeeId == employeeId && sd.Date.Date == date.Date);
+        }
+        public async Task<List<ScheduledData>> GetByEmployeeAndMonthAsync(int employeeId, int year, int monthId)
+        {
+            return await _context.ScheduledDatas
+                .Where(sd => sd.EmployeeId == employeeId
+                             && sd.Date.Year == year
+                             && sd.Date.Month == monthId)
+                .ToListAsync();
+        }
     }
 }

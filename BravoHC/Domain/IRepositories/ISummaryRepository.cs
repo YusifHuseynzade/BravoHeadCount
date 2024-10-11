@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface ISummaryRepository : IRepository<Summary>
     {
+        Task<Summary> GetByEmployeeAndMonthAsync(int employeeId, int year, int monthId);
     }
 }

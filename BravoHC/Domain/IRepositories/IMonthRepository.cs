@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IMonthRepository : IRepository<Month>
     {
+        Task<Month> GetByNumberAsync(int monthNumber);
     }
 }

@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface ISickLeaveRepository : IRepository<SickLeave>
     {
+        Task<SickLeave> GetByEmployeeIdAsync(int employeeId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace Infrastructure.Repositories
         public SickLeaveRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<SickLeave> GetByEmployeeIdAsync(int employeeId)
+        {
+            return await _context.Set<SickLeave>()
+                .FirstOrDefaultAsync(vs => vs.EmployeeId == employeeId);
         }
     }
 }

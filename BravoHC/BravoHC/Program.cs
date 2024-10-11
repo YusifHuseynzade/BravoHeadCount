@@ -25,6 +25,7 @@ using ScheduledDataDetails.Handlers.CommandHandlers;
 using SectionDetails;
 using StoreDetails;
 using SubSubSectionDetails;
+using SummaryDetails.Handlers.CommandHandlers;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 
@@ -65,6 +66,8 @@ builder.Services.AddTransient<EmployeeImportService>();
 builder.Services.AddTransient<ProjectImportService>();
 
 builder.Services.AddHostedService<EmployeeHeadCountService>();
+builder.Services.AddHostedService<ScheduledDataCronJobService>();
+builder.Services.AddHostedService<SummaryCronJobService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -125,6 +128,7 @@ builder.Services.AddBakuMetroServices();
 builder.Services.AddBakuTargetServices();
 builder.Services.AddVacationScheduleServices();
 builder.Services.AddSickLeaveServices();
+builder.Services.AddSummaryServices();
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(

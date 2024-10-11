@@ -43,9 +43,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BakuMetroDetails", "BakuMet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BakuTargetDetails", "BakuTargetDetails\BakuTargetDetails.csproj", "{DD4791FD-4225-433A-A9AD-9B8640FE496B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VacationScheduleDetails", "VacationScheduleDetails\VacationScheduleDetails.csproj", "{C770DF96-C373-41C1-876D-C7D8BCFD0F39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VacationScheduleDetails", "VacationScheduleDetails\VacationScheduleDetails.csproj", "{C770DF96-C373-41C1-876D-C7D8BCFD0F39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SickLeaveDetails", "SickLeaveDetails\SickLeaveDetails.csproj", "{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SickLeaveDetails", "SickLeaveDetails\SickLeaveDetails.csproj", "{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SummaryDetails", "SummaryDetails\SummaryDetails.csproj", "{0BF299E1-1206-470E-9CA5-965899B50B98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +139,10 @@ Global
 		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BF299E1-1206-470E-9CA5-965899B50B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BF299E1-1206-470E-9CA5-965899B50B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BF299E1-1206-470E-9CA5-965899B50B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BF299E1-1206-470E-9CA5-965899B50B98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +165,7 @@ Global
 		{DD4791FD-4225-433A-A9AD-9B8640FE496B} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 		{C770DF96-C373-41C1-876D-C7D8BCFD0F39} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 		{D236DACF-9D8E-42DE-8696-A952DCDEBE3F} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
+		{0BF299E1-1206-470E-9CA5-965899B50B98} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4379445D-F582-4EA4-AD1F-FF40A11DB40E}

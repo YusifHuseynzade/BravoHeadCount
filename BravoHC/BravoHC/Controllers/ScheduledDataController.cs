@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ScheduledDataDetails.Commands.Request;
+using ScheduledDataDetails.Queries.Request;
 using SectionDetails.Commands.Request;
 using SectionDetails.Queries.Request;
+using SickLeaveDetails.Queries.Request;
+using VacationScheduleDetails.Queries.Request;
 
 namespace BravoHC.Controllers
 {
@@ -52,6 +55,27 @@ namespace BravoHC.Controllers
             {
                 return BadRequest(result.Message);
             }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllScheduledDataQueryRequest request)
+        {
+            var scheduledDatas = await _mediator.Send(request);
+
+            return Ok(scheduledDatas);
+        }
+
+        [HttpGet("{id}")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var requestModel = new GetByIdScheduledDataQueryRequest { Id = id };
+            var position = await _mediator.Send(requestModel);
+
+            return position != null
+                ? (IActionResult)Ok(position)
+                : NotFound(new { Message = "VacationSchedule not found." });
         }
 
     }

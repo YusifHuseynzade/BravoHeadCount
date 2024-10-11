@@ -4,7 +4,6 @@ using AutoMapper;
 using BakuDistrictDetails.Profiles;
 using BakuMetroDetails.Profiles;
 using BakuTargetDetails.Profiles;
-using Domain.Entities;
 using Domain.IRepositories;
 using Domain.IServices;
 using EmployeeDetails.Handlers.CommandHandlers;
@@ -20,10 +19,13 @@ using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
 using ScheduledDataDetails.Handlers.CommandHandlers;
+using ScheduledDataDetails.Profiles;
 using SectionDetails.Profiles;
 using SickLeaveDetails.Profiles;
 using StoreDetails.Profiles;
 using SubSectionDetails.Profiles;
+using SummaryDetails.Handlers.CommandHandlers;
+using SummaryDetails.Profiles;
 
 namespace Infrastructure
 {
@@ -60,9 +62,12 @@ namespace Infrastructure
             builder.RegisterType<EmployeeHeadCountService>()
                .As<IHostedService>()  // IHostedService olarak kaydet
                .SingleInstance();
-            //builder.RegisterType<ScheduledDataService>()
-            // .As<IHostedService>()  // IHostedService olarak kaydet
-            // .SingleInstance();
+            builder.RegisterType<ScheduledDataCronJobService>()
+             .As<IHostedService>()  // IHostedService olarak kaydet
+             .SingleInstance();
+            builder.RegisterType<SummaryCronJobService>()
+            .As<IHostedService>()  // IHostedService olarak kaydet
+            .SingleInstance();
 
             builder.Register(ctx =>
             {
@@ -84,6 +89,8 @@ namespace Infrastructure
                     cfg.AddProfile(new BakuTargetMapper(httpContextAccessor));
                     cfg.AddProfile(new ColorMapper(httpContextAccessor));
                     cfg.AddProfile(new SickLeaveMapper(httpContextAccessor));
+                    cfg.AddProfile(new ScheduledDataMapper(httpContextAccessor));
+                    cfg.AddProfile(new SummaryMapper(httpContextAccessor));
 
                 });
 

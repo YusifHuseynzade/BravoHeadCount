@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.IRepositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ScheduledDataDetails.Queries.Request;
 using ScheduledDataDetails.Queries.Response;
 
@@ -19,7 +20,12 @@ public class GetByIdScheduledDataQueryHandler : IRequestHandler<GetByIdScheduled
 
     public async Task<GetByIdScheduledDataQueryResponse> Handle(GetByIdScheduledDataQueryRequest request, CancellationToken cancellationToken)
     {
-        var scheduledData = await _repository.FirstOrDefaultAsync(x => x.Id == request.Id);
+        var scheduledData = await _repository.GetAll(x => x.Id == request.Id)
+               .Include(sd => sd.Plan) // Plan ile ilişki
+               .Include(sd => sd.Employee) // Employee ile ilişki
+                   .ThenInclude(e => e.Position) // Employee ve Position ile ilişki
+               .Include(sd => sd.Project) // Project ile ilişki
+               .FirstOrDefaultAsync(cancellationToken);
 
         if (scheduledData != null)
         {

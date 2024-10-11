@@ -51,14 +51,18 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                     // Yeni HCNumber değeri
                     var newHCNumber = updateRequest.HCNumber;
 
-                    // Eğer yeni HCNumber store'ın HeadCountNumber'ından küçükse color'u beyaz olarak ayarlayalım
                     if (newHCNumber <= store.HeadCountNumber)
                     {
-                        // Beyaz rengin ID'sini al
-                        var whiteColorId = await _colorRepository.GetWhiteColorIdAsync(); // Implement GetWhiteColorIdAsync() method
+                        // Mevcut rengin sarı olup olmadığını kontrol et
+                        var yellowColorId = await _colorRepository.GetYellowColorIdAsync();
+                        if (targetHeadCount.ColorId == yellowColorId)
+                        {
+                            // Beyaz rengin ID'sini al
+                            var whiteColorId = await _colorRepository.GetWhiteColorIdAsync();
 
-                        // ColorId'yi beyaz olarak ayarla
-                        targetHeadCount.ColorId = whiteColorId;
+                            // ColorId'yi beyaz olarak ayarla
+                            targetHeadCount.ColorId = whiteColorId;
+                        }
                     }
                     else
                     {
@@ -91,11 +95,16 @@ namespace HeadCountDetails.Handlers.CommandHandlers
                         // Eğer HCNumber store'daki HeadCountNumber'dan küçük veya eşitse beyaz renge ayarla
                         else
                         {
-                            // Beyaz rengin ID'sini al
-                            var whiteColorId = await _colorRepository.GetWhiteColorIdAsync();
+                            // Eğer mevcut renk sarı ise beyaza ayarla, aksi halde değişmeden bırak
+                            var yellowColorId = await _colorRepository.GetYellowColorIdAsync();
+                            if (headCounts[i].ColorId == yellowColorId)
+                            {
+                                // Beyaz rengin ID'sini al
+                                var whiteColorId = await _colorRepository.GetWhiteColorIdAsync();
 
-                            // ColorId'yi beyaz renge ayarla
-                            headCounts[i].ColorId = whiteColorId;
+                                // ColorId'yi beyaz renge ayarla
+                                headCounts[i].ColorId = whiteColorId;
+                            }
                         }
 
                         // HeadCount'u güncelle

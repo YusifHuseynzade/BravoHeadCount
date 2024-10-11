@@ -10,5 +10,6 @@ namespace ScheduledDataDetails.Queries.Response
     {
         public int TotalScheduledDataCount { get; set; }
         public List<GetAllScheduledDataQueryResponse> ScheduledDatas { get; set; }
+
     }
 }

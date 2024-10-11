@@ -11,5 +11,7 @@ namespace Domain.IRepositories
     {
         Task<ScheduledData> GetLastScheduledDataAsync();
         Task<IEnumerable<ScheduledData>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<ScheduledData> GetByEmployeeAndDateAsync(int employeeId, DateTime date);
+        Task<List<ScheduledData>> GetByEmployeeAndMonthAsync(int employeeId, int year, int monthId);
     }
 }

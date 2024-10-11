@@ -16,18 +16,21 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
         private readonly IProjectRepository _projectRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IVacationScheduleRepository _vacationScheduleRepository;
+        private readonly ISickLeaveRepository _sickLeaveRepository;
         private readonly IPlanRepository _planRepository;
 
         public CreateScheduledDataCommandHandler(IScheduledDataRepository scheduledDataRepository,
                                                  IProjectRepository projectRepository,
                                                  IEmployeeRepository employeeRepository,
                                                  IVacationScheduleRepository vacationScheduleRepository,
+                                                 ISickLeaveRepository sickLeaveRepository,
                                                  IPlanRepository planRepository)
         {
             _scheduledDataRepository = scheduledDataRepository;
             _projectRepository = projectRepository;
             _employeeRepository = employeeRepository;
             _vacationScheduleRepository = vacationScheduleRepository;
+            _sickLeaveRepository = sickLeaveRepository;
             _planRepository = planRepository;
         }
 
@@ -65,14 +68,15 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                     };
                 }
 
-                // "Məzuniyyət" planını al
+                // "Məzuniyyət" ve "Xəstəlik vərəqi" planlarını al
                 var vacationPlan = await _planRepository.GetByValueAsync("Məzuniyyət");
-                if (vacationPlan == null)
+                var sickLeavePlan = await _planRepository.GetByValueAsync("Xəstəlik vərəqi");
+                if (vacationPlan == null || sickLeavePlan == null)
                 {
                     return new CreateScheduledDataCommandResponse
                     {
                         IsSuccess = false,
-                        ErrorMessage = "'Məzuniyyət' planı bulunamadı."
+                        ErrorMessage = "'Məzuniyyət' veya 'Xəstəlik vərəqi' planı bulunamadı."
                     };
                 }
 
@@ -86,6 +90,8 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                     {
                         // Çalışanın tatil bilgilerini al
                         var vacationSchedule = await _vacationScheduleRepository.GetByEmployeeIdAsync(employee.Id);
+                        // Çalışanın hastalık izni bilgilerini al
+                        var sickLeave = await _sickLeaveRepository.GetByEmployeeIdAsync(employee.Id);
 
                         // Haftalık tarih aralığını belirle (Pazartesi - Pazar)
                         for (var date = nextMonday; date <= nextSunday; date = date.AddDays(1))
@@ -97,13 +103,18 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                             {
                                 planId = vacationPlan.Id;
                             }
+                            // Hastalık izni kontrolü: Hastalık izni varsa planId'yi ayarla
+                            else if (sickLeave != null && sickLeave.StartDate <= date && sickLeave.EndDate >= date)
+                            {
+                                planId = sickLeavePlan.Id;
+                            }
 
                             var scheduledData = new ScheduledData
                             {
                                 EmployeeId = employee.Id, // Çalışanın ID'si
                                 ProjectId = project.Id,   // Projenin ID'si
                                 Date = date.Date,         // Tarih (Günlük olarak)
-                                PlanId = planId,          // Tatil varsa planId "Məzuniyyət" olacak
+                                PlanId = planId,          // Tatil veya hastalık izni varsa ilgili plan atanacak
                             };
 
                             await _scheduledDataRepository.AddAsync(scheduledData);
