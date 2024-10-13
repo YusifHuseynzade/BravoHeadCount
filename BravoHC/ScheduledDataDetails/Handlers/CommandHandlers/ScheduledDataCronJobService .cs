@@ -1,5 +1,7 @@
-﻿using Domain.Entities;
+﻿using Common.Interfaces;
+using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,164 +13,164 @@ namespace ScheduledDataDetails.Handlers.CommandHandlers
     public class ScheduledDataCronJobService : BackgroundService
     {
         private readonly ILogger<ScheduledDataCronJobService> _logger;
-        private readonly IScheduledDataRepository _scheduledDataRepository;
-        private readonly IVacationScheduleRepository _vacationScheduleRepository;
-        private readonly ISickLeaveRepository _sickLeaveRepository;
-        private readonly IPlanRepository _planRepository;
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IServiceProvider _serviceProvider; // IServiceProvider ekleniyor
 
         public ScheduledDataCronJobService(
             ILogger<ScheduledDataCronJobService> logger,
-            IScheduledDataRepository scheduledDataRepository,
-            IVacationScheduleRepository vacationScheduleRepository,
-            ISickLeaveRepository sickLeaveRepository,
-            IPlanRepository planRepository,
-            IEmployeeRepository employeeRepository)
+            IServiceProvider serviceProvider) // IServiceProvider dependency injection ile ekleniyor
         {
             _logger = logger;
-            _scheduledDataRepository = scheduledDataRepository;
-            _vacationScheduleRepository = vacationScheduleRepository;
-            _sickLeaveRepository = sickLeaveRepository;
-            _planRepository = planRepository;
-            _employeeRepository = employeeRepository;
+            _serviceProvider = serviceProvider; // IServiceProvider atama
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                try
+                using (var scope = _serviceProvider.CreateScope()) // Yeni bir scope oluşturuluyor
                 {
-                    _logger.LogInformation("ScheduledDataCronJobService is running at: {time}", DateTimeOffset.Now);
+                    var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+                    var scheduledDataRepository = scope.ServiceProvider.GetRequiredService<IScheduledDataRepository>();
+                    var vacationScheduleRepository = scope.ServiceProvider.GetRequiredService<IVacationScheduleRepository>();
+                    var sickLeaveRepository = scope.ServiceProvider.GetRequiredService<ISickLeaveRepository>();
+                    var planRepository = scope.ServiceProvider.GetRequiredService<IPlanRepository>();
+                    var employeeRepository = scope.ServiceProvider.GetRequiredService<IEmployeeRepository>();
 
-                    // "Məzuniyyət" ve "Xəstəlik vərəqi" planlarını al
-                    var vacationPlan = await _planRepository.GetByValueAsync("Məzuniyyət");
-                    var sickLeavePlan = await _planRepository.GetByValueAsync("Xəstəlik vərəqi");
-
-                    if (vacationPlan == null || sickLeavePlan == null)
+                    try
                     {
-                        _logger.LogError("'Məzuniyyət' veya 'Xəstəlik vərəqi' planı bulunamadı.");
-                        return;
-                    }
+                        _logger.LogInformation("ScheduledDataCronJobService is running at: {time}", DateTimeOffset.Now);
 
-                    // Tüm çalışanları getir
-                    var employees = await _employeeRepository.GetAllAsync();
-                    foreach (var employee in employees)
-                    {
-                        // Çalışanın tatil ve hastalık bilgilerini al
-                        var vacationSchedule = await _vacationScheduleRepository.GetByEmployeeIdAsync(employee.Id);
-                        var sickLeave = await _sickLeaveRepository.GetByEmployeeIdAsync(employee.Id);
+                        // "Məzuniyyət" ve "Xəstəlik vərəqi" planlarını al
+                        var vacationPlan = await planRepository.GetByValueAsync("Məzuniyyət");
+                        var sickLeavePlan = await planRepository.GetByValueAsync("Xəstəlik vərəqi");
 
-                        // Tatil tarih aralığını kontrol et ve ScheduledData oluştur veya güncelle
-                        if (vacationSchedule != null)
+                        if (vacationPlan == null || sickLeavePlan == null)
                         {
-                            var vacationStartDate = vacationSchedule.StartDate;
-                            var vacationEndDate = vacationSchedule.EndDate;
-
-                            for (var date = vacationStartDate.Date; date <= vacationEndDate.Date; date = date.AddDays(1))
-                            {
-                                // ScheduledData kaydını kontrol et
-                                var scheduledData = await _scheduledDataRepository.GetByEmployeeAndDateAsync(employee.Id, date);
-
-                                // Eğer ScheduledData kaydı yoksa, o tarihe ait tatil bilgisi mevcut mu kontrol et
-                                if (scheduledData == null)
-                                {
-                                    // Eğer o tarihe ait scheduledData yoksa, oluşturma
-                                    continue;
-                                }
-
-                                // Eğer ScheduledData kaydı varsa ve plan atanmadıysa veya yanlışsa, doğru planı ata
-                                if (scheduledData.PlanId == null || scheduledData.PlanId != vacationPlan.Id)
-                                {
-                                    scheduledData.PlanId = vacationPlan.Id;
-                                    await _scheduledDataRepository.UpdateAsync(scheduledData);
-                                }
-                            }
+                            _logger.LogError("'Məzuniyyət' veya 'Xəstəlik vərəqi' planı bulunamadı.");
+                            return;
                         }
 
-                        // Hastalık izni tarih aralığını kontrol et ve ScheduledData oluştur veya güncelle
-                        if (sickLeave != null)
+                        // Tüm çalışanları getir
+                        var employees = await employeeRepository.GetAllAsync();
+                        foreach (var employee in employees)
                         {
-                            var sickLeaveStartDate = sickLeave.StartDate;
-                            var sickLeaveEndDate = sickLeave.EndDate;
+                            // Çalışanın tatil ve hastalık bilgilerini al
+                            var vacationSchedule = await vacationScheduleRepository.GetByEmployeeIdAsync(employee.Id);
+                            var sickLeave = await sickLeaveRepository.GetByEmployeeIdAsync(employee.Id);
 
-                            for (var date = sickLeaveStartDate.Date; date <= sickLeaveEndDate.Date; date = date.AddDays(1))
+                            // Tatil tarih aralığını kontrol et ve ScheduledData oluştur veya güncelle
+                            if (vacationSchedule != null)
                             {
-                                // ScheduledData kaydını kontrol et
-                                var scheduledData = await _scheduledDataRepository.GetByEmployeeAndDateAsync(employee.Id, date);
+                                var vacationStartDate = vacationSchedule.StartDate;
+                                var vacationEndDate = vacationSchedule.EndDate;
 
-                                // Eğer ScheduledData kaydı yoksa, o tarihe ait hastalık izni bilgisi mevcut mu kontrol et
-                                if (scheduledData == null)
+                                for (var date = vacationStartDate.Date; date <= vacationEndDate.Date; date = date.AddDays(1))
                                 {
-                                    // Eğer o tarihe ait scheduledData yoksa, oluşturma
-                                    continue;
-                                }
+                                    // ScheduledData kaydını kontrol et
+                                    var scheduledData = await scheduledDataRepository.GetByEmployeeAndDateAsync(employee.Id, date);
 
-                                // Eğer ScheduledData kaydı varsa ve plan atanmadıysa veya yanlışsa, doğru planı ata
-                                if (scheduledData.PlanId == null || scheduledData.PlanId != sickLeavePlan.Id)
-                                {
-                                    scheduledData.PlanId = sickLeavePlan.Id;
-                                    await _scheduledDataRepository.UpdateAsync(scheduledData);
+                                    // Eğer ScheduledData kaydı yoksa, o tarihe ait tatil bilgisi mevcut mu kontrol et
+                                    if (scheduledData == null)
+                                    {
+                                        // Eğer o tarihe ait scheduledData yoksa, oluşturma
+                                        continue;
+                                    }
+
+                                    // Eğer ScheduledData kaydı varsa ve plan atanmadıysa veya yanlışsa, doğru planı ata
+                                    if (scheduledData.PlanId == null || scheduledData.PlanId != vacationPlan.Id)
+                                    {
+                                        scheduledData.PlanId = vacationPlan.Id;
+                                        await scheduledDataRepository.UpdateAsync(scheduledData);
+                                    }
                                 }
                             }
+
+                            // Hastalık izni tarih aralığını kontrol et ve ScheduledData oluştur veya güncelle
+                            if (sickLeave != null)
+                            {
+                                var sickLeaveStartDate = sickLeave.StartDate;
+                                var sickLeaveEndDate = sickLeave.EndDate;
+
+                                for (var date = sickLeaveStartDate.Date; date <= sickLeaveEndDate.Date; date = date.AddDays(1))
+                                {
+                                    // ScheduledData kaydını kontrol et
+                                    var scheduledData = await scheduledDataRepository.GetByEmployeeAndDateAsync(employee.Id, date);
+
+                                    // Eğer ScheduledData kaydı yoksa, o tarihe ait hastalık izni bilgisi mevcut mu kontrol et
+                                    if (scheduledData == null)
+                                    {
+                                        // Eğer o tarihe ait scheduledData yoksa, oluşturma
+                                        continue;
+                                    }
+
+                                    // Eğer ScheduledData kaydı varsa ve plan atanmadıysa veya yanlışsa, doğru planı ata
+                                    if (scheduledData.PlanId == null || scheduledData.PlanId != sickLeavePlan.Id)
+                                    {
+                                        scheduledData.PlanId = sickLeavePlan.Id;
+                                        await scheduledDataRepository.UpdateAsync(scheduledData);
+                                    }
+                                }
+                            }
+
+                            // Uygun olmayan ScheduledData kayıtlarını kontrol et ve PlanId'yi null yap
+                            await ClearInvalidScheduledData(employee.Id, vacationSchedule, sickLeave, vacationPlan, sickLeavePlan);
                         }
 
-                        // Uygun olmayan ScheduledData kayıtlarını kontrol et ve PlanId'yi null yap
-                        await ClearInvalidScheduledData(employee.Id, vacationSchedule, sickLeave, vacationPlan, sickLeavePlan);
+                        // Değişiklikleri kaydet
+                        await scheduledDataRepository.CommitAsync();
+
+                        _logger.LogInformation("ScheduledDataCronJobService successfully completed.");
                     }
-
-                    // Değişiklikleri kaydet
-                    await _scheduledDataRepository.CommitAsync();
-
-                    _logger.LogInformation("ScheduledDataCronJobService successfully completed.");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred while running the ScheduledDataCronJobService.");
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "An error occurred while running the ScheduledDataCronJobService.");
+                    }
                 }
 
                 // 2 dakika bekle
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
             }
         }
-
 
         private async Task ClearInvalidScheduledData(int employeeId, VacationSchedule vacationSchedule, SickLeave sickLeave, Plan vacationPlan, Plan sickLeavePlan)
         {
-            // Çalışanın tüm ScheduledData kayıtlarını al
-            var allScheduledData = await _scheduledDataRepository.GetByEmployeeIdAsync(employeeId);
-
-            // Tatil tarih aralığını kontrol et
-            if (vacationSchedule != null)
+            using (var scope = _serviceProvider.CreateScope()) // Yeni bir scope oluşturuluyor
             {
-                foreach (var scheduledData in allScheduledData)
+                var scheduledDataRepository = scope.ServiceProvider.GetRequiredService<IScheduledDataRepository>();
+
+                // Çalışanın tüm ScheduledData kayıtlarını al
+                var allScheduledData = await scheduledDataRepository.GetByEmployeeIdAsync(employeeId);
+
+                // Tatil tarih aralığını kontrol et
+                if (vacationSchedule != null)
                 {
-                    // Eğer mevcut tarih tatil aralığına uymuyorsa ve mevcut plan tatil planıysa, PlanId'yi null yap
-                    if ((scheduledData.Date < vacationSchedule.StartDate || scheduledData.Date > vacationSchedule.EndDate)
-                        && scheduledData.PlanId == vacationPlan.Id)
+                    foreach (var scheduledData in allScheduledData)
                     {
-                        scheduledData.PlanId = null; // Geçersiz olan PlanId'yi null yap
-                        await _scheduledDataRepository.UpdateAsync(scheduledData);
+                        // Eğer mevcut tarih tatil aralığına uymuyorsa ve mevcut plan tatil planıysa, PlanId'yi null yap
+                        if ((scheduledData.Date < vacationSchedule.StartDate || scheduledData.Date > vacationSchedule.EndDate)
+                            && scheduledData.PlanId == vacationPlan.Id)
+                        {
+                            scheduledData.PlanId = null; // Geçersiz olan PlanId'yi null yap
+                            await scheduledDataRepository.UpdateAsync(scheduledData);
+                        }
                     }
                 }
-            }
 
-            // Hastalık izni tarih aralığını kontrol et
-            if (sickLeave != null)
-            {
-                foreach (var scheduledData in allScheduledData)
+                // Hastalık izni tarih aralığını kontrol et
+                if (sickLeave != null)
                 {
-                    // Eğer mevcut tarih hastalık izni aralığına uymuyorsa ve mevcut plan hastalık planıysa, PlanId'yi null yap
-                    if ((scheduledData.Date < sickLeave.StartDate || scheduledData.Date > sickLeave.EndDate)
-                        && scheduledData.PlanId == sickLeavePlan.Id)
+                    foreach (var scheduledData in allScheduledData)
                     {
-                        scheduledData.PlanId = null; // Geçersiz olan PlanId'yi null yap
-                        await _scheduledDataRepository.UpdateAsync(scheduledData);
+                        // Eğer mevcut tarih hastalık izni aralığına uymuyorsa ve mevcut plan hastalık planıysa, PlanId'yi null yap
+                        if ((scheduledData.Date < sickLeave.StartDate || scheduledData.Date > sickLeave.EndDate)
+                            && scheduledData.PlanId == sickLeavePlan.Id)
+                        {
+                            scheduledData.PlanId = null; // Geçersiz olan PlanId'yi null yap
+                            await scheduledDataRepository.UpdateAsync(scheduledData);
+                        }
                     }
                 }
             }
         }
-
-
     }
 }

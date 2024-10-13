@@ -65,10 +65,6 @@ builder.Services.AddTransient<HeadCountImportService>();
 builder.Services.AddTransient<EmployeeImportService>();
 builder.Services.AddTransient<ProjectImportService>();
 
-builder.Services.AddHostedService<EmployeeHeadCountService>();
-builder.Services.AddHostedService<ScheduledDataCronJobService>();
-builder.Services.AddHostedService<SummaryCronJobService>();
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
