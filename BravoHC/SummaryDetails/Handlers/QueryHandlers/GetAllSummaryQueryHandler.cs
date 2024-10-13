@@ -21,11 +21,26 @@ namespace SummaryDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllSummaryListQueryResponse>> Handle(GetAllSummaryQueryRequest request, CancellationToken cancellationToken)
         {
-            var summaries = _repository.GetAll(x => true).Include(s => s.Employee)
-                .ThenInclude(e => e.Position)
+            // Get all summaries and include related entities
+            var summariesQuery = _repository.GetAll(x => true)
                 .Include(s => s.Employee)
-                .ThenInclude(e => e.Section)
-                .Include(s => s.Month);
+                    .ThenInclude(e => e.Position)
+                .Include(s => s.Employee)
+                    .ThenInclude(e => e.Section)
+                .Include(s => s.Month).AsQueryable();
+
+            // Apply year filter if provided
+            if (request.Year.HasValue)
+            {
+                summariesQuery = summariesQuery.Where(s => s.Year == request.Year.Value);
+            }
+
+            if (request.Month.HasValue)
+            {
+                summariesQuery = summariesQuery.Where(s => s.Month != null && s.Month.Number == request.Month.Value);
+            }
+
+            var summaries = await summariesQuery.ToListAsync(cancellationToken);
 
 
             if (summaries != null)

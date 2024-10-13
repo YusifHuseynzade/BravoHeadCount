@@ -43,5 +43,12 @@ namespace Infrastructure.Repositories
                              && sd.Date.Month == monthId)
                 .ToListAsync();
         }
+        public async Task<List<ScheduledData>> GetByEmployeeIdAsync(int employeeId)
+        {
+            // Belirli bir çalışana ait tüm ScheduledData kayıtlarını al
+            return await _context.ScheduledDatas
+                .Where(sd => sd.EmployeeId == employeeId)
+                .ToListAsync(); // Asenkron olarak listeyi döndür
+        }
     }
 }

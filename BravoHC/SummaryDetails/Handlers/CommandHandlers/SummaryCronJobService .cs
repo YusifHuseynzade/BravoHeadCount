@@ -37,6 +37,9 @@ namespace SummaryDetails.Handlers.CommandHandlers
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            int? lastMonth = null; // Son kontrol edilen ay
+            int? lastYear = null; // Son kontrol edilen yıl
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -57,56 +60,105 @@ namespace SummaryDetails.Handlers.CommandHandlers
 
                     // Tüm çalışanları al
                     var employees = await _employeeRepository.GetAllAsync();
-                    foreach (var employee in employees)
+                    var currentDate = DateTime.UtcNow;
+                    var currentMonth = currentDate.Month;
+                    var currentYear = currentDate.Year;
+
+                    // Eğer ay değiştiyse, tüm çalışanlar için yeni Summary kaydı oluştur
+                    if (currentMonth != lastMonth || currentYear != lastYear)
                     {
-                        // Çalışanın ScheduledData verilerini al (bu ay ve yıl için)
-                        var currentDate = DateTime.UtcNow;
-                        var month = await _monthRepository.GetByNumberAsync(currentDate.Month);
-                        if (month == null) continue;
-
-                        var scheduledData = await _scheduledDataRepository.GetByEmployeeAndMonthAsync(employee.Id, currentDate.Year, month.Id);
-
-                        // Verileri say
-                        var workdaysCount = scheduledData.Count(sd =>
-                            sd.PlanId != vacationPlan.Id &&
-                            sd.PlanId != sickLeavePlan.Id &&
-                            sd.PlanId != dayOffPlan.Id &&
-                            sd.PlanId != holidayPlan.Id);
-
-                        var vacationDaysCount = scheduledData.Count(sd => sd.PlanId == vacationPlan.Id);
-                        var sickDaysCount = scheduledData.Count(sd => sd.PlanId == sickLeavePlan.Id);
-                        var dayOffCount = scheduledData.Count(sd => sd.PlanId == dayOffPlan.Id);
-                        var absentDaysCount = scheduledData.Count(sd => sd.PlanId == holidayPlan.Id);
-
-                        // Mevcut Summary kaydı var mı?
-                        var summary = await _summaryRepository.GetByEmployeeAndMonthAsync(employee.Id, currentDate.Year, month.Id);
-                        if (summary == null)
+                        foreach (var employee in employees)
                         {
-                            // Eğer summary kaydı yoksa, yeni bir kayıt oluştur
-                            summary = new Summary
+                            var month = await _monthRepository.GetByNumberAsync(currentMonth);
+                            if (month == null) continue;
+
+                            // Çalışanın ScheduledData verilerini al (bu ay ve yıl için)
+                            var scheduledData = await _scheduledDataRepository.GetByEmployeeAndMonthAsync(employee.Id, currentYear, month.Id);
+
+                            // Verileri say
+                            var workdaysCount = scheduledData.Count(sd =>
+                                sd.PlanId != vacationPlan.Id &&
+                                sd.PlanId != sickLeavePlan.Id &&
+                                sd.PlanId != dayOffPlan.Id &&
+                                sd.PlanId != holidayPlan.Id);
+
+                            var vacationDaysCount = scheduledData.Count(sd => sd.PlanId == vacationPlan.Id);
+                            var sickDaysCount = scheduledData.Count(sd => sd.PlanId == sickLeavePlan.Id);
+                            var dayOffCount = scheduledData.Count(sd => sd.PlanId == dayOffPlan.Id);
+                            var absentDaysCount = scheduledData.Count(sd => sd.PlanId == holidayPlan.Id);
+
+                            // Mevcut Summary kaydı var mı?
+                            var summary = await _summaryRepository.GetByEmployeeAndMonthAsync(employee.Id, currentYear, month.Id);
+                            if (summary == null)
                             {
-                                EmployeeId = employee.Id,
-                                MonthId = month.Id,
-                                Year = currentDate.Year,
-                                WorkdaysCount = workdaysCount,
-                                VacationDaysCount = vacationDaysCount,
-                                SickDaysCount = sickDaysCount,
-                                DayOffCount = dayOffCount,
-                                AbsentDaysCount = absentDaysCount
-                            };
+                                // Eğer summary kaydı yoksa, yeni bir kayıt oluştur
+                                summary = new Summary
+                                {
+                                    EmployeeId = employee.Id,
+                                    MonthId = month.Id,
+                                    Year = currentYear,
+                                    WorkdaysCount = workdaysCount,
+                                    VacationDaysCount = vacationDaysCount,
+                                    SickDaysCount = sickDaysCount,
+                                    DayOffCount = dayOffCount,
+                                    AbsentDaysCount = absentDaysCount
+                                };
 
-                            await _summaryRepository.AddAsync(summary);
+                                await _summaryRepository.AddAsync(summary);
+                            }
+                            else
+                            {
+                                // Eğer summary kaydı varsa, güncelle
+                                summary.WorkdaysCount = workdaysCount;
+                                summary.VacationDaysCount = vacationDaysCount;
+                                summary.SickDaysCount = sickDaysCount;
+                                summary.DayOffCount = dayOffCount;
+                                summary.AbsentDaysCount = absentDaysCount;
+
+                                await _summaryRepository.UpdateAsync(summary);
+                            }
                         }
-                        else
-                        {
-                            // Eğer summary kaydı varsa, güncelle
-                            summary.WorkdaysCount = workdaysCount;
-                            summary.VacationDaysCount = vacationDaysCount;
-                            summary.SickDaysCount = sickDaysCount;
-                            summary.DayOffCount = dayOffCount;
-                            summary.AbsentDaysCount = absentDaysCount;
 
-                            await _summaryRepository.UpdateAsync(summary);
+                        // Son kontrol edilen ay ve yılı güncelle
+                        lastMonth = currentMonth;
+                        lastYear = currentYear;
+                    }
+                    else
+                    {
+                        // Mevcut ay içindeki kayıtları güncelle
+                        foreach (var employee in employees)
+                        {
+                            var month = await _monthRepository.GetByNumberAsync(currentMonth);
+                            if (month == null) continue;
+
+                            // Çalışanın ScheduledData verilerini al (bu ay ve yıl için)
+                            var scheduledData = await _scheduledDataRepository.GetByEmployeeAndMonthAsync(employee.Id, currentYear, month.Id);
+
+                            // Verileri say
+                            var workdaysCount = scheduledData.Count(sd =>
+                                sd.PlanId != vacationPlan.Id &&
+                                sd.PlanId != sickLeavePlan.Id &&
+                                sd.PlanId != dayOffPlan.Id &&
+                                sd.PlanId != holidayPlan.Id);
+
+                            var vacationDaysCount = scheduledData.Count(sd => sd.PlanId == vacationPlan.Id);
+                            var sickDaysCount = scheduledData.Count(sd => sd.PlanId == sickLeavePlan.Id);
+                            var dayOffCount = scheduledData.Count(sd => sd.PlanId == dayOffPlan.Id);
+                            var absentDaysCount = scheduledData.Count(sd => sd.PlanId == holidayPlan.Id);
+
+                            // Mevcut Summary kaydı var mı?
+                            var summary = await _summaryRepository.GetByEmployeeAndMonthAsync(employee.Id, currentYear, month.Id);
+                            if (summary != null)
+                            {
+                                // Eğer summary kaydı varsa, güncelle
+                                summary.WorkdaysCount = workdaysCount;
+                                summary.VacationDaysCount = vacationDaysCount;
+                                summary.SickDaysCount = sickDaysCount;
+                                summary.DayOffCount = dayOffCount;
+                                summary.AbsentDaysCount = absentDaysCount;
+
+                                await _summaryRepository.UpdateAsync(summary);
+                            }
                         }
                     }
 
@@ -120,9 +172,10 @@ namespace SummaryDetails.Handlers.CommandHandlers
                     _logger.LogError(ex, "An error occurred while running the SummaryCronJobService.");
                 }
 
-                // 24 saatte bir çalış
+                // 1 dakikada bir çalış
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
+
     }
 }
