@@ -29,9 +29,9 @@ namespace Infrastructure.Configurations
                .IsRequired()
                .HasMaxLength(15);
 
-            builder.HasOne(au => au.Role)
-                .WithMany(ar => ar.AppUsers)
-                .HasForeignKey(au => au.RoleId);
+            builder.HasMany(u => u.AppUserRoles)
+                   .WithOne(ur => ur.AppUser)
+                   .HasForeignKey(ur => ur.AppUserId);
 
         }
     }

@@ -35,6 +35,7 @@ namespace Infrastructure
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<AppUserRepository>().As<IAppUserRepository>();
+            builder.RegisterType<AppUserRoleRepository>().As<IAppUserRoleRepository>();
             builder.RegisterType<RoleRepository>().As<IRoleRepository>();
             builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>();
             builder.RegisterType<HeadCountRepository>().As<IHeadCountRepository>();

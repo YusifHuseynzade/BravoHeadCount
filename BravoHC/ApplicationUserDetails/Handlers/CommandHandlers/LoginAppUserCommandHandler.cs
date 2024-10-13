@@ -33,8 +33,11 @@ namespace Application.ApplicationUserDetails.Commands
 
         public async Task<LoginAppUserCommandResponse> Handle(LoginAppUserCommandRequest request, CancellationToken cancellationToken)
         {
-            // Kullanıcıyı e-posta ile veritabanından getir
-            var appUser = await _context.AppUsers.Include(m => m.Role).FirstOrDefaultAsync(u => u.Email == request.Email);
+            // Kullanıcıyı e-posta ile veritabanından getir ve rollerini de dahil et
+            var appUser = await _context.AppUsers
+                                        .Include(u => u.AppUserRoles)
+                                        .ThenInclude(ur => ur.Role)
+                                        .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             // Kullanıcı kontrolü ve aktif olup olmadığını denetle
             if (appUser == null)
@@ -63,7 +66,6 @@ namespace Application.ApplicationUserDetails.Commands
                     PhoneNumber = appUser.PhoneNumber,
                     FullName = appUser.FullName,
                     Email = appUser.Email,
-                    RoleId = appUser.RoleId,
                     JwtToken = jwtToken,
                     RefreshToken = refreshToken,
                     Message = "Giriş başarılı"
@@ -82,9 +84,17 @@ namespace Application.ApplicationUserDetails.Commands
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, appUser.Email),
-                new Claim(ClaimTypes.Role, appUser.Role.RoleName.ToString())
+                new Claim(ClaimTypes.Name, appUser.Email)
             };
+
+            // Kullanıcının rollerini ekle
+            if (appUser.AppUserRoles != null && appUser.AppUserRoles.Any())
+            {
+                foreach (var userRole in appUser.AppUserRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, userRole.Role.RoleName));
+                }
+            }
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
             var jwtToken = new JwtSecurityToken

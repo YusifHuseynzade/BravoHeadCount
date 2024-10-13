@@ -23,8 +23,9 @@ namespace Infrastructure.Repositories
         public async Task<AppUser> GetLoggedInUserAsync(string email)
         {
             return await _context.AppUsers
-            .Include(u => u.Role) // Role bilgilerini yükle
-            .FirstOrDefaultAsync(x => x.Email == email);
+                .Include(u => u.AppUserRoles)           // AppUserRoles bilgilerini yükle
+                .ThenInclude(ur => ur.Role)             // Her bir AppUserRole için Role bilgilerini yükle
+                .FirstOrDefaultAsync(x => x.Email == email);
         }
     }
 }

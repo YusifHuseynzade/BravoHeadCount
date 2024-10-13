@@ -18,9 +18,8 @@ namespace Domain.Entities
         public DateTime OTPTokenCreated { get; set; }
         public DateTime OTPTokenExpires { get; set; }
         public bool IsActive { get; set; } = false;
-        public int RoleId { get; set; }
-        public Role Role { get; set; }
-       
+        public List<AppUserRole>? AppUserRoles { get; set; }
+
 
         public void SetCreateUserDetails(string userName, string fullName, string phoneNumber, string password, string email)
         {

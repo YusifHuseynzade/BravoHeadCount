@@ -17,6 +17,7 @@ namespace Infrastructure
 
         }
         public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<AppUserRole> AppUserRoles { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<HeadCount> HeadCounts { get; set; }

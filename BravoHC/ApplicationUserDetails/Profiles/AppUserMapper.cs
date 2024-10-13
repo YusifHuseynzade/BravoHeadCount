@@ -14,8 +14,10 @@ namespace ApplicationUserDetails.Profiles
         {
             _httpAccessor = httpAccessor;
 
-            CreateMap<AppUser, GetAllAppUserQueryResponse>();
-            CreateMap<AppUser, GetByIdAppUserQueryResponse>();
+            CreateMap<AppUser, GetAllAppUserQueryResponse>()
+            .ForMember(dest => dest.RoleIds, opt => opt.MapFrom(src => src.AppUserRoles.Select(ur => ur.RoleId).ToList()));
+            CreateMap<AppUser, GetByIdAppUserQueryResponse>()
+            .ForMember(dest => dest.RoleIds, opt => opt.MapFrom(src => src.AppUserRoles.Select(ur => ur.RoleId).ToList()));
             CreateMap<CreateAppUserCommandRequest, AppUser>();
             CreateMap<UpdateAppUserCommandRequest, AppUser>();
 

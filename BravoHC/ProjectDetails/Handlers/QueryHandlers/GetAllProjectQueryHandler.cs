@@ -40,8 +40,10 @@ namespace ProjectDetails.Handlers.QueryHandlers
             // Kullanıcı bilgilerini veritabanından alıyoruz
             var loggedInUser = await _userRepository.GetLoggedInUserAsync(userEmail);
 
-            // Eğer kullanıcının rolü 'Store Management' ya da 'Recruiter' ise projeleri filtreliyoruz
-            if (loggedInUser.Role.RoleName == "Store Management" || loggedInUser.Role.RoleName == "Recruiter")
+            var userRoles = loggedInUser.AppUserRoles.Select(ur => ur.Role.RoleName).ToList();
+
+            // Eğer kullanıcının rolü 'Store Management' ya da 'Recruiter' rollerinden biri ise projeleri filtreliyoruz
+            if (userRoles.Contains("Store Management") || userRoles.Contains("Recruiter"))
             {
                 var projects = _repository.GetAll(x =>
                     x.OperationDirectorMail == userEmail ||

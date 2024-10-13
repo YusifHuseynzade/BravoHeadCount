@@ -11,7 +11,7 @@ namespace Domain.Entities
         public string RoleName { get; set; }
         public string RoleType { get; set; }
         public string RoleLevel { get; set; }
-        public List<AppUser>? AppUsers { get; set; }
+        public List<AppUserRole>? AppUserRoles { get; set; }
         public void SetDetail(string name)
         {
             this.RoleName = name;

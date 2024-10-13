@@ -22,7 +22,10 @@ namespace ApplicationUserDetails.Handlers.QueryHandlers
         {
             if (_context != null)
             {
-                var user = await _context.AppUsers.FirstOrDefaultAsync(p => p.Id == request.Id);
+                var user = await _context.AppUsers
+                                        .Include(u => u.AppUserRoles)
+                                        .ThenInclude(ur => ur.Role)
+                                        .FirstOrDefaultAsync(p => p.Id == request.Id);
 
                 if (user != null)
                 {
