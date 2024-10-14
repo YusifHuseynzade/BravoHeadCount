@@ -66,6 +66,7 @@ namespace Application.ApplicationUserDetails.Commands
                     PhoneNumber = appUser.PhoneNumber,
                     FullName = appUser.FullName,
                     Email = appUser.Email,
+                    RoleIds = appUser.AppUserRoles != null ? appUser.AppUserRoles.Select(ur => ur.RoleId).ToList() : new List<int>(),
                     JwtToken = jwtToken,
                     RefreshToken = refreshToken,
                     Message = "Giriş başarılı"
