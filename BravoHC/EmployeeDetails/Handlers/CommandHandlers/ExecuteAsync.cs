@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace EmployeeDetails.Handlers.CommandHandlers
 {
@@ -104,11 +103,11 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     // 3 günden fazla geçtiyse, HCNumber'a göre store'daki HeadCountNumber ile kıyaslama yaparak renk ayarla
                     if (currentHeadCount.HCNumber > store.HeadCountNumber)
                     {
-                        currentHeadCount.ColorId = await _colorRepository.GetYellowColorIdAsync(); // Örnek olarak kırmızı
+                        currentHeadCount.ColorId = await _colorRepository.GetYellowColorIdAsync(); // Örnek olarak sarı
                     }
                     else
                     {
-                        currentHeadCount.ColorId = await _colorRepository.GetWhiteColorIdAsync(); // Sarı renk
+                        currentHeadCount.ColorId = await _colorRepository.GetWhiteColorIdAsync(); // Beyaz renk
                     }
                 }
 
@@ -131,12 +130,10 @@ namespace EmployeeDetails.Handlers.CommandHandlers
 
         private async Task AddEmployeeToNewHeadCountAsync(Employee employee)
         {
+            // Önce boş headcount'ları kontrol et
             var availableHeadCounts = await _headCountRepository.GetAllAsync(hc =>
                 hc.ProjectId == employee.ProjectId &&
-                hc.SectionId == employee.SectionId &&
-                hc.PositionId == employee.PositionId &&
-                hc.SubSectionId == employee.SubSectionId &&
-                hc.IsVacant == true);
+                hc.IsVacant == true); // Boş olanları kontrol et
 
             var sortedHeadCounts = availableHeadCounts.OrderBy(hc => hc.HCNumber).ToList();
 
@@ -144,6 +141,19 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             {
                 // Mevcut bir headcount'u güncelle
                 var headCount = sortedHeadCounts.First();
+                if (headCount.SectionId == null)
+                {
+                    headCount.SectionId = employee.SectionId; // Employee'nin section bilgilerini doldur
+                }
+                if (headCount.PositionId == null)
+                {
+                    headCount.PositionId = employee.PositionId; // Employee'nin position bilgilerini doldur
+                }
+                if (headCount.SubSectionId == null)
+                {
+                    headCount.SubSectionId = employee.SubSectionId; // Employee'nin sub-section bilgilerini doldur
+                }
+
                 headCount.EmployeeId = employee.Id;
                 headCount.IsVacant = false;
 
@@ -151,10 +161,9 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             }
             else
             {
-                // Employee'nin ProjectId'sine göre store bilgisini al
+                // Eğer boş headcount yoksa yeni headcount oluştur
                 var store = await _storeRepository.GetByProjectIdAsync(employee.ProjectId);
 
-                // Yeni headcount oluştur
                 await CreateNewHeadCountAsync(employee, store);
             }
 
