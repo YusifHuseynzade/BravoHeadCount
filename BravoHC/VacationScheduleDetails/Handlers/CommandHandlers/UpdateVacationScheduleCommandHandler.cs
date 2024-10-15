@@ -62,7 +62,6 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
                     // Gelen request bilgilerini mevcut kayda ata
                     vacationSchedule.StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
                     vacationSchedule.EndDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc);
-                    vacationSchedule.EmployeeId = request.EmployeeId;
 
                     // Veritabanında güncelle
                     await _vacationScheduleRepository.UpdateAsync(vacationSchedule);

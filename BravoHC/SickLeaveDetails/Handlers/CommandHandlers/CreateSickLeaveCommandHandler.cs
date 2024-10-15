@@ -25,13 +25,23 @@ namespace SickLeaveDetails.Handlers.CommandHandlers
             try
             {
                 // Employee kontrolü: EmployeeId geçerli mi?
-                var employeeExists = await _employeeRepository.GetAsync(e => e.Id == request.EmployeeId);
+                var employeeExists = await _employeeRepository.GetAsync(e => e.Badge == request.EmployeeBadge);
                 if (employeeExists == null)
                 {
                     return new CreateSickLeaveCommandResponse
                     {
                         IsSuccess = false,
                         ErrorMessage = "The specified employee does not exist."
+                    };
+                }
+
+                // Geçmiş bir tarihe sick leave oluşturulmasını engelle
+                if (request.StartDate < DateTime.UtcNow || request.EndDate < DateTime.UtcNow)
+                {
+                    return new CreateSickLeaveCommandResponse
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "Sick leave cannot be created for a past date."
                     };
                 }
 
@@ -49,7 +59,7 @@ namespace SickLeaveDetails.Handlers.CommandHandlers
                 // Yeni bir SickLeave nesnesi oluştur ve gelen request'ten verileri ata
                 var sickLeave = new SickLeave
                 {
-                    EmployeeId = request.EmployeeId,
+                    EmployeeId = employeeExists.Id,
                     StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc),
                     EndDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc)
                 };

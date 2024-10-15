@@ -28,6 +28,14 @@ namespace SickLeaveDetails.Handlers.CommandHandlers
                 var sickLeave = await _sickLeaveRepository.GetAsync(p => p.Id == request.Id);
                 if (sickLeave != null)
                 {
+                    // Geçmiş bir tarihe sick leave güncellemesini engelle (StartDate ve EndDate kontrolü)
+                    if (request.StartDate < DateTime.UtcNow || request.EndDate < DateTime.UtcNow)
+                    {
+                        response.IsSuccess = false;
+                        response.Message = "Sick leave cannot be updated with a past date.";
+                        return response;
+                    }
+
                     // Tarih aralığını kontrol et
                     var dateDifference = (request.EndDate - request.StartDate).TotalDays;
                     if (dateDifference >= 14)
@@ -40,7 +48,6 @@ namespace SickLeaveDetails.Handlers.CommandHandlers
                     // Gelen request bilgilerini mevcut kayda ata
                     sickLeave.StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
                     sickLeave.EndDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc);
-                    sickLeave.EmployeeId = request.EmployeeId;
 
                     // Veritabanında güncelle
                     await _sickLeaveRepository.UpdateAsync(sickLeave);

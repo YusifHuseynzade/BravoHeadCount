@@ -25,7 +25,7 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
             try
             {
                 // Employee kontrolü: EmployeeId geçerli mi?
-                var employeeExists = await _employeeRepository.GetAsync(e => e.Id == request.EmployeeId);
+                var employeeExists = await _employeeRepository.GetAsync(e => e.Badge == request.EmployeeBadge);
                 if (employeeExists == null)
                 {
                     return new CreateVacationScheduleCommandResponse
@@ -40,7 +40,7 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
                 var nextMonth = new DateTime(currentDate.Year, currentDate.Month, 1).AddMonths(1);
                 var monthAfterNext = nextMonth.AddMonths(1);
 
-                if (currentDate.Day <= 9)
+                if (currentDate.Day <= 25)
                 {
                     // Ayın 25'ine kadar bir sonraki ay veya ondan sonraki ay için planlama yapılabilir
                     if ((request.StartDate.Year == nextMonth.Year && request.StartDate.Month == nextMonth.Month) ||
@@ -73,7 +73,7 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
                 // Yeni bir VacationSchedule nesnesi oluştur ve gelen request'ten verileri ata
                 var vacationSchedule = new VacationSchedule
                 {
-                    EmployeeId = request.EmployeeId,
+                    EmployeeId = employeeExists.Id,
                     StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc),
                     EndDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc)
                 };
@@ -81,6 +81,7 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
                 // Veritabanına ekle ve işlemi kaydet
                 await _vacationScheduleRepository.AddAsync(vacationSchedule);
                 await _vacationScheduleRepository.CommitAsync();
+
 
                 // İşlem başarılı olduğunda olumlu bir yanıt döndür
                 return new CreateVacationScheduleCommandResponse

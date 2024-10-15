@@ -27,6 +27,7 @@ using StoreDetails.Profiles;
 using SubSectionDetails.Profiles;
 using SummaryDetails.Handlers.CommandHandlers;
 using SummaryDetails.Profiles;
+using VacationScheduleDetails.Profiles;
 
 namespace Infrastructure
 {
@@ -93,6 +94,7 @@ namespace Infrastructure
                     cfg.AddProfile(new SickLeaveMapper(httpContextAccessor));
                     cfg.AddProfile(new ScheduledDataMapper(httpContextAccessor));
                     cfg.AddProfile(new SummaryMapper(httpContextAccessor));
+                    cfg.AddProfile(new VacationScheduleMapper(httpContextAccessor));
 
                 });
 

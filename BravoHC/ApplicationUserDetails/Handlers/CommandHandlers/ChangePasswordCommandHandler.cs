@@ -1,7 +1,6 @@
 ﻿using ApplicationUserDetails.Commands.Request;
 using ApplicationUserDetails.Commands.Response;
 using Common.Interfaces;
-using Core.Helpers;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,10 +20,7 @@ namespace ApplicationUserDetails.Handlers.CommandHandlers
         {
             AppUser user = await _context.AppUsers.FirstOrDefaultAsync(p => p.Id == request.Id);
 
-            ValidationChecker.ValidateUserPassword(request.NewPassword);
-            var currentPassword = InputHasher.HashInputSHA256(request.CurrentPassword);
-
-            if (user.Password != currentPassword)
+            if (user.Password != request.CurrentPassword)
             {
                 return new ChangePasswordCommandResponse
                 {
@@ -43,7 +39,7 @@ namespace ApplicationUserDetails.Handlers.CommandHandlers
 
             if (!string.IsNullOrEmpty(request.NewPassword))
             {
-                user.Password = InputHasher.HashInputSHA256(request.NewPassword);
+                user.Password = request.NewPassword;
             }
 
             await _context.SaveChangesAsync(cancellationToken);

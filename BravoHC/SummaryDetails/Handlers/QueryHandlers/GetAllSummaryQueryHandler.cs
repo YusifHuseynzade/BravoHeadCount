@@ -40,6 +40,8 @@ namespace SummaryDetails.Handlers.QueryHandlers
                 summariesQuery = summariesQuery.Where(s => s.Month != null && s.Month.Number == request.Month.Value);
             }
 
+            summariesQuery = summariesQuery.OrderBy(s => s.Id).ThenBy(s => s.Month.Number);
+
             var summaries = await summariesQuery.ToListAsync(cancellationToken);
 
 

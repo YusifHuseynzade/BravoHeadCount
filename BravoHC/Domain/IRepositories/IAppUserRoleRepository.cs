@@ -7,5 +7,6 @@ namespace Domain.IRepositories
     {
         Task<List<AppUserRole>> GetAllAsync(Expression<Func<AppUserRole, bool>> predicate);
         Task DeleteAsync(AppUserRole entity);
+        Task<IEnumerable<AppUserRole>> GetListAsync(Expression<Func<AppUserRole, bool>> predicate);
     }
 }

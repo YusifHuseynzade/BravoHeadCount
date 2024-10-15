@@ -5,7 +5,7 @@ namespace SickLeaveDetails.Commands.Request;
 
 public class CreateSickLeaveCommandRequest : IRequest<CreateSickLeaveCommandResponse>
 {
-    public int EmployeeId { get; set; }
+    public string EmployeeBadge { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 }

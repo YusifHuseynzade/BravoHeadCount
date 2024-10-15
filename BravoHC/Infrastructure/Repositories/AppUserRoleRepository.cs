@@ -23,5 +23,10 @@ namespace Infrastructure.Repositories
             _context.Set<AppUserRole>().Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<AppUserRole>> GetListAsync(Expression<Func<AppUserRole, bool>> predicate)
+        {
+            return await _context.AppUserRoles.Where(predicate).ToListAsync();
+        }
     }
 }
