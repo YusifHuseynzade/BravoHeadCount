@@ -73,6 +73,7 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Section)
                 .Include(sd => sd.Project)
+                .OrderBy(sd => sd.Id)
                 .AsQueryable();
 
             // Eğer tarih filtresi verilmemişse geçerli haftayı kullan

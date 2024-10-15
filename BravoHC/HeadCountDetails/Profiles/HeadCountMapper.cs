@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Core.Helpers;
 using Domain.Entities;
 using HeadCountDetails.Queries.Response;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,8 @@ namespace HeadCountDetails.Profiles
                 .ForMember(dest => dest.BakuDistrict, opt => opt.MapFrom(src => src.BakuDistrict))
                 .ForMember(dest => dest.BakuMetro, opt => opt.MapFrom(src => src.BakuMetro))
                 .ForMember(dest => dest.BakuTarget, opt => opt.MapFrom(src => src.BakuTarget))
+                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.Image) ? $"{RequestExtensions.BaseUrl(_httpAccessor.HttpContext)}/{src.Image}" : null))
                 .ReverseMap();
 
  

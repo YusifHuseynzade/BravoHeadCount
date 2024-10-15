@@ -22,6 +22,6 @@ namespace HeadCountDetails.Queries.Response
         public int SectionId { get; set; }
         public int ProjectId { get; set; }
         public DateTime StartedDate { get; set; }
-
+        public string? ImageUrl { get; set; }
     }
 }

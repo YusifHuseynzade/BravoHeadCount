@@ -6,7 +6,7 @@ namespace Core.Helpers
     {
         public static string BaseUrl(this HttpContext httpContext)
         {
-            return "https"+$"://10.10.30.21:5002{httpContext.Request.PathBase}";
+            return "https"+$"://192.168.50.89:7128{httpContext.Request.PathBase}";
         }
     }
 }

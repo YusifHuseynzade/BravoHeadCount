@@ -14,6 +14,7 @@ using HeadCountDetails.ExcelImportService;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PositionDetails;
@@ -131,6 +132,25 @@ builder.Host.ConfigureContainer<ContainerBuilder>(
    builder => builder.RegisterModule(new AutoFacBusiness()));
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseFileServer(new FileServerOptions
+    {
+        FileProvider = new PhysicalFileProvider(@"c:/BravoHCFiles"),
+        RequestPath = new PathString("/uploads"),
+        EnableDirectoryBrowsing = false
+    });
+}
+else
+{
+    app.UseFileServer(new FileServerOptions
+    {
+        FileProvider = new PhysicalFileProvider("/mnt/media_files/bravohc"),
+        RequestPath = new PathString("/uploads"),
+        EnableDirectoryBrowsing = false
+    });
+}
 
 #region Middleware
 // Configure the HTTP request pipeline.
