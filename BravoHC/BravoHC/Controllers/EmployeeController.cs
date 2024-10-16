@@ -128,5 +128,19 @@ namespace BravoHC.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpGet("EmployeeProjecthistory")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetEmployeeProjectHistory([FromQuery] GetEmployeeProjectHistoryQueryRequest request)
+        {
+            var projectHistory = await _mediator.Send(request);
+
+            if (projectHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(projectHistory);
+        }
+
     }
 }

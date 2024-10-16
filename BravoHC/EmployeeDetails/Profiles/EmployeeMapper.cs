@@ -41,7 +41,7 @@ namespace EmployeeDetails.Profiles
                 .ForMember(dest => dest.SubSection, opt => opt.MapFrom(src => src.SubSection))
                 .ForMember(dest => dest.StartedDate, opt => opt.MapFrom(src => src.StartedDate))
                 .ForMember(dest => dest.ContractEndDate, opt => opt.MapFrom(src => src.ContractEndDate))
-                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
                 !string.IsNullOrEmpty(src.Image) ? $"{RequestExtensions.BaseUrl(_httpAccessor.HttpContext)}/{src.Image}" : null))
                 .ReverseMap();
 
@@ -53,6 +53,11 @@ namespace EmployeeDetails.Profiles
             CreateMap<Position, PositionResponse>().ReverseMap();
             CreateMap<Section, SectionResponse>().ReverseMap();
             CreateMap<SubSection, SubSectionResponse>().ReverseMap();
+            CreateMap<HeadCountHistory, GetEmployeeProjectHistoryResponse>()
+            .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.FullName))
+            .ForMember(dest => dest.FromProjectCode, opt => opt.MapFrom(src => src.FromProject.ProjectCode))
+            .ForMember(dest => dest.ToProjectCode, opt => opt.MapFrom(src => src.ToProject.ProjectCode))
+            .ReverseMap();
         }
     }
 }

@@ -72,6 +72,8 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                     .ThenInclude(e => e.Position)
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Section)
+                .Include(sd => sd.Employee)
+                    .ThenInclude(e => e.EmployeeBalances)
                 .Include(sd => sd.Project)
                 .OrderBy(sd => sd.Id)
                 .AsQueryable();

@@ -15,8 +15,6 @@ namespace Domain.Entities
         public DateTime? Fact { get; set; }
         public int? VacationScheduleId { get; set; }
         public VacationSchedule? VacationSchedule { get; set; }
-        public int? HolidayBalance { get; set; }
-        public int? GraduationBalance {  get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
         public int EmployeeId { get; set; }

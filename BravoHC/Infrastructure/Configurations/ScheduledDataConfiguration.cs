@@ -15,12 +15,6 @@ namespace Infrastructure.Configurations
             builder.Property(sd => sd.Fact)
                 .IsRequired(false); // Fact alanı nullable
 
-            builder.Property(sd => sd.HolidayBalance)
-                .IsRequired(false); // HolidayBalance alanı nullable
-
-            builder.Property(sd => sd.GraduationBalance)
-                .IsRequired(false); // GraduationBalance alanı nullable
-
             // Plan ile ilişki
             builder.HasOne(sd => sd.Plan)
                 .WithMany(p => p.ScheduledDatas)

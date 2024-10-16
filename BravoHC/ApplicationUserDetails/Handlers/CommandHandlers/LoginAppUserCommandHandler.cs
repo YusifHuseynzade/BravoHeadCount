@@ -69,11 +69,11 @@ namespace Application.ApplicationUserDetails.Commands
                     RoleIds = appUser.AppUserRoles != null ? appUser.AppUserRoles.Select(ur => ur.RoleId).ToList() : new List<int>(),
                     JwtToken = jwtToken,
                     RefreshToken = refreshToken,
-                    Message = "Giriş başarılı"
+                    Message = "Login successful"
                 };
             }
 
-            return new LoginAppUserCommandResponse { IsSuccess = false, Message = "Geçersiz kimlik bilgileri" };
+            return new LoginAppUserCommandResponse { IsSuccess = false, Message = "Invalid credentials" };
         }
 
         private string GenerateJwtToken(AppUser appUser)

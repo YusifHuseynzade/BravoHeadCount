@@ -24,6 +24,10 @@ public class GetByIdScheduledDataQueryHandler : IRequestHandler<GetByIdScheduled
                .Include(sd => sd.Plan) // Plan ile ilişki
                .Include(sd => sd.Employee) // Employee ile ilişki
                    .ThenInclude(e => e.Position) // Employee ve Position ile ilişki
+               .Include(sd => sd.Employee) // Employee ile ilişki
+                   .ThenInclude(e => e.Section)
+               .Include(sd => sd.Employee) // Employee ile ilişki
+                   .ThenInclude(e => e.EmployeeBalances)
                .Include(sd => sd.Project) // Project ile ilişki
                .FirstOrDefaultAsync(cancellationToken);
 

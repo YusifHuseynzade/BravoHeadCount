@@ -37,5 +37,6 @@ namespace Domain.Entities
         public List<Summary> Summaries { get; set; }
         public List<SickLeave> SickLeaves { get; set; }
         public List<VacationSchedule> VacationSchedules { get; set; }
+        public List<EmployeeBalance> EmployeeBalances { get; set; }
     }
 }

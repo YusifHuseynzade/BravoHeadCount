@@ -35,16 +35,6 @@ namespace SickLeaveDetails.Handlers.CommandHandlers
                     };
                 }
 
-                // Geçmiş bir tarihe sick leave oluşturulmasını engelle
-                if (request.StartDate < DateTime.UtcNow || request.EndDate < DateTime.UtcNow)
-                {
-                    return new CreateSickLeaveCommandResponse
-                    {
-                        IsSuccess = false,
-                        ErrorMessage = "Sick leave cannot be created for a past date."
-                    };
-                }
-
                 // Tarih aralığını kontrol et
                 var dateDifference = (request.EndDate - request.StartDate).TotalDays;
                 if (dateDifference >= 14)

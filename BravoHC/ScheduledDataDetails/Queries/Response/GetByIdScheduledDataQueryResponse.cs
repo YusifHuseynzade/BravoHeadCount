@@ -21,8 +21,8 @@ public class GetByIdScheduledDataQueryResponse
     public string EmployeeBadge { get; set; }
     public string EmployeeSection { get; set; }
     public string EmployeePosition { get; set; }
+    public int HolidayBalance { get; set; }
+    public int VacationBalance { get; set; }
     public DateTime? Fact { get; set; }
-    public int? HolidayBalance { get; set; }
-    public int? GraduationBalance { get; set; }
 
 }

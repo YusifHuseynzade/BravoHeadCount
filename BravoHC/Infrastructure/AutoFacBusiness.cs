@@ -39,6 +39,7 @@ namespace Infrastructure
             builder.RegisterType<AppUserRoleRepository>().As<IAppUserRoleRepository>();
             builder.RegisterType<RoleRepository>().As<IRoleRepository>();
             builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>();
+            builder.RegisterType<EmployeeBalanceRepository>().As<IEmployeeBalanceRepository>();
             builder.RegisterType<HeadCountRepository>().As<IHeadCountRepository>();
             builder.RegisterType<HeadCountHistoryRepository>().As<IHeadCountHistoryRepository>();
             builder.RegisterType<PositionRepository>().As<IPositionRepository>();
