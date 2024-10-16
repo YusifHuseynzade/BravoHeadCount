@@ -33,6 +33,12 @@ namespace BravoHC.Controllers
         {
             return Ok(await _mediator.Send(request));
         }
+        [HttpPut("UpdateJobDescription")]
+        [Authorize(Roles = "Admin, Recruiter")]
+        public async Task<IActionResult> Update([FromForm] UpdatePositionFileCommandRequest request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
         [HttpGet]
         [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllPositionQueryRequest request)

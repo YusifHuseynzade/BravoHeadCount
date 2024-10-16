@@ -49,6 +49,8 @@ namespace HeadCountDetails.Profiles
                 .ReverseMap();
 
             CreateMap<Position, PositionResponse>()
+                .ForMember(dest => dest.JobDescriptionUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.JobDescription) ? $"{RequestExtensions.BaseUrl(_httpAccessor.HttpContext)}/{src.JobDescription}" : null))
                 .ReverseMap();
 
             CreateMap<HeadCountBackgroundColor, ColorResponse>()
