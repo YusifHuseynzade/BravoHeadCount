@@ -10,5 +10,6 @@ namespace EmployeeDetails.Commands.Response
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

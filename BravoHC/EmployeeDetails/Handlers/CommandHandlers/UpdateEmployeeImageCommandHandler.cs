@@ -17,14 +17,16 @@ namespace EmployeeDetails.Handlers.CommandHandlers
     public class UpdateEmployeeImageCommandHandler : IRequestHandler<UpdateEmployeeImageCommandRequest, UpdateEmployeeImageCommandResponse>
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IHttpContextAccessor _httpAccessor;
         private readonly IHostEnvironment _env;
         private readonly IOptions<FileSettings> _settings;
 
-        public UpdateEmployeeImageCommandHandler(IEmployeeRepository employeeRepository, IHostEnvironment env, IOptions<FileSettings> settings)
+        public UpdateEmployeeImageCommandHandler(IEmployeeRepository employeeRepository, IHostEnvironment env, IOptions<FileSettings> settings, IHttpContextAccessor httpAccessor)
         {
             _employeeRepository = employeeRepository;
             _env = env;
             _settings = settings;
+            _httpAccessor = httpAccessor;
         }
 
         public async Task<UpdateEmployeeImageCommandResponse> Handle(UpdateEmployeeImageCommandRequest request, CancellationToken cancellationToken)
@@ -56,6 +58,10 @@ namespace EmployeeDetails.Handlers.CommandHandlers
                     if (imagePath != null)
                     {
                         existingEmployee.Image = imagePath;
+
+                        // Base URL ile tam resim yolunu oluştur
+                        var imageUrl = CreateImageUrl(imagePath);
+                        response.ImageUrl = imageUrl;
                     }
                     else
                     {
@@ -74,12 +80,25 @@ namespace EmployeeDetails.Handlers.CommandHandlers
             }
             catch (Exception ex)
             {
-                // Hata günlüğü için
                 response.IsSuccess = false;
                 response.Message = "An error occurred while updating the employee image.";
             }
 
             return response;
         }
+
+        // Resim URL'sini dinamik olarak oluşturan yardımcı metod
+        private string CreateImageUrl(string imagePath)
+        {
+            var request = _httpAccessor.HttpContext?.Request;
+            if (request == null)
+            {
+                throw new InvalidOperationException("HttpContext is not available.");
+            }
+
+            return $"{request.Scheme}://{request.Host}/{imagePath}";
+        }
+
+
     }
 }
