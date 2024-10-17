@@ -126,6 +126,7 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 mappedResponse.MorningShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Səhər");
                 mappedResponse.AfterNoonShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Günorta");
                 mappedResponse.EveningShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Gecə");
+                mappedResponse.DayOffCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Day Off");
 
                 response.Add(mappedResponse);
             }

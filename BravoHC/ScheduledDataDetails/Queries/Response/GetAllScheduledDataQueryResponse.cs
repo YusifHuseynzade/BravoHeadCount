@@ -16,6 +16,7 @@ public class GetAllScheduledDataQueryResponse
     public int MorningShiftCount { get; set; } = 0;
     public int AfterNoonShiftCount { get; set; } = 0;
     public int EveningShiftCount { get; set; } = 0;
+    public int DayOffCount { get; set; } = 0;
     public int HolidayBalance { get; set; }
     public int VacationBalance { get; set; }
     public List<ScheduledDataItem> ScheduledData { get; set; }

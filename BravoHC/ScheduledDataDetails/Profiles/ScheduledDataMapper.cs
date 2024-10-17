@@ -20,6 +20,7 @@ public class ScheduledDataMapper : Profile
                  .ForMember(dest => dest.MorningShiftCount, opt => opt.MapFrom(src => src.Plan.Shift == "Səhər" ? 1 : 0))
                  .ForMember(dest => dest.AfterNoonShiftCount, opt => opt.MapFrom(src => src.Plan.Shift == "Günorta" ? 1 : 0))
                  .ForMember(dest => dest.EveningShiftCount, opt => opt.MapFrom(src => src.Plan.Shift == "Gecə" ? 1 : 0))
+                  .ForMember(dest => dest.DayOffCount, opt => opt.MapFrom(src => src.Plan.Shift == "Day Off" ? 1 : 0))
                  .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
                  .ForMember(dest => dest.HolidayBalance, opt => opt.MapFrom(src =>
                   src.Employee.EmployeeBalances.FirstOrDefault().HolidayBalance))
