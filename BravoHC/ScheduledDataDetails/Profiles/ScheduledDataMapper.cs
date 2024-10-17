@@ -17,6 +17,9 @@ public class ScheduledDataMapper : Profile
                  .ForMember(dest => dest.EmployeeBadge, opt => opt.MapFrom(src => src.Employee.Badge)) // Employee badge bilgisini ekledik
                  .ForMember(dest => dest.EmployeePosition, opt => opt.MapFrom(src => src.Employee.Position.Name)) // Employee pozisyon bilgisini ekledik
                  .ForMember(dest => dest.EmployeeSection, opt => opt.MapFrom(src => src.Employee.Section.Name))
+                 .ForMember(dest => dest.MorningShiftCount, opt => opt.MapFrom(src => src.Plan.Shift == "Səhər" ? 1 : 0))
+                 .ForMember(dest => dest.AfterNoonShiftCount, opt => opt.MapFrom(src => src.Plan.Shift == "Günorta" ? 1 : 0))
+                 .ForMember(dest => dest.EveningShiftCount, opt => opt.MapFrom(src => src.Plan.Shift == "Gecə" ? 1 : 0))
                  .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
                  .ForMember(dest => dest.HolidayBalance, opt => opt.MapFrom(src =>
                   src.Employee.EmployeeBalances.FirstOrDefault().HolidayBalance))

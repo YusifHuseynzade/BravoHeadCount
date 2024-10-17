@@ -115,15 +115,27 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 })
                 .ToListAsync(cancellationToken); // Tüm verileri al
 
+            // Şift sayılarını hesapla
+            var response = new List<GetAllScheduledDataQueryResponse>();
+
+            foreach (var group in groupedData)
+            {
+                var mappedResponse = _mapper.Map<GetAllScheduledDataQueryResponse>(group);
+
+                // Null kontrolü ile şift sayısını hesaplıyoruz
+                mappedResponse.MorningShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Səhər");
+                mappedResponse.AfterNoonShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Günorta");
+                mappedResponse.EveningShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Gecə");
+
+                response.Add(mappedResponse);
+            }
+
             // Page ve ShowMore parametrelerine göre işlem yapma
             if (request.ShowMore != null)
             {
                 var skip = (request.Page - 1) * request.ShowMore.Take;
-                groupedData = groupedData.Skip(skip).Take(request.ShowMore.Take).ToList();
+                response = response.Skip(skip).Take(request.ShowMore.Take).ToList();
             }
-
-            // Mapper ile dönüştürme
-            var response = _mapper.Map<List<GetAllScheduledDataQueryResponse>>(groupedData);
 
             // Boş liste döndürme kontrolü
             if (!response.Any())
@@ -133,13 +145,14 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
 
             // Response hazırlama
             return new List<GetScheduledDataListResponse>
-            {
-                new GetScheduledDataListResponse
-                {
-                    TotalScheduledDataCount = totalCount, // Toplam çalışan sayısını döndür
-                    ScheduledDatas = response
-                }
-            };
+    {
+        new GetScheduledDataListResponse
+        {
+            TotalScheduledDataCount = totalCount, // Toplam çalışan sayısını döndür
+            ScheduledDatas = response
         }
+    };
+        }
+
     }
 }

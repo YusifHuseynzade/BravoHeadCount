@@ -13,6 +13,9 @@ public class GetAllScheduledDataQueryResponse
     public string EmployeeBadge { get; set; }
     public string EmployeeSection { get; set; }
     public string EmployeePosition { get; set; }
+    public int MorningShiftCount { get; set; } = 0;
+    public int AfterNoonShiftCount { get; set; } = 0;
+    public int EveningShiftCount { get; set; } = 0;
     public int HolidayBalance { get; set; }
     public int VacationBalance { get; set; }
     public List<ScheduledDataItem> ScheduledData { get; set; }
