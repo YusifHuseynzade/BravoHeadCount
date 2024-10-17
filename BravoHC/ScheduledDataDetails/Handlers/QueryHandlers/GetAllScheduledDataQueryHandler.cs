@@ -23,11 +23,12 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
         private readonly IProjectRepository _projectRepository;
         private readonly IAppUserRepository _userRepository;
 
-        public GetAllScheduledDataQueryHandler(IScheduledDataRepository repository,
-                                               IMapper mapper,
-                                               IHttpContextAccessor httpContextAccessor,
-                                               IProjectRepository projectRepository,
-                                               IAppUserRepository userRepository)
+        public GetAllScheduledDataQueryHandler(
+            IScheduledDataRepository repository,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor,
+            IProjectRepository projectRepository,
+            IAppUserRepository userRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -40,7 +41,6 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
         {
             request.NormalizeDates();
 
-            // Oturum açan kullanıcının email bilgisi
             var userEmail = _httpContextAccessor.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
             if (string.IsNullOrEmpty(userEmail))
@@ -48,25 +48,19 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 throw new UnauthorizedAccessException("Kullanıcı emaili bulunamadı.");
             }
 
-            // Kullanıcı bilgilerini veritabanından alıyoruz
             var loggedInUser = await _userRepository.GetLoggedInUserAsync(userEmail);
+            var projects = await _projectRepository.GetAllAsync(x => x.StoreManagerMail == userEmail);
 
-            // Kullanıcının projelerini filtrele
-            var projects = await _projectRepository.GetAllAsync(x =>
-                x.StoreManagerMail == userEmail);
-
-            // Eğer kullanıcının projeleri yoksa boş bir liste döndür
             if (!projects.Any())
             {
                 return new List<GetScheduledDataListResponse>();
             }
 
-            // Proje ID'lerini filtrele
             var projectIds = projects.Select(p => p.Id).ToList();
 
             // Filtreleme işlemi
             var scheduledDatasQuery = _repository.GetAll(sd => projectIds.Contains(sd.ProjectId))
-                .AsNoTracking() // İzlemeyi devre dışı bırakma
+                .AsNoTracking()
                 .Include(sd => sd.Plan)
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Position)
@@ -75,17 +69,13 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.EmployeeBalances)
                 .Include(sd => sd.Project)
-                .OrderBy(sd => sd.Id)
                 .AsQueryable();
 
-            // Eğer tarih filtresi verilmemişse geçerli haftayı kullan
+            // Tarih filtresi
             var dateToFilter = request.WeekDate ?? DateTime.UtcNow;
-
-            // Haftanın başını (Pazartesi) ve sonunu (Pazar) hesapla
             var startOfWeek = dateToFilter.AddDays(-(int)dateToFilter.DayOfWeek + (int)DayOfWeek.Sunday);
             var endOfWeek = startOfWeek.AddDays(7);
 
-            // Haftanın başı ve sonu arasındaki verileri filtrele
             scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Date >= startOfWeek && sd.Date <= endOfWeek);
 
             // Filtreler: Section, Position, Badge ve FullName
@@ -109,38 +99,47 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Employee.FullName.Contains(request.FullName));
             }
 
-            // Verileri listeye dönüştür
-            var scheduledDatas = await scheduledDatasQuery.ToListAsync(cancellationToken);
+            // Toplam sayıyı hesapla
+            var totalCount = await scheduledDatasQuery
+                .Select(sd => sd.EmployeeId)
+                .Distinct()
+                .CountAsync(cancellationToken); // Çalışan sayısını al
 
-            if (scheduledDatas.Any())
+            // Çalışan başına gruplama işlemi
+            var groupedData = await scheduledDatasQuery
+                .GroupBy(sd => sd.EmployeeId)
+                .Select(g => new GroupedScheduledDataDto
+                {
+                    Employee = g.FirstOrDefault().Employee,
+                    ScheduledDataList = g.ToList()
+                })
+                .ToListAsync(cancellationToken); // Tüm verileri al
+
+            // Page ve ShowMore parametrelerine göre işlem yapma
+            if (request.ShowMore != null)
             {
-                var response = _mapper.Map<List<GetAllScheduledDataQueryResponse>>(scheduledDatas);
-
-                // Pagination işlemi ve show more
-                if (request.ShowMore != null)
-                {
-                    response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
-                }
-
-                // Toplam veri sayısını al
-                var totalCount = scheduledDatas.Count;
-
-                // Pagination model oluştur
-                PaginationListDto<GetAllScheduledDataQueryResponse> model =
-                       new PaginationListDto<GetAllScheduledDataQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);
-
-                // Response hazırlama
-                return new List<GetScheduledDataListResponse>
-                {
-                    new GetScheduledDataListResponse
-                    {
-                        TotalScheduledDataCount = totalCount,
-                        ScheduledDatas = model.Items
-                    }
-                };
+                var skip = (request.Page - 1) * request.ShowMore.Take;
+                groupedData = groupedData.Skip(skip).Take(request.ShowMore.Take).ToList();
             }
 
-            return new List<GetScheduledDataListResponse>();
+            // Mapper ile dönüştürme
+            var response = _mapper.Map<List<GetAllScheduledDataQueryResponse>>(groupedData);
+
+            // Boş liste döndürme kontrolü
+            if (!response.Any())
+            {
+                return new List<GetScheduledDataListResponse>(); // Boş liste dönüyor
+            }
+
+            // Response hazırlama
+            return new List<GetScheduledDataListResponse>
+            {
+                new GetScheduledDataListResponse
+                {
+                    TotalScheduledDataCount = totalCount, // Toplam çalışan sayısını döndür
+                    ScheduledDatas = response
+                }
+            };
         }
     }
 }

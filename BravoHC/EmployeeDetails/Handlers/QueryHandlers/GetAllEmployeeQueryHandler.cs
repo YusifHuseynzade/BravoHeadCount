@@ -37,16 +37,12 @@ namespace EmployeeDetails.Handlers.QueryHandlers
                 .Include(x => x.Section)
                 .Include(x => x.SubSection);
 
-            // Badge filtresi varsa
-            if (!string.IsNullOrEmpty(request.Badge))
+            // Search filtresi varsa
+            if (!string.IsNullOrEmpty(request.Search))
             {
-                employeesQuery = employeesQuery.Where(x => x.Badge.Contains(request.Badge));
-            }
-
-            // FullName filtresi varsa
-            if (!string.IsNullOrEmpty(request.FullName))
-            {
-                employeesQuery = employeesQuery.Where(x => x.FullName.Contains(request.FullName));
+                employeesQuery = employeesQuery.Where(x =>
+                    x.Badge.Contains(request.Search) ||
+                    x.FullName.Contains(request.Search));
             }
 
             // Toplam çalışan sayısını hesaplıyoruz (filtrelere göre)
