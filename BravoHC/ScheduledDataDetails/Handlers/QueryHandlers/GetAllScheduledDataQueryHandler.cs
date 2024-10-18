@@ -8,6 +8,7 @@ using ScheduledDataDetails.Queries.Request;
 using ScheduledDataDetails.Queries.Response;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -19,46 +20,44 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
     {
         private readonly IScheduledDataRepository _repository;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IProjectRepository _projectRepository;
-        private readonly IAppUserRepository _userRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public GetAllScheduledDataQueryHandler(
             IScheduledDataRepository repository,
             IMapper mapper,
-            IHttpContextAccessor httpContextAccessor,
             IProjectRepository projectRepository,
-            IAppUserRepository userRepository)
+            IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
             _projectRepository = projectRepository;
-            _userRepository = userRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<GetScheduledDataListResponse>> Handle(GetAllScheduledDataQueryRequest request, CancellationToken cancellationToken)
         {
             request.NormalizeDates();
 
-            var userEmail = _httpContextAccessor.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            var userEmail = _httpContextAccessor.HttpContext?.User?.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
             if (string.IsNullOrEmpty(userEmail))
             {
                 throw new UnauthorizedAccessException("Kullanıcı emaili bulunamadı.");
             }
 
-            var loggedInUser = await _userRepository.GetLoggedInUserAsync(userEmail);
-            var projects = await _projectRepository.GetAllAsync(x => x.StoreManagerMail == userEmail);
+            var loggedInUserProjects = await _projectRepository
+                .GetAllAsync(p => p.StoreManagerMail == userEmail);
 
-            if (!projects.Any())
+            if (!loggedInUserProjects.Any())
             {
                 return new List<GetScheduledDataListResponse>();
             }
 
-            var projectIds = projects.Select(p => p.Id).ToList();
+            var projectIds = loggedInUserProjects.Select(p => p.Id).ToList();
 
-            // Filtreleme işlemi
+            // Scheduled data sorgulaması
             var scheduledDatasQuery = _repository.GetAll(sd => projectIds.Contains(sd.ProjectId))
                 .AsNoTracking()
                 .Include(sd => sd.Plan)
@@ -66,46 +65,36 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                     .ThenInclude(e => e.Position)
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Section)
-                .Include(sd => sd.Employee)
-                    .ThenInclude(e => e.EmployeeBalances)
                 .Include(sd => sd.Project)
                 .AsQueryable();
 
             // Tarih filtresi
-            var dateToFilter = request.WeekDate ?? DateTime.UtcNow;
-            var startOfWeek = dateToFilter.AddDays(-(int)dateToFilter.DayOfWeek + (int)DayOfWeek.Sunday);
+            var weekStartDate = request.WeekDate ?? DateTime.UtcNow;
+            var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek);
             var endOfWeek = startOfWeek.AddDays(7);
 
-            scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Date >= startOfWeek && sd.Date <= endOfWeek);
+            scheduledDatasQuery = scheduledDatasQuery
+                .Where(sd => sd.Date >= startOfWeek && sd.Date <= endOfWeek);
 
-            // Filtreler: Section, Position, Badge ve FullName
-            if (!string.IsNullOrEmpty(request.SectionName))
+            int weekNumber = ISOWeek.GetWeekOfYear(weekStartDate);
+
+            // Filtreleme işlemi (Section ve Arama)
+            if (request.SectionId.HasValue)
             {
-                scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Employee.Section.Name.Contains(request.SectionName));
+                scheduledDatasQuery = scheduledDatasQuery
+                    .Where(sd => sd.Employee.Section.Id == request.SectionId.Value);
             }
 
-            if (!string.IsNullOrEmpty(request.PositionName))
+            if (!string.IsNullOrEmpty(request.Search))
             {
-                scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Employee.Position.Name.Contains(request.PositionName));
+                var searchTerm = request.Search.ToLower();
+                scheduledDatasQuery = scheduledDatasQuery.Where(sd =>
+                    sd.Employee.FullName.ToLower().Contains(searchTerm) ||
+                    sd.Employee.Badge.ToLower().Contains(searchTerm) ||
+                    sd.Employee.Position.Name.ToLower().Contains(searchTerm));
             }
 
-            if (!string.IsNullOrEmpty(request.Badge))
-            {
-                scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Employee.Badge.Contains(request.Badge));
-            }
-
-            if (!string.IsNullOrEmpty(request.FullName))
-            {
-                scheduledDatasQuery = scheduledDatasQuery.Where(sd => sd.Employee.FullName.Contains(request.FullName));
-            }
-
-            // Toplam sayıyı hesapla
-            var totalCount = await scheduledDatasQuery
-                .Select(sd => sd.EmployeeId)
-                .Distinct()
-                .CountAsync(cancellationToken); // Çalışan sayısını al
-
-            // Çalışan başına gruplama işlemi
+            // Çalışan başına gruplama
             var groupedData = await scheduledDatasQuery
                 .GroupBy(sd => sd.EmployeeId)
                 .Select(g => new GroupedScheduledDataDto
@@ -113,47 +102,66 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                     Employee = g.FirstOrDefault().Employee,
                     ScheduledDataList = g.ToList()
                 })
-                .ToListAsync(cancellationToken); // Tüm verileri al
+                .ToListAsync(cancellationToken);
 
-            // Şift sayılarını hesapla
+            // Response oluşturma
             var response = new List<GetAllScheduledDataQueryResponse>();
 
             foreach (var group in groupedData)
             {
                 var mappedResponse = _mapper.Map<GetAllScheduledDataQueryResponse>(group);
 
-                // Null kontrolü ile şift sayısını hesaplıyoruz
-                mappedResponse.MorningShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Səhər");
-                mappedResponse.AfterNoonShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Günorta");
-                mappedResponse.EveningShiftCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Gecə");
-                mappedResponse.DayOffCount = group.ScheduledDataList.Count(sd => sd.Plan != null && sd.Plan.Shift == "Day Off");
+                mappedResponse.MorningShiftCount = group.ScheduledDataList
+                    .Count(sd => sd.Plan != null && sd.Plan.Shift == "Səhər");
+
+                mappedResponse.AfterNoonShiftCount = group.ScheduledDataList
+                    .Count(sd => sd.Plan != null && sd.Plan.Shift == "Günorta");
+
+                mappedResponse.EveningShiftCount = group.ScheduledDataList
+                    .Count(sd => sd.Plan != null && sd.Plan.Shift == "Gecə");
+
+                mappedResponse.DayOffCount = group.ScheduledDataList
+                    .Count(sd => sd.Plan != null && sd.Plan.Shift == "Day Off");
 
                 response.Add(mappedResponse);
             }
 
-            // Page ve ShowMore parametrelerine göre işlem yapma
+            // Toplam Haftalık İstatistikler ve Sections
+            var totalMorning = response.Sum(r => r.MorningShiftCount);
+            var totalAfterNoon = response.Sum(r => r.AfterNoonShiftCount);
+            var totalEvening = response.Sum(r => r.EveningShiftCount);
+
+            var totalShifts = totalMorning + totalAfterNoon + totalEvening;
+
+            string FormatPercentage(int value) => $"{value}%";
+
+            // Toplam Haftalık İstatistikler ve Sections
+            var result = new GetScheduledDataListResponse
+            {
+                TotalScheduledDataCount = groupedData.Count,
+                ProjectName = loggedInUserProjects.FirstOrDefault()?.ProjectName,
+                Sections = groupedData.Select(g => g.Employee.Section.Name).Distinct().ToList(),
+                Week = weekNumber,
+                WeeklyMorningShiftCount = response.Sum(r => r.MorningShiftCount),
+                WeeklyAfterNoonShiftCount = response.Sum(r => r.AfterNoonShiftCount),
+                WeeklyEveningShiftCount = response.Sum(r => r.EveningShiftCount),
+                WeeklyDayOffCount = scheduledDatasQuery.Count(sd => sd.Plan.Value == "Day Off"),
+                WeeklyHolidayCount = scheduledDatasQuery.Count(sd => sd.Plan.Value == "Bayram"),
+                WeeklyVacationCount = scheduledDatasQuery.Count(sd => sd.Plan.Value == "Məzuniyyət"),
+                WeeklyMorningShiftPercentage = totalShifts > 0 ? FormatPercentage((int)Math.Round((double)(totalMorning * 100) / totalShifts)) : "0%",
+                WeeklyAfterNoonShiftPercentage = totalShifts > 0 ? FormatPercentage((int)Math.Round((double)(totalAfterNoon * 100) / totalShifts)) : "0%",
+                WeeklyEveningShiftPercentage = totalShifts > 0 ? FormatPercentage((int)Math.Round((double)(totalEvening * 100) / totalShifts)) : "0%",
+                ScheduledDatas = response
+            };
+
+            // Sayfalama işlemi
             if (request.ShowMore != null)
             {
                 var skip = (request.Page - 1) * request.ShowMore.Take;
-                response = response.Skip(skip).Take(request.ShowMore.Take).ToList();
+                result.ScheduledDatas = result.ScheduledDatas.Skip(skip).Take(request.ShowMore.Take).ToList();
             }
 
-            // Boş liste döndürme kontrolü
-            if (!response.Any())
-            {
-                return new List<GetScheduledDataListResponse>(); // Boş liste dönüyor
-            }
-
-            // Response hazırlama
-            return new List<GetScheduledDataListResponse>
-    {
-        new GetScheduledDataListResponse
-        {
-            TotalScheduledDataCount = totalCount, // Toplam çalışan sayısını döndür
-            ScheduledDatas = response
+            return new List<GetScheduledDataListResponse> { result };
         }
-    };
-        }
-
     }
 }

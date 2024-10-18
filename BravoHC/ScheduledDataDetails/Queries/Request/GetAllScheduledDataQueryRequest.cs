@@ -8,10 +8,8 @@ public class GetAllScheduledDataQueryRequest : IRequest<List<GetScheduledDataLis
 {
     public int Page { get; set; } = 1;
     public ShowMoreDto? ShowMore { get; set; }
-    public string? SectionName { get; set; }
-    public string? PositionName { get; set; }
-    public string? Badge { get; set; }
-    public string? FullName { get; set; }
+    public int? SectionId { get; set; }
+    public string? Search { get; set; }
     public DateTime? WeekDate { get; set; }
     public void NormalizeDates()
     {
