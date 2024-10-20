@@ -21,6 +21,7 @@ using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
 using ScheduledDataDetails.Handlers.CommandHandlers;
 using ScheduledDataDetails.Profiles;
+using ScheduledDataDetails.ScheduledDataExportService;
 using SectionDetails.Profiles;
 using SickLeaveDetails.Profiles;
 using StoreDetails.Profiles;
@@ -63,6 +64,7 @@ namespace Infrastructure
             builder.RegisterType<VacationScheduleRepository>().As<IVacationScheduleRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
+            builder.RegisterType<ScheduledDataExportService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<EmployeeHeadCountService>()
                .As<IHostedService>()  // IHostedService olarak kaydet
                .SingleInstance();
