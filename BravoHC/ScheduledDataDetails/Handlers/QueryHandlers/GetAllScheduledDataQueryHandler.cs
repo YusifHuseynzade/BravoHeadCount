@@ -43,22 +43,17 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 .FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
             if (string.IsNullOrEmpty(userEmail))
-            {
                 throw new UnauthorizedAccessException("Kullanıcı emaili bulunamadı.");
-            }
 
             var loggedInUserProjects = await _projectRepository
                 .GetAllAsync(p => p.StoreManagerMail == userEmail);
 
             if (!loggedInUserProjects.Any())
-            {
                 return new List<GetScheduledDataListResponse>();
-            }
 
             var projectIds = loggedInUserProjects.Select(p => p.Id).ToList();
 
-            // Scheduled data sorgulaması
-            var scheduledDatasQuery = _repository.GetAll(sd => projectIds.Contains(sd.ProjectId))
+            var scheduledDataList = await _repository.GetAll(sd => projectIds.Contains(sd.ProjectId))
                 .AsNoTracking()
                 .Include(sd => sd.Plan)
                 .Include(sd => sd.Employee)
@@ -66,45 +61,56 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Section)
                 .Include(sd => sd.Project)
-                .AsQueryable();
+                .ToListAsync(cancellationToken);
 
-            // Tarih filtresi
-            var weekStartDate = request.WeekDate ?? DateTime.UtcNow;
-            var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek);
-            var endOfWeek = startOfWeek.AddDays(7);
-
-            scheduledDatasQuery = scheduledDatasQuery
-                .Where(sd => sd.Date >= startOfWeek && sd.Date <= endOfWeek);
-
-            int weekNumber = ISOWeek.GetWeekOfYear(weekStartDate);
-
-            // Filtreleme işlemi (Section ve Arama)
-            if (request.SectionId.HasValue)
+            // TargetDate'e göre 4 saat çıkma işlemi
+            if (request.TargetDate.HasValue)
             {
-                scheduledDatasQuery = scheduledDatasQuery
-                    .Where(sd => sd.Employee.Section.Id == request.SectionId.Value);
+                var targetDate = request.TargetDate.Value.AddHours(4).Date; // 4 saat çıkararak normalize et
+
+                scheduledDataList = scheduledDataList
+                    .Where(sd => sd.Date.Date == targetDate)
+                    .ToList();
+
+                if (!string.IsNullOrEmpty(request.StartHour) && !string.IsNullOrEmpty(request.EndHour))
+                {
+                    if (TimeSpan.TryParse(request.StartHour, out var startHour) &&
+                        TimeSpan.TryParse(request.EndHour, out var endHour))
+                    {
+                        scheduledDataList = scheduledDataList
+                            .Where(sd =>
+                                sd.Plan != null &&
+                                !string.IsNullOrEmpty(sd.Plan.Value) &&
+                                ParsePlanTimeRange(sd.Plan.Value, out var planStart, out var planEnd) &&
+                                TimeRangeOverlap(planStart, planEnd, startHour, endHour))
+                            .ToList();
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Geçerli bir saat formatı sağlanmadı.");
+                    }
+                }
+            }
+            else if (request.WeekDate.HasValue)
+            {
+                var weekStartDate = request.WeekDate.Value.Date;
+                var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek);
+                var endOfWeek = startOfWeek.AddDays(7); // Haftanın son günü dahil
+
+                scheduledDataList = scheduledDataList
+                    .Where(sd => sd.Date.Date >= startOfWeek && sd.Date.Date <= endOfWeek)
+                    .ToList();
             }
 
-            if (!string.IsNullOrEmpty(request.Search))
-            {
-                var searchTerm = request.Search.ToLower();
-                scheduledDatasQuery = scheduledDatasQuery.Where(sd =>
-                    sd.Employee.FullName.ToLower().Contains(searchTerm) ||
-                    sd.Employee.Badge.ToLower().Contains(searchTerm) ||
-                    sd.Employee.Position.Name.ToLower().Contains(searchTerm));
-            }
-
-            // Çalışan başına gruplama
-            var groupedData = await scheduledDatasQuery
+            var groupedData = scheduledDataList
                 .GroupBy(sd => sd.EmployeeId)
                 .Select(g => new GroupedScheduledDataDto
                 {
-                    Employee = g.FirstOrDefault().Employee,
-                    ScheduledDataList = g.ToList()
+                    Employee = g.FirstOrDefault()?.Employee,
+                    ScheduledDataList = g.OrderBy(sd => sd.Id).ToList()
                 })
-                .ToListAsync(cancellationToken);
+                .ToList();
 
-            // Response oluşturma
             var response = new List<GetAllScheduledDataQueryResponse>();
 
             foreach (var group in groupedData)
@@ -126,35 +132,25 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 response.Add(mappedResponse);
             }
 
-            // Toplam Haftalık İstatistikler ve Sections
             var totalMorning = response.Sum(r => r.MorningShiftCount);
             var totalAfterNoon = response.Sum(r => r.AfterNoonShiftCount);
             var totalEvening = response.Sum(r => r.EveningShiftCount);
-
             var totalShifts = totalMorning + totalAfterNoon + totalEvening;
 
             string FormatPercentage(int value) => $"{value}%";
 
-            // Toplam Haftalık İstatistikler ve Sections
             var result = new GetScheduledDataListResponse
             {
                 TotalScheduledDataCount = groupedData.Count,
                 ProjectName = loggedInUserProjects.FirstOrDefault()?.ProjectName,
                 Sections = groupedData.Select(g => g.Employee.Section.Name).Distinct().ToList(),
-                Week = weekNumber,
+                Week = ISOWeek.GetWeekOfYear(request.WeekDate ?? DateTime.UtcNow),
                 WeeklyMorningShiftCount = response.Sum(r => r.MorningShiftCount),
                 WeeklyAfterNoonShiftCount = response.Sum(r => r.AfterNoonShiftCount),
                 WeeklyEveningShiftCount = response.Sum(r => r.EveningShiftCount),
-                WeeklyDayOffCount = scheduledDatasQuery.Count(sd => sd.Plan.Value == "Day Off"),
-                WeeklyHolidayCount = scheduledDatasQuery.Count(sd => sd.Plan.Value == "Bayram"),
-                WeeklyVacationCount = scheduledDatasQuery.Count(sd => sd.Plan.Value == "Məzuniyyət"),
-                WeeklyMorningShiftPercentage = totalShifts > 0 ? FormatPercentage((int)Math.Round((double)(totalMorning * 100) / totalShifts)) : "0%",
-                WeeklyAfterNoonShiftPercentage = totalShifts > 0 ? FormatPercentage((int)Math.Round((double)(totalAfterNoon * 100) / totalShifts)) : "0%",
-                WeeklyEveningShiftPercentage = totalShifts > 0 ? FormatPercentage((int)Math.Round((double)(totalEvening * 100) / totalShifts)) : "0%",
                 ScheduledDatas = response
             };
 
-            // Sayfalama işlemi
             if (request.ShowMore != null)
             {
                 var skip = (request.Page - 1) * request.ShowMore.Take;
@@ -163,5 +159,27 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
 
             return new List<GetScheduledDataListResponse> { result };
         }
+
+        private bool ParsePlanTimeRange(string value, out TimeSpan planStart, out TimeSpan planEnd)
+        {
+            planStart = TimeSpan.Zero;
+            planEnd = TimeSpan.Zero;
+
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            var times = value.Split('-');
+            if (times.Length != 2)
+                return false;
+
+            return TimeSpan.TryParse(times[0], out planStart) &&
+                   TimeSpan.TryParse(times[1], out planEnd);
+        }
+
+        private bool TimeRangeOverlap(TimeSpan planStart, TimeSpan planEnd, TimeSpan startHour, TimeSpan endHour)
+        {
+            return planStart >= startHour && planEnd <= endHour;
+        }
+
     }
 }

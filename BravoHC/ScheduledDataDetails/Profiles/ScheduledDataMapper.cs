@@ -66,5 +66,7 @@ public class ScheduledDataMapper : Profile
                   src.Employee.EmployeeBalances.FirstOrDefault().HolidayBalance))
                  .ForMember(dest => dest.VacationBalance, opt => opt.MapFrom(src =>
                   src.Employee.EmployeeBalances.FirstOrDefault().VacationBalance));
+
+        CreateMap<Plan, GetAllPlanQueryResponse>().ReverseMap();
     }
 }

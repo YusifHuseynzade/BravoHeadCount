@@ -14,7 +14,7 @@ namespace ScheduledDataDetails.Queries.Response
         public string PlanValue { get; set; } // Planın değeri (Örneğin, "Vardiya")
         public string PlanColor { get; set; } // Planın rengi
         public string PlanShift { get; set; } // Planın vardiya bilgisi
-        public DateTime? Fact { get; set; } // Gerçekleşen tarih
+        public string? Fact { get; set; } // Gerçekleşen tarih
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }
     }

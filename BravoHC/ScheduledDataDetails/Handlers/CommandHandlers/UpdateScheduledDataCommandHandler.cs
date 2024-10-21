@@ -125,6 +125,18 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                             else
                             {
                                 scheduledData.PlanId = updateDto.PlanId;
+
+                                // Fact alanını kontrol et
+                                if (!string.IsNullOrEmpty(updateDto.Fact) && updateDto.Fact != "8")
+                                {
+                                    return new UpdateScheduledDataCommandResponse
+                                    {
+                                        IsSuccess = false,
+                                        Message = $"Invalid Fact value. Only '8' is allowed for employee ID {employeeUpdate.EmployeeId}."
+                                    };
+                                }
+
+                                // Eğer Fact "8" veya boşsa kaydet
                                 scheduledData.Fact = updateDto.Fact;
                             }
                         }

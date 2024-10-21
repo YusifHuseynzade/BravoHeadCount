@@ -74,6 +74,9 @@ namespace Infrastructure
             builder.RegisterType<SummaryCronJobService>()
             .As<IHostedService>()  // IHostedService olarak kaydet
             .SingleInstance();
+            builder.RegisterType<ScheduledDataFactUpdaterService>()
+           .As<IHostedService>()  // IHostedService olarak kaydet
+           .SingleInstance();
 
             builder.Register(ctx =>
             {

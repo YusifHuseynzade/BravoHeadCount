@@ -11,11 +11,16 @@ public class GetAllScheduledDataQueryRequest : IRequest<List<GetScheduledDataLis
     public int? SectionId { get; set; }
     public string? Search { get; set; }
     public DateTime? WeekDate { get; set; }
+    public DateTime? TargetDate { get; set; }  
+    public string? StartHour { get; set; }   
+    public string? EndHour { get; set; }
     public void NormalizeDates()
     {
+        // Sadece dolu olan nullable DateTime değerlerini UTC'ye çeviriyoruz.
         if (WeekDate.HasValue)
-        {
             WeekDate = WeekDate.Value.ToUniversalTime();
-        }
+
+        if (TargetDate.HasValue)
+            TargetDate = TargetDate.Value.ToUniversalTime();
     }
 }

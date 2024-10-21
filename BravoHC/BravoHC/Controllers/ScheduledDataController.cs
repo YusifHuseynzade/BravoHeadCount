@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PositionDetails.Queries.Request;
 using ScheduledDataDetails.Commands.Request;
 using ScheduledDataDetails.Queries.Request;
 using ScheduledDataDetails.Queries.Response;
@@ -138,6 +139,15 @@ namespace BravoHC.Controllers
             return File(fileContent,
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         "ScheduledData.xlsx");
+        }
+
+        [HttpGet("scheduledData-plans")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllPlanQueryRequest request)
+        {
+            var plans = await _mediator.Send(request);
+
+            return Ok(plans);
         }
     }
 }
