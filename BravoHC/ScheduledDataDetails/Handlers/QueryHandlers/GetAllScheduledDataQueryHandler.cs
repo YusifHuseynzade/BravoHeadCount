@@ -93,7 +93,7 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             }
             else if (request.WeekDate.HasValue)
             {
-                var weekStartDate = request.WeekDate.Value.Date;
+                var weekStartDate = request.WeekDate.Value.AddHours(-4).Date;
                 var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek);
                 var endOfWeek = startOfWeek.AddDays(7); // Haftanın son günü dahil
 
@@ -144,7 +144,7 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 TotalScheduledDataCount = groupedData.Count,
                 ProjectName = loggedInUserProjects.FirstOrDefault()?.ProjectName,
                 Sections = groupedData.Select(g => g.Employee.Section.Name).Distinct().ToList(),
-                Week = ISOWeek.GetWeekOfYear(request.WeekDate ?? DateTime.UtcNow),
+                Week = ISOWeek.GetWeekOfYear((request.WeekDate ?? DateTime.UtcNow).AddHours(4)),
                 WeeklyMorningShiftCount = response.Sum(r => r.MorningShiftCount),
                 WeeklyAfterNoonShiftCount = response.Sum(r => r.AfterNoonShiftCount),
                 WeeklyEveningShiftCount = response.Sum(r => r.EveningShiftCount),
