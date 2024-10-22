@@ -93,12 +93,12 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             }
             else if (request.WeekDate.HasValue)
             {
-                var weekStartDate = request.WeekDate.Value.AddHours(-4).Date;
-                var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek);
-                var endOfWeek = startOfWeek.AddDays(7); // Haftanın son günü dahil
+                var weekStartDate = request.WeekDate.Value.Date.AddHours(4);
+                var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek); // Pazartesi başlangıç
+                var endOfWeek = startOfWeek.AddDays(7);
 
                 scheduledDataList = scheduledDataList
-                    .Where(sd => sd.Date.Date >= startOfWeek && sd.Date.Date <= endOfWeek)
+                    .Where(sd => sd.Date >= startOfWeek && sd.Date <= endOfWeek)
                     .ToList();
             }
 
@@ -135,9 +135,13 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             var totalMorning = response.Sum(r => r.MorningShiftCount);
             var totalAfterNoon = response.Sum(r => r.AfterNoonShiftCount);
             var totalEvening = response.Sum(r => r.EveningShiftCount);
+            var totalDayOff = response.Sum(r => r.DayOffCount);
+            var totalHoliday = scheduledDataList.Count(sd => sd.Plan?.Shift == "Bayram");
+            var totalVacation = scheduledDataList.Count(sd => sd.Plan?.Shift == "Məzuniyyət");
             var totalShifts = totalMorning + totalAfterNoon + totalEvening;
 
-            string FormatPercentage(int value) => $"{value}%";
+            string FormatPercentage(int value) =>
+    totalShifts > 0 ? $"{(value * 100) / totalShifts}%" : "0%";
 
             var result = new GetScheduledDataListResponse
             {
@@ -145,9 +149,17 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                 ProjectName = loggedInUserProjects.FirstOrDefault()?.ProjectName,
                 Sections = groupedData.Select(g => g.Employee.Section.Name).Distinct().ToList(),
                 Week = ISOWeek.GetWeekOfYear((request.WeekDate ?? DateTime.UtcNow).AddHours(4)),
-                WeeklyMorningShiftCount = response.Sum(r => r.MorningShiftCount),
-                WeeklyAfterNoonShiftCount = response.Sum(r => r.AfterNoonShiftCount),
-                WeeklyEveningShiftCount = response.Sum(r => r.EveningShiftCount),
+                WeeklyMorningShiftCount = totalMorning,
+                WeeklyAfterNoonShiftCount = totalAfterNoon,
+                WeeklyEveningShiftCount = totalEvening,
+                WeeklyMorningShiftPercentage = FormatPercentage(totalMorning),
+                WeeklyAfterNoonShiftPercentage = FormatPercentage(totalAfterNoon),
+                WeeklyEveningShiftPercentage = FormatPercentage(totalEvening),
+
+                // İzin, bayram ve tatil sayıları
+                WeeklyDayOffCount = totalDayOff,
+                WeeklyHolidayCount = totalHoliday,
+                WeeklyVacationCount = totalVacation,
                 ScheduledDatas = response
             };
 
