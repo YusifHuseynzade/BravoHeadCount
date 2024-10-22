@@ -149,5 +149,14 @@ namespace BravoHC.Controllers
 
             return Ok(plans);
         }
+
+        [HttpGet("scheduledData-facts")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllFactQueryRequest request)
+        {
+            var plans = await _mediator.Send(request);
+
+            return Ok(plans);
+        }
     }
 }

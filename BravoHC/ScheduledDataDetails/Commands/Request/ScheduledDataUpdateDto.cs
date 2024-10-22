@@ -10,6 +10,6 @@ namespace ScheduledDataDetails.Commands.Request
     {
         public int ScheduledDataId { get; set; }
         public int PlanId { get; set; }
-        public string? Fact { get; set; }
+        public int? FactId { get; set; }
     }
 }

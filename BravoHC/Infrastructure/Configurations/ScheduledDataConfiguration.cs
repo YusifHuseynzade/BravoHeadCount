@@ -12,13 +12,15 @@ namespace Infrastructure.Configurations
             builder.Property(sd => sd.Date)
                 .IsRequired(); // Date alanı zorunlu
 
-            builder.Property(sd => sd.Fact)
-                .IsRequired(false); // Fact alanı nullable
-
             // Plan ile ilişki
             builder.HasOne(sd => sd.Plan)
                 .WithMany(p => p.ScheduledDatas)
                 .HasForeignKey(sd => sd.PlanId);
+
+            // Plan ile ilişki
+            builder.HasOne(sd => sd.Fact)
+                .WithMany(p => p.ScheduledDatas)
+                .HasForeignKey(sd => sd.FactId);
 
             // Employee ile ilişki
             builder.HasOne(sd => sd.Employee)

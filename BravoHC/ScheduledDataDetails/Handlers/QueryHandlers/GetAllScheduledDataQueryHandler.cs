@@ -56,12 +56,32 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             var scheduledDataList = await _repository.GetAll(sd => projectIds.Contains(sd.ProjectId))
                 .AsNoTracking()
                 .Include(sd => sd.Plan)
+                .Include(sd => sd.Fact)
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Position)
                 .Include(sd => sd.Employee)
                     .ThenInclude(e => e.Section)
                 .Include(sd => sd.Project)
                 .ToListAsync(cancellationToken);
+
+            // SectionId ve Search filtrelerini ekliyoruz
+            if (request.SectionId.HasValue)
+            {
+                scheduledDataList = scheduledDataList
+                    .Where(sd => sd.Employee.Section.Id == request.SectionId.Value)
+                    .ToList();
+            }
+
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                var searchLower = request.Search.ToLower();
+                scheduledDataList = scheduledDataList
+                    .Where(sd =>
+                        (sd.Employee.FullName?.ToLower().Contains(searchLower) ?? false) ||
+                        (sd.Employee.Badge?.ToLower().Contains(searchLower) ?? false) ||
+                        (sd.Employee.Position?.Name?.ToLower().Contains(searchLower) ?? false))
+                    .ToList();
+            }
 
             // TargetDate'e göre 4 saat çıkma işlemi
             if (request.TargetDate.HasValue)

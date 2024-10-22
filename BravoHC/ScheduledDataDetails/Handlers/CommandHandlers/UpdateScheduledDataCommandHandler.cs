@@ -33,130 +33,105 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
         {
             try
             {
-                foreach (var employeeUpdate in request.EmployeesWeeklyUpdates)
+                // Çalışan bilgilerini al
+                var employee = await _employeeRepository.GetAsync(e => e.Id == request.EmployeeId);
+                if (employee == null)
                 {
-                    // Çalışan bilgilerini al
-                    var employee = await _employeeRepository.GetAsync(e => e.Id == employeeUpdate.EmployeeId);
-                    if (employee == null)
+                    return new UpdateScheduledDataCommandResponse
                     {
-                        return new UpdateScheduledDataCommandResponse
-                        {
-                            IsSuccess = false,
-                            Message = $"Employee with ID {employeeUpdate.EmployeeId} not found."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = $"Employee with ID {request.EmployeeId} not found."
+                    };
+                }
 
-                    // "Məzuniyyət", "Day Off" ve "Xəstəlik vərəqi" planlarının ID'sini al
-                    var vacationPlan = await _planRepository.GetByValueAsync("Məzuniyyət");
-                    var dayOffPlan = await _planRepository.GetByValueAsync("Day Off");
-                    var sickLeavePlan = await _planRepository.GetByValueAsync("Xəstəlik vərəqi");
+                // Planların ID'sini al
+                var vacationPlan = await _planRepository.GetByValueAsync("Məzuniyyət");
+                var dayOffPlan = await _planRepository.GetByValueAsync("Day Off");
+                var sickLeavePlan = await _planRepository.GetByValueAsync("Xəstəlik vərəqi");
 
-                    if (vacationPlan == null || dayOffPlan == null || sickLeavePlan == null)
+                if (vacationPlan == null || dayOffPlan == null || sickLeavePlan == null)
+                {
+                    return new UpdateScheduledDataCommandResponse
                     {
-                        return new UpdateScheduledDataCommandResponse
-                        {
-                            IsSuccess = false,
-                            Message = "'Məzuniyyət', 'Day Off', or 'Xəstəlik vərəqi' plan not found."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = $"Plan not found for employee ID {request.EmployeeId}."
+                    };
+                }
 
-                    // İstek içerisindeki scheduled data ID'lerini alın
-                    var scheduledDataIds = employeeUpdate.WeeklyUpdates.Select(x => x.ScheduledDataId).ToList();
+                // Güncellenebilir data
+                var scheduledDataIds = request.WeeklyUpdates.Select(x => x.ScheduledDataId).ToList();
+                var scheduledDataList = await _scheduledDataRepository.GetAllAsync(sd => scheduledDataIds.Contains(sd.Id) && sd.EmployeeId == request.EmployeeId);
 
-                    // Veritabanından ilgili scheduled data kayıtlarını alın
-                    var scheduledDataList = await _scheduledDataRepository.GetAllAsync(sd => scheduledDataIds.Contains(sd.Id) && sd.EmployeeId == employeeUpdate.EmployeeId);
-
-                    if (!scheduledDataList.Any())
+                if (!scheduledDataList.Any())
+                {
+                    return new UpdateScheduledDataCommandResponse
                     {
-                        return new UpdateScheduledDataCommandResponse
-                        {
-                            IsSuccess = false,
-                            Message = $"No scheduled data found for the given employee ID {employeeUpdate.EmployeeId}."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = $"No scheduled data found for employee ID {request.EmployeeId}."
+                    };
+                }
 
-                    // Referans tarihi al ve haftanın başlangıcını ve bitişini belirle
-                    var referenceDate = scheduledDataList.First().Date;
-                    var currentWeekStart = DateTime.UtcNow.AddDays(-(int)DateTime.UtcNow.DayOfWeek + 1);
-                    var referenceWeekStart = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + 1);
-                    var referenceWeekEnd = referenceWeekStart.AddDays(6);
+                // Tarih kontrolleri
+                var referenceDate = scheduledDataList.First().Date;
+                var currentWeekStart = DateTime.UtcNow.AddDays(-(int)DateTime.UtcNow.DayOfWeek + 1);
+                var referenceWeekStart = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + 1);
+                var referenceWeekEnd = referenceWeekStart.AddDays(6);
 
-                    // Geçmiş haftalara güncelleme yapılmamalı
-                    if (referenceWeekEnd < currentWeekStart)
+                if (referenceWeekEnd < currentWeekStart)
+                {
+                    return new UpdateScheduledDataCommandResponse
                     {
-                        return new UpdateScheduledDataCommandResponse
-                        {
-                            IsSuccess = false,
-                            Message = $"Cannot update past weeks for employee ID {employeeUpdate.EmployeeId}."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = $"Cannot update past weeks for employee ID {request.EmployeeId}."
+                    };
+                }
 
-                    // Haftalık güncellemenin 7 gün olup olmadığını kontrol edin
-                    var fullWeekData = scheduledDataList.Where(sd => sd.Date >= referenceWeekStart && sd.Date <= referenceWeekEnd).ToList();
-                    if (fullWeekData.Count != 7)
+                var fullWeekData = scheduledDataList.Where(sd => sd.Date >= referenceWeekStart && sd.Date <= referenceWeekEnd).ToList();
+                if (fullWeekData.Count != 7)
+                {
+                    return new UpdateScheduledDataCommandResponse
                     {
-                        return new UpdateScheduledDataCommandResponse
-                        {
-                            IsSuccess = false,
-                            Message = $"All 7 days of the week must be filled for each update week for employee ID {employeeUpdate.EmployeeId}."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = $"All 7 days of the week must be filled for employee ID {request.EmployeeId}."
+                    };
+                }
 
-                    // Çalışanın mevcut hafta içinde tatil veya hastalık durumu olup olmadığını kontrol et
-                    var sickLeave = await _sickLeaveRepository.GetByEmployeeIdAsync(employee.Id);
+                var sickLeave = await _sickLeaveRepository.GetByEmployeeIdAsync(employee.Id);
 
-                    // Güncellemeleri yap ve "Məzuniyyət" ve "Xəstəlik vərəqi" planları kontrolü
-                    foreach (var updateDto in employeeUpdate.WeeklyUpdates)
+                foreach (var updateDto in request.WeeklyUpdates)
+                {
+                    var scheduledData = scheduledDataList.FirstOrDefault(sd => sd.Id == updateDto.ScheduledDataId);
+                    if (scheduledData != null)
                     {
-                        var scheduledData = scheduledDataList.FirstOrDefault(sd => sd.Id == updateDto.ScheduledDataId);
-                        if (scheduledData != null)
+                        if (scheduledData.PlanId == vacationPlan.Id || scheduledData.PlanId == sickLeavePlan.Id)
                         {
-                            // Eğer plan "Məzuniyyət" veya "Xəstəlik vərəqi" ise güncellenmemelidir
-                            if (scheduledData.PlanId == vacationPlan.Id || scheduledData.PlanId == sickLeavePlan.Id)
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            // Eğer hastalık durumu mevcut ise ve tarihler uyuşuyorsa, "Xəstəlik vərəqi" planını atayalım
-                            if (sickLeave != null && sickLeave.StartDate <= scheduledData.Date && sickLeave.EndDate >= scheduledData.Date)
-                            {
-                                scheduledData.PlanId = sickLeavePlan.Id;
-                            }
-                            else
-                            {
-                                scheduledData.PlanId = updateDto.PlanId;
-
-                                // Fact alanını kontrol et
-                                if (!string.IsNullOrEmpty(updateDto.Fact) && updateDto.Fact != "8")
-                                {
-                                    return new UpdateScheduledDataCommandResponse
-                                    {
-                                        IsSuccess = false,
-                                        Message = $"Invalid Fact value. Only '8' is allowed for employee ID {employeeUpdate.EmployeeId}."
-                                    };
-                                }
-
-                                // Eğer Fact "8" veya boşsa kaydet
-                                scheduledData.Fact = updateDto.Fact;
-                            }
+                        if (sickLeave != null && sickLeave.StartDate <= scheduledData.Date && sickLeave.EndDate >= scheduledData.Date)
+                        {
+                            scheduledData.PlanId = sickLeavePlan.Id;
+                        }
+                        else
+                        {
+                            scheduledData.PlanId = updateDto.PlanId;
+                            scheduledData.FactId = updateDto.FactId;
                         }
                     }
+                }
 
-                    // Haftalık güncellemede en az bir "Day Off" kontrolü
-                    if (!fullWeekData.Any(sd => sd.PlanId == dayOffPlan.Id))
+                if (!fullWeekData.Any(sd => sd.PlanId == dayOffPlan.Id))
+                {
+                    return new UpdateScheduledDataCommandResponse
                     {
-                        return new UpdateScheduledDataCommandResponse
-                        {
-                            IsSuccess = false,
-                            Message = $"Weekly updates must include at least one 'Day Off' for employee ID {employeeUpdate.EmployeeId}."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = $"At least one 'Day Off' is required for employee ID {request.EmployeeId}."
+                    };
+                }
 
-                    // Güncellemeleri veritabanında uygulayın
-                    foreach (var scheduledData in scheduledDataList)
-                    {
-                        await _scheduledDataRepository.UpdateAsync(scheduledData);
-                    }
+                foreach (var scheduledData in scheduledDataList)
+                {
+                    await _scheduledDataRepository.UpdateAsync(scheduledData);
                 }
 
                 await _scheduledDataRepository.CommitAsync();
@@ -164,7 +139,7 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                 return new UpdateScheduledDataCommandResponse
                 {
                     IsSuccess = true,
-                    Message = "Scheduled data updated successfully for all employees."
+                    Message = $"Update successful for employee ID {request.EmployeeId}."
                 };
             }
             catch (Exception ex)
@@ -172,7 +147,7 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                 return new UpdateScheduledDataCommandResponse
                 {
                     IsSuccess = false,
-                    Message = $"An error occurred while updating scheduled data: {ex.Message}"
+                    Message = $"Error updating employee ID {request.EmployeeId}: {ex.Message}"
                 };
             }
         }

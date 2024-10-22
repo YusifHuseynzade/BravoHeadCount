@@ -58,6 +58,7 @@ namespace Infrastructure
             builder.RegisterType<HeadCountBackgroundColorRepository>().As<IHeadCountBackgroundColorRepository>();
             builder.RegisterType<ScheduledDataRepository>().As<IScheduledDataRepository>();
             builder.RegisterType<PlanRepository>().As<IPlanRepository>();
+            builder.RegisterType<FactRepository>().As<IFactRepository>();
             builder.RegisterType<SummaryRepository>().As<ISummaryRepository>();
             builder.RegisterType<SickLeaveRepository>().As<ISickLeaveRepository>();
             builder.RegisterType<MonthRepository>().As<IMonthRepository>();
@@ -74,9 +75,7 @@ namespace Infrastructure
             builder.RegisterType<SummaryCronJobService>()
             .As<IHostedService>()  // IHostedService olarak kaydet
             .SingleInstance();
-            builder.RegisterType<ScheduledDataFactUpdaterService>()
-           .As<IHostedService>()  // IHostedService olarak kaydet
-           .SingleInstance();
+
 
             builder.Register(ctx =>
             {

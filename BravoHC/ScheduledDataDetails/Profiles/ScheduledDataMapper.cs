@@ -42,7 +42,7 @@ public class ScheduledDataMapper : Profile
           .ForMember(dest => dest.PlanValue, opt => opt.MapFrom(src => src.Plan.Value ?? "—"))
           .ForMember(dest => dest.PlanColor, opt => opt.MapFrom(src => src.Plan.Color))
           .ForMember(dest => dest.PlanShift, opt => opt.MapFrom(src => src.Plan.Shift))
-          .ForMember(dest => dest.Fact, opt => opt.MapFrom(src => src.Fact))
+           .ForMember(dest => dest.FactValue, opt => opt.MapFrom(src => src.Fact.Value ?? "—"))
           .ForMember(dest => dest.ProjectId, opt => opt.MapFrom(src => src.Project.Id))
           .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectName));
 
@@ -61,12 +61,13 @@ public class ScheduledDataMapper : Profile
                  .ForMember(dest => dest.ProjectId, opt => opt.MapFrom(src => src.Employee.Project.Id))
                  .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Employee.Project.ProjectName))
                  .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
-                 .ForMember(dest => dest.Fact, opt => opt.MapFrom(src => src.Fact))
+                 .ForMember(dest => dest.FactValue, opt => opt.MapFrom(src => src.Fact.Value))
                  .ForMember(dest => dest.HolidayBalance, opt => opt.MapFrom(src =>
                   src.Employee.EmployeeBalances.FirstOrDefault().HolidayBalance))
                  .ForMember(dest => dest.VacationBalance, opt => opt.MapFrom(src =>
                   src.Employee.EmployeeBalances.FirstOrDefault().VacationBalance));
 
         CreateMap<Plan, GetAllPlanQueryResponse>().ReverseMap();
+        CreateMap<Fact, GetAllFactQueryResponse>().ReverseMap();
     }
 }

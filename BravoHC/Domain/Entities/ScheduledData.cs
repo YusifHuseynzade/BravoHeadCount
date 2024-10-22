@@ -12,7 +12,8 @@ namespace Domain.Entities
         public DateTime Date { get; set; } = DateTime.UtcNow.AddHours(4);
         public int? PlanId { get; set; }
         public Plan? Plan { get; set; }
-        public string? Fact { get; set; }
+        public int? FactId { get; set; }
+        public Fact? Fact { get; set; }
         public int? VacationScheduleId { get; set; }
         public VacationSchedule? VacationSchedule { get; set; }
         public int ProjectId { get; set; }

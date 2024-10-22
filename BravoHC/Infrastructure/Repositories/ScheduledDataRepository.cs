@@ -50,12 +50,5 @@ namespace Infrastructure.Repositories
                 .Where(sd => sd.EmployeeId == employeeId)
                 .ToListAsync(); // Asenkron olarak listeyi döndür
         }
-
-        public async Task<List<ScheduledData>> GetAllWithEmptyFactAsync()
-        {
-            return await _context.ScheduledDatas
-                .Where(sd => string.IsNullOrEmpty(sd.Fact))
-                .ToListAsync();
-        }
     }
 }

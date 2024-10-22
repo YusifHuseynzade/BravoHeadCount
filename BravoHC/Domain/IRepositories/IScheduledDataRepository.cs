@@ -14,6 +14,5 @@ namespace Domain.IRepositories
         Task<ScheduledData> GetByEmployeeAndDateAsync(int employeeId, DateTime date);
         Task<List<ScheduledData>> GetByEmployeeAndMonthAsync(int employeeId, int year, int monthId);
         Task<List<ScheduledData>> GetByEmployeeIdAsync(int employeeId);
-        Task<List<ScheduledData>> GetAllWithEmptyFactAsync();
     }
 }

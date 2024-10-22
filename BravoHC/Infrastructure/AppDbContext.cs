@@ -40,6 +40,7 @@ namespace Infrastructure
         public DbSet<SickLeave> SickLeaves { get; set; }
         public DbSet<VacationSchedule> VacationSchedules { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<Fact> Facts { get; set; }
         public DbSet<Month> Months { get; set; }
         public DbSet<EmployeeBalance> EmployeeBalances { get; set; }
 

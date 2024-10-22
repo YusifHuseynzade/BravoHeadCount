@@ -23,6 +23,7 @@ public class GetByIdScheduledDataQueryResponse
     public string EmployeePosition { get; set; }
     public int HolidayBalance { get; set; }
     public int VacationBalance { get; set; }
-    public DateTime? Fact { get; set; }
+    public int? FactId { get; set; }
+    public string FactValue { get; set; }
 
 }

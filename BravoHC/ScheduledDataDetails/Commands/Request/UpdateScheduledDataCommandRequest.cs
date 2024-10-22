@@ -1,9 +1,9 @@
 ﻿using MediatR;
+using ScheduledDataDetails.Commands.Request;
 using ScheduledDataDetails.Commands.Response;
-
-namespace ScheduledDataDetails.Commands.Request;
 
 public class UpdateScheduledDataCommandRequest : IRequest<UpdateScheduledDataCommandResponse>
 {
-    public List<EmployeeWeeklyUpdateDto> EmployeesWeeklyUpdates { get; set; }
+    public int EmployeeId { get; set; }
+    public List<ScheduledDataUpdateDto> WeeklyUpdates { get; set; }
 }

@@ -22,6 +22,7 @@ public class GetByIdScheduledDataQueryHandler : IRequestHandler<GetByIdScheduled
     {
         var scheduledData = await _repository.GetAll(x => x.Id == request.Id)
                .Include(sd => sd.Plan) // Plan ile ilişki
+               .Include(sd => sd.Fact)
                .Include(sd => sd.Employee) // Employee ile ilişki
                    .ThenInclude(e => e.Position) // Employee ve Position ile ilişki
                .Include(sd => sd.Employee) // Employee ile ilişki
