@@ -34,7 +34,6 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             _projectRepository = projectRepository;
             _httpContextAccessor = httpContextAccessor;
         }
-
         public async Task<List<GetScheduledDataListResponse>> Handle(GetAllScheduledDataQueryRequest request, CancellationToken cancellationToken)
         {
             request.NormalizeDates();
@@ -114,7 +113,7 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             else if (request.WeekDate.HasValue)
             {
                 var weekStartDate = request.WeekDate.Value.Date.AddHours(4);
-                var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek); // Pazartesi başlangıç
+                var startOfWeek = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek); 
                 var endOfWeek = startOfWeek.AddDays(7);
 
                 scheduledDataList = scheduledDataList
@@ -192,7 +191,6 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
 
             return new List<GetScheduledDataListResponse> { result };
         }
-
         private bool ParsePlanTimeRange(string value, out TimeSpan planStart, out TimeSpan planEnd)
         {
             planStart = TimeSpan.Zero;
@@ -208,7 +206,6 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
             return TimeSpan.TryParse(times[0], out planStart) &&
                    TimeSpan.TryParse(times[1], out planEnd);
         }
-
         private bool TimeRangeOverlap(TimeSpan planStart, TimeSpan planEnd, TimeSpan startHour, TimeSpan endHour)
         {
             return planStart >= startHour && planEnd <= endHour;
