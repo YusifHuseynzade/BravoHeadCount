@@ -13,17 +13,15 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
 {
     public class UpdateScheduledDataCommandHandler : IRequestHandler<UpdateScheduledDataCommandRequest, UpdateScheduledDataCommandResponse>
     {
-        private readonly IEmployeeRepository _employeeRepository;
         private readonly IScheduledDataRepository _scheduledDataRepository;
         private readonly IPlanRepository _planRepository;
         private readonly ISickLeaveRepository _sickLeaveRepository;
 
-        public UpdateScheduledDataCommandHandler(IEmployeeRepository employeeRepository,
-                                                 IScheduledDataRepository scheduledDataRepository,
-                                                 IPlanRepository planRepository,
-                                                 ISickLeaveRepository sickLeaveRepository)
+        public UpdateScheduledDataCommandHandler(
+            IScheduledDataRepository scheduledDataRepository,
+            IPlanRepository planRepository,
+            ISickLeaveRepository sickLeaveRepository)
         {
-            _employeeRepository = employeeRepository;
             _scheduledDataRepository = scheduledDataRepository;
             _planRepository = planRepository;
             _sickLeaveRepository = sickLeaveRepository;
@@ -31,123 +29,101 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
 
         public async Task<UpdateScheduledDataCommandResponse> Handle(UpdateScheduledDataCommandRequest request, CancellationToken cancellationToken)
         {
+            var successCount = 0;
+            var failureMessages = new List<string>();
+
             try
             {
-                // Çalışan bilgilerini al
-                var employee = await _employeeRepository.GetAsync(e => e.Id == request.EmployeeId);
-                if (employee == null)
+                foreach (var weeklyUpdate in request.ScheduleUpdates)
                 {
-                    return new UpdateScheduledDataCommandResponse
+                    var scheduledDataIds = weeklyUpdate.WeeklyUpdates.Select(x => x.ScheduledDataId).ToList();
+                    var scheduledDataList = await _scheduledDataRepository.GetAllAsync(sd => scheduledDataIds.Contains(sd.Id));
+
+                    if (!scheduledDataList.Any())
                     {
-                        IsSuccess = false,
-                        Message = $"Employee with ID {request.EmployeeId} not found."
-                    };
-                }
+                        failureMessages.Add("No valid scheduled data found for the provided IDs.");
+                        continue;
+                    }
 
-                // Planların ID'sini al
-                var vacationPlan = await _planRepository.GetByValueAsync("Məzuniyyət");
-                var dayOffPlan = await _planRepository.GetByValueAsync("Day Off");
-                var sickLeavePlan = await _planRepository.GetByValueAsync("Xəstəlik vərəqi");
+                    // Haftanın başlangıcını ve bitişini belirle
+                    var referenceDate = scheduledDataList.First().Date;
+                    var weekStart = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + 1).Date;
+                    var weekEnd = weekStart.AddDays(6);
 
-                if (vacationPlan == null || dayOffPlan == null || sickLeavePlan == null)
-                {
-                    return new UpdateScheduledDataCommandResponse
+                    if (scheduledDataList.Count(sd => sd.Date >= weekStart && sd.Date <= weekEnd) != 7)
                     {
-                        IsSuccess = false,
-                        Message = $"Plan not found for employee ID {request.EmployeeId}."
-                    };
-                }
+                        failureMessages.Add($"Incomplete data for the week starting {weekStart:yyyy-MM-dd}.");
+                        continue;
+                    }
 
-                // Güncellenebilir data
-                var scheduledDataIds = request.WeeklyUpdates.Select(x => x.ScheduledDataId).ToList();
-                var scheduledDataList = await _scheduledDataRepository.GetAllAsync(sd => scheduledDataIds.Contains(sd.Id) && sd.EmployeeId == request.EmployeeId);
+                    var vacationPlan = await _planRepository.GetByValueAsync("Məzuniyyət");
+                    var dayOffPlan = await _planRepository.GetByValueAsync("Day Off");
+                    var sickLeavePlan = await _planRepository.GetByValueAsync("Xəstəlik vərəqi");
 
-                if (!scheduledDataList.Any())
-                {
-                    return new UpdateScheduledDataCommandResponse
+                    if (vacationPlan == null || dayOffPlan == null || sickLeavePlan == null)
                     {
-                        IsSuccess = false,
-                        Message = $"No scheduled data found for employee ID {request.EmployeeId}."
-                    };
-                }
+                        failureMessages.Add("'Məzuniyyət', 'Day Off', or 'Xəstəlik vərəqi' plan not found.");
+                        continue;
+                    }
 
-                // Tarih kontrolleri
-                var referenceDate = scheduledDataList.First().Date;
-                var currentWeekStart = DateTime.UtcNow.AddDays(-(int)DateTime.UtcNow.DayOfWeek + 1);
-                var referenceWeekStart = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + 1);
-                var referenceWeekEnd = referenceWeekStart.AddDays(6);
-
-                if (referenceWeekEnd < currentWeekStart)
-                {
-                    return new UpdateScheduledDataCommandResponse
+                    if (!weeklyUpdate.WeeklyUpdates.Any(update => update.PlanId == dayOffPlan.Id))
                     {
-                        IsSuccess = false,
-                        Message = $"Cannot update past weeks for employee ID {request.EmployeeId}."
-                    };
-                }
+                        failureMessages.Add($"Missing 'Day Off' plan for the week starting {weekStart:yyyy-MM-dd}.");
+                        continue;
+                    }
 
-                var fullWeekData = scheduledDataList.Where(sd => sd.Date >= referenceWeekStart && sd.Date <= referenceWeekEnd).ToList();
-                if (fullWeekData.Count != 7)
-                {
-                    return new UpdateScheduledDataCommandResponse
+                    foreach (var updateDto in weeklyUpdate.WeeklyUpdates)
                     {
-                        IsSuccess = false,
-                        Message = $"All 7 days of the week must be filled for employee ID {request.EmployeeId}."
-                    };
-                }
-
-                var sickLeave = await _sickLeaveRepository.GetByEmployeeIdAsync(employee.Id);
-
-                foreach (var updateDto in request.WeeklyUpdates)
-                {
-                    var scheduledData = scheduledDataList.FirstOrDefault(sd => sd.Id == updateDto.ScheduledDataId);
-                    if (scheduledData != null)
-                    {
-                        if (scheduledData.PlanId == vacationPlan.Id || scheduledData.PlanId == sickLeavePlan.Id)
+                        var scheduledData = scheduledDataList.FirstOrDefault(sd => sd.Id == updateDto.ScheduledDataId);
+                        if (scheduledData != null)
                         {
-                            continue;
-                        }
+                            if (scheduledData.PlanId == vacationPlan.Id || scheduledData.PlanId == sickLeavePlan.Id)
+                                continue;
 
-                        if (sickLeave != null && sickLeave.StartDate <= scheduledData.Date && sickLeave.EndDate >= scheduledData.Date)
-                        {
-                            scheduledData.PlanId = sickLeavePlan.Id;
-                        }
-                        else
-                        {
-                            scheduledData.PlanId = updateDto.PlanId;
-                            scheduledData.FactId = updateDto.FactId;
+                            var sickLeave = await _sickLeaveRepository.GetByEmployeeIdAsync(scheduledData.EmployeeId);
+                            if (sickLeave != null && sickLeave.StartDate <= scheduledData.Date && sickLeave.EndDate >= scheduledData.Date)
+                            {
+                                scheduledData.PlanId = sickLeavePlan.Id;
+                            }
+                            else
+                            {
+                                scheduledData.PlanId = updateDto.PlanId;
+                                scheduledData.FactId = updateDto.FactId;
+                            }
                         }
                     }
-                }
 
-                if (!fullWeekData.Any(sd => sd.PlanId == dayOffPlan.Id))
-                {
-                    return new UpdateScheduledDataCommandResponse
+                    foreach (var scheduledData in scheduledDataList)
                     {
-                        IsSuccess = false,
-                        Message = $"At least one 'Day Off' is required for employee ID {request.EmployeeId}."
-                    };
-                }
+                        await _scheduledDataRepository.UpdateAsync(scheduledData);
+                    }
 
-                foreach (var scheduledData in scheduledDataList)
-                {
-                    await _scheduledDataRepository.UpdateAsync(scheduledData);
+                    successCount++;
                 }
 
                 await _scheduledDataRepository.CommitAsync();
 
                 return new UpdateScheduledDataCommandResponse
                 {
-                    IsSuccess = true,
-                    Message = $"Update successful for employee ID {request.EmployeeId}."
+                    IsSuccess = failureMessages.Count == 0,
+                    Message = failureMessages.Count == 0
+                        ? "All weekly updates completed successfully."
+                        : $"Updates completed with {failureMessages.Count} failures.",
+                    SuccessCount = successCount,
+                    FailureCount = failureMessages.Count,
+                    FailureMessages = failureMessages
                 };
             }
             catch (Exception ex)
             {
+                failureMessages.Add($"Error processing week starting: {ex.Message}");
                 return new UpdateScheduledDataCommandResponse
                 {
                     IsSuccess = false,
-                    Message = $"Error updating employee ID {request.EmployeeId}: {ex.Message}"
+                    Message = $"An error occurred while processing: {ex.Message}",
+                    SuccessCount = successCount,
+                    FailureCount = failureMessages.Count,
+                    FailureMessages = failureMessages
                 };
             }
         }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,6 +50,15 @@ namespace Infrastructure.Repositories
             return await _context.ScheduledDatas
                 .Where(sd => sd.EmployeeId == employeeId)
                 .ToListAsync(); // Asenkron olarak listeyi döndür
+        }
+
+        public async Task<List<ScheduledData>> GetAllAsync(Expression<Func<ScheduledData, bool>> predicate)
+        {
+            // Veritabanından ilgili verileri filtreye göre getiriyoruz.
+            return await _context.ScheduledDatas
+                .Where(predicate) // Belirtilen koşula göre filtreleme
+                .AsNoTracking()   // Performans için NoTracking modu
+                .ToListAsync();   // Liste olarak asenkron şekilde getir
         }
     }
 }

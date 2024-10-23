@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ScheduledDataDetails.Commands.Request
 {
-    public class EmployeeWeeklyUpdateDto
+    public class WeeklyUpdateDto
     {
-        public int EmployeeId { get; set; }
         public List<ScheduledDataUpdateDto> WeeklyUpdates { get; set; }
     }
 }

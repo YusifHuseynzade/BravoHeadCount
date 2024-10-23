@@ -4,7 +4,6 @@ using AutoMapper;
 using BakuDistrictDetails.Profiles;
 using BakuMetroDetails.Profiles;
 using BakuTargetDetails.Profiles;
-using Common.Interfaces;
 using Domain.IRepositories;
 using Domain.IServices;
 using EmployeeDetails.Handlers.CommandHandlers;

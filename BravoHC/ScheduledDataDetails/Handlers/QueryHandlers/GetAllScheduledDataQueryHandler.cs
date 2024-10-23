@@ -129,6 +129,7 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
                     Employee = g.FirstOrDefault()?.Employee,
                     ScheduledDataList = g.OrderBy(sd => sd.Id).ToList()
                 })
+                .OrderBy(g => g.Employee?.FullName)
                 .ToList();
 
             var response = new List<GetAllScheduledDataQueryResponse>();
