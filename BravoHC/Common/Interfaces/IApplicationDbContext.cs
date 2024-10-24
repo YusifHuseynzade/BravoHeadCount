@@ -32,6 +32,12 @@ namespace Common.Interfaces
         public DbSet<Fact> Facts { get; set; }
         public DbSet<Month> Months { get; set; }
         public DbSet<EmployeeBalance> EmployeeBalances { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<Encashment> Encashments { get; set; }
+        public DbSet<EndOfMonthReport> EndOfMonthReports { get; set; }
+        public DbSet<ExpensesReport> ExpensesReports { get; set; }
+        public DbSet<MoneyOrder> MoneyOrders { get; set; }
+        public DbSet<SettingFinanceOperation> SettingFinanceOperations { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

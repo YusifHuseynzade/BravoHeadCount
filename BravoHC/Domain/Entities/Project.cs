@@ -10,6 +10,7 @@ namespace Domain.Entities
     {
         public string ProjectCode { get; set; }
         public string ProjectName { get; set; }
+        public string ProjectNameForBank { get; set; }
         public bool? IsStore { get; set; }
         public bool? IsHeadOffice { get; set; }
         public bool? IsActive { get; set; }
@@ -21,6 +22,7 @@ namespace Domain.Entities
         public string AreaManagerBadge { get; set; }
         public string AreaManagerMail { get; set; }
         public string StoreManagerMail { get; set; }
+        public string StoreUserMail { get; set; }
         public string Recruiter { get; set; }
         public string RecruiterMail { get; set; }
         public List<ProjectSections> ProjectSections { get; set; }

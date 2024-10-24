@@ -25,7 +25,6 @@ using SectionDetails.Profiles;
 using SickLeaveDetails.Profiles;
 using StoreDetails.Profiles;
 using SubSectionDetails.Profiles;
-using SummaryDetails.Handlers.CommandHandlers;
 using SummaryDetails.Profiles;
 using VacationScheduleDetails.Profiles;
 
@@ -62,18 +61,24 @@ namespace Infrastructure
             builder.RegisterType<SickLeaveRepository>().As<ISickLeaveRepository>();
             builder.RegisterType<MonthRepository>().As<IMonthRepository>();
             builder.RegisterType<VacationScheduleRepository>().As<IVacationScheduleRepository>();
+            builder.RegisterType<AttachmentRepository>().As<IAttachmentRepository>();
+            builder.RegisterType<EncashmentRepository>().As<IEncashmentRepository>();
+            builder.RegisterType<EndOfMonthReportRepository>().As<IEndOfMonthReportRepository>();
+            builder.RegisterType<ExpensesReportRepository>().As<IExpensesReportRepository>();
+            builder.RegisterType<MoneyOrderRepository>().As<IMoneyOrderRepository>();
+            builder.RegisterType<SettingFinanceOperationRepository>().As<ISettingFinanceOperationRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<ScheduledDataExportService>().AsSelf().InstancePerLifetimeScope();
-            builder.RegisterType<EmployeeHeadCountService>()
-               .As<IHostedService>()  // IHostedService olarak kaydet
-               .SingleInstance();
-            builder.RegisterType<ScheduledDataCronJobService>()
-             .As<IHostedService>()  // IHostedService olarak kaydet
-             .SingleInstance();
-            builder.RegisterType<SummaryCronJobService>()
-            .As<IHostedService>()  // IHostedService olarak kaydet
-            .SingleInstance();
+            //builder.RegisterType<EmployeeHeadCountService>()
+            //   .As<IHostedService>()  // IHostedService olarak kaydet
+            //   .SingleInstance();
+            //builder.RegisterType<ScheduledDataCronJobService>()
+            // .As<IHostedService>()  // IHostedService olarak kaydet
+            // .SingleInstance();
+            //builder.RegisterType<SummaryCronJobService>()
+            //.As<IHostedService>()  // IHostedService olarak kaydet
+            //.SingleInstance();
 
 
             builder.Register(ctx =>
