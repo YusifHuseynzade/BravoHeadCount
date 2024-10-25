@@ -4,8 +4,10 @@ using Autofac.Extensions.DependencyInjection;
 using BakuTargetDetails;
 using Common.Interfaces;
 using Core.Helpers;
+using Domain.Entities;
 using EmployeeDetails;
 using EmployeeDetails.ExcelImportService;
+using EncashmentDetails;
 using FluentValidation.AspNetCore;
 using HeadCountBackGroundColorDetails;
 using HeadCountDetails;
@@ -81,6 +83,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
 });
 
+builder.Services.Configure<HikVisionSettings>(builder.Configuration.GetSection("ConnectionStrings"));
+
 builder.Services.AddScoped<IApplicationDbContext, AppDbContext>();
 builder.Services.AddHttpContextAccessor();
 
@@ -123,6 +127,7 @@ builder.Services.AddBakuTargetServices();
 builder.Services.AddVacationScheduleServices();
 builder.Services.AddSickLeaveServices();
 builder.Services.AddSummaryServices();
+builder.Services.AddEncashmentServices();
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(

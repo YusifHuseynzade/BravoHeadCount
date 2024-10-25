@@ -8,8 +8,7 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<MoneyOrder> builder)
         {
-            builder.Property(m => m.MarketCodeAndName).IsRequired();
-            builder.Property(m => m.Amount).HasColumnType("decimal(18,2)");
+            builder.Property(m => m.TotalAmount).HasColumnType("decimal(18,2)");
             builder.Property(m => m.HundredAZN).IsRequired();
         }
     }

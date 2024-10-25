@@ -20,18 +20,18 @@ namespace ScheduledDataDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllFactListQueryResponse>> Handle(GetAllFactQueryRequest request, CancellationToken cancellationToken)
         {
-            var plans = _repository.GetAll(x => true);
+            var facts = _repository.GetAll(f => f.Value == "8");
 
-            if (plans != null)
+            if (facts != null)
             {
-                var response = _mapper.Map<List<GetAllFactQueryResponse>>(plans);
+                var response = _mapper.Map<List<GetAllFactQueryResponse>>(facts);
 
                 if (request.ShowMore != null)
                 {
                     response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
                 }
 
-                var totalCount = plans.Count();
+                var totalCount = facts.Count();
 
                 PaginationListDto<GetAllFactQueryResponse> model =
                        new PaginationListDto<GetAllFactQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);

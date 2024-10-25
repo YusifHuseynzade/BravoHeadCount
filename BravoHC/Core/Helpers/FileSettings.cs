@@ -5,5 +5,7 @@
         public string Path { get; set; }
         public string Employee { get; set; }
         public string Position { get; set; }
+        public string Encashment { get; set; }
+        public string ExpensesReport { get; set; }
     }
 }

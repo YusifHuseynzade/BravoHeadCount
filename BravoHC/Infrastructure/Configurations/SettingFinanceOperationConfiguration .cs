@@ -8,8 +8,7 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<SettingFinanceOperation> builder)
         {
-            builder.Property(s => s.Name).IsRequired().HasMaxLength(100);
-            builder.Property(s => s.Branch).HasMaxLength(100);
+            builder.Property(s => s.Name).HasMaxLength(100);
         }
     }
 }

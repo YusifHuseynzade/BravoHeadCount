@@ -82,10 +82,13 @@ namespace Application.ApplicationUserDetails.Commands
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                     _configuration.GetSection("AppSettings:Token").Value));
 
+            string fullName = appUser.FullName;
+
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, appUser.Email)
+                new Claim(ClaimTypes.Name, appUser.Email),
+                 new Claim("FullName", fullName)
             };
 
             // Kullanıcının rollerini ekle

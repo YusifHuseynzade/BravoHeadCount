@@ -21,7 +21,10 @@ public class GetByIdEncashmentQueryHandler : IRequestHandler<GetByIdEncashmentQu
     {
         try
         {
-            var encashment = await _repository.GetAsync(x => x.Id == request.Id);
+            var encashment = await _repository.GetAsync(
+                  x => x.Id == request.Id,
+                  includes: new[] { "Project", "Branch", "Attachments" }
+              );
 
             if (encashment != null)
             {

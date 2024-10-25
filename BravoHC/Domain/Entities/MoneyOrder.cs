@@ -25,19 +25,18 @@ namespace Domain.Entities
         public int TotalQuantity { get; set; }
         public int TotalAmount { get; set; }
         public string? Name { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow.AddHours(4);
         public string CreatedBy { get; set; }
-        public string ModifiedBy { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public string? ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public int BranchId { get; set; }
         public Branch Branch { get; set; }
         public string SealNumber { get; set; }
-        public void SetDetails(string marketCodeAndName, int hundredAZN, float fiftyAZN, float twentyAZN,
+        public void SetDetails(int hundredAZN, float fiftyAZN, float twentyAZN,
                           float tenAZN, float fiveAZN, float oneAZN, float fiftyQapik,
                           float twentyQapik, float tenQapik, float fiveQapik, float threeQapik,
-                          float oneQapik, int totalQuantity, int amount, string name, string modifiedBy)
+                          float oneQapik, int totalQuantity, string name, string modifiedBy)
         {
-            MarketCodeAndName = marketCodeAndName;
             HundredAZN = hundredAZN;
             FiftyAZN = fiftyAZN;
             TwentyAZN = twentyAZN;
@@ -51,7 +50,6 @@ namespace Domain.Entities
             ThreeQapik = threeQapik;
             OneQapik = oneQapik;
             TotalQuantity = totalQuantity;
-            Amount = amount;
             Name = name;
             ModifiedBy = modifiedBy;
         }

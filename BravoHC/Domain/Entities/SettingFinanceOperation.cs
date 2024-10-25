@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class SettingFinanceOperation : BaseEntity
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public string EncashmentDays { get; set; }
         public DateTime DateEncashment { get; set; }
         public bool IsActiveEncashment { get; set; }
@@ -22,11 +22,11 @@ namespace Domain.Entities
         public int FrequencyMoneyOrder { get; set; }
         public List<string> MoneyOrderRecipient { get; set; }
         public string CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow.AddHours(4);
         public int BranchId { get; set; }
         public Branch Branch { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        public string ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public string? ModifiedBy { get; set; }
         public void SetDetails(string name, string encashmentDays, DateTime dateEncashment, bool isActiveEncashment, string createdBy,
                        string moneyOrderDays,
                        DateTime dateMoneyOrder, bool isActiveMoneyOrder, int frequencyEncashment, int frequencyMoneyOrder,

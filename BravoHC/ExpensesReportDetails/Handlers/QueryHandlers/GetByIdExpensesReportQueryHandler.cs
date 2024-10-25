@@ -21,7 +21,10 @@ public class GetByIdExpensesReportQueryHandler : IRequestHandler<GetByIdExpenses
     {
         try
         {
-            var ExpensesReport = await _repository.GetAsync(x => x.Id == request.Id);
+            var ExpensesReport = await _repository.GetAsync(
+                  x => x.Id == request.Id,
+                  includes: new[] { "Project", "Attachments" }
+              );
 
             if (ExpensesReport != null)
             {

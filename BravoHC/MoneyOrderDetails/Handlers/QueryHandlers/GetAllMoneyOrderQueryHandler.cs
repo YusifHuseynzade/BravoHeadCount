@@ -21,7 +21,11 @@ namespace MoneyOrderDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllMoneyOrderListQueryResponse>> Handle(GetAllMoneyOrderQueryRequest request, CancellationToken cancellationToken)
         {
-            var MoneyOrders = _repository.GetAll(x => true);
+            var MoneyOrders = _repository.GetAll(
+            x => true,
+            nameof(MoneyOrder.Project),
+            nameof(MoneyOrder.Branch)
+        );
 
             if (MoneyOrders != null)
             {

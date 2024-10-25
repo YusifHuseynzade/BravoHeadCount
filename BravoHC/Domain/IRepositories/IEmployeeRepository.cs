@@ -11,5 +11,6 @@ namespace Domain.IRepositories
     {
         Task<int?> GetIdByNameAsync(string employeeName);
         Task<List<int>> GetAllEmployeeIdsAsync();
+        Task<Employee> GetByBadgeAsync(string badge);
     }
 }

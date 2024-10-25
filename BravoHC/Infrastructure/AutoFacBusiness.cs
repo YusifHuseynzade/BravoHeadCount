@@ -8,6 +8,8 @@ using Domain.IRepositories;
 using Domain.IServices;
 using EmployeeDetails.Handlers.CommandHandlers;
 using EmployeeDetails.Profiles;
+using EncashmentDetails.Profiles;
+using ExpensesReportDetails.Profiles;
 using HeadCountBackGroundColorDetails.Profiles;
 using HeadCountDetails.HeadCountExportedService;
 using HeadCountDetails.Profiles;
@@ -79,6 +81,9 @@ namespace Infrastructure
             //builder.RegisterType<SummaryCronJobService>()
             //.As<IHostedService>()  // IHostedService olarak kaydet
             //.SingleInstance();
+            builder.RegisterType<AttendanceBackgroundService>()
+          .As<IHostedService>()  // IHostedService olarak kaydet
+          .SingleInstance();
 
 
             builder.Register(ctx =>
@@ -104,7 +109,8 @@ namespace Infrastructure
                     cfg.AddProfile(new ScheduledDataMapper(httpContextAccessor));
                     cfg.AddProfile(new SummaryMapper(httpContextAccessor));
                     cfg.AddProfile(new VacationScheduleMapper(httpContextAccessor));
-
+                    cfg.AddProfile(new EncashmentMapper(httpContextAccessor));
+                    cfg.AddProfile(new ExpensesReportMapper(httpContextAccessor));
                 });
 
                 return config;

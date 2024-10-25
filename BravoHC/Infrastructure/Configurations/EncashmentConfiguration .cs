@@ -8,12 +8,15 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Encashment> builder)
         {
-            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
-            builder.Property(e => e.MarketCodeAndName).IsRequired();
+            builder.Property(e => e.Name).IsRequired(false).HasMaxLength(100);
             builder.Property(e => e.AmountFromSales).HasColumnType("decimal(18,2)");
             builder.Property(e => e.AmountFoundOnSite).HasColumnType("decimal(18,2)");
             builder.Property(e => e.SafeSurplus).HasColumnType("decimal(18,2)");
-            builder.Property(e => e.SealNumber).HasColumnType("decimal(18,2)");
+            builder.Property(e => e.SealNumber).IsRequired();
+
+            builder.HasMany(s => s.Attachments)
+         .WithOne(e => e.Encashment)
+         .HasForeignKey(e => e.EncashmentId);
         }
     }
 }

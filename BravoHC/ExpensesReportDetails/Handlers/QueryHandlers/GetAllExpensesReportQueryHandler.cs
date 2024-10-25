@@ -21,7 +21,11 @@ namespace ExpensesReportDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllExpensesReportListQueryResponse>> Handle(GetAllExpensesReportQueryRequest request, CancellationToken cancellationToken)
         {
-            var ExpensesReports = _repository.GetAll(x => true);
+            var ExpensesReports = _repository.GetAll(
+                x => true,
+                nameof(ExpensesReport.Project),
+                nameof(ExpensesReport.Attachments)
+            );
 
             if (ExpensesReports != null)
             {

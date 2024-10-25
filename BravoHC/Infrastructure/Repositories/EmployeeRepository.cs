@@ -30,5 +30,10 @@ namespace Infrastructure.Repositories
         {
             return await _context.Employees.Select(e => e.Id).ToListAsync();
         }
+        public async Task<Employee> GetByBadgeAsync(string badge)
+        {
+            return await _context.Employees
+                .FirstOrDefaultAsync(e => e.Badge == badge);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.Constants;
+using Domain.Entities;
 using Domain.IRepositories;
 using EndOfMonthReportDetails.Queries.Request;
 using EndOfMonthReportDetails.Queries.Response;
@@ -20,7 +21,10 @@ namespace EndOfMonthReportDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllEndOfMonthReportListQueryResponse>> Handle(GetAllEndOfMonthReportQueryRequest request, CancellationToken cancellationToken)
         {
-            var EndOfMonthReports = _repository.GetAll(x => true);
+            var EndOfMonthReports = _repository.GetAll(
+            x => true,
+            nameof(EndOfMonthReport.Project) // Project bilgisini include et
+        );
 
             if (EndOfMonthReports != null)
             {

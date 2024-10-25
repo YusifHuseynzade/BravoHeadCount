@@ -14,7 +14,14 @@ public class MoneyOrderMapper : Profile
     {
         _httpAccessor = httpAccessor;
 
-        CreateMap<MoneyOrder, GetAllMoneyOrderQueryResponse>().ReverseMap();
-        CreateMap<MoneyOrder, GetByIdMoneyOrderQueryResponse>().ReverseMap();
+        CreateMap<MoneyOrder, GetAllMoneyOrderQueryResponse>()
+             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode))
+             .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name))
+             .ReverseMap();
+
+        CreateMap<MoneyOrder, GetByIdMoneyOrderQueryResponse>()
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode))
+            .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name))
+            .ReverseMap();
     }
 }

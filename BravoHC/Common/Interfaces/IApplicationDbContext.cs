@@ -38,6 +38,7 @@ namespace Common.Interfaces
         public DbSet<ExpensesReport> ExpensesReports { get; set; }
         public DbSet<MoneyOrder> MoneyOrders { get; set; }
         public DbSet<SettingFinanceOperation> SettingFinanceOperations { get; set; }
+        public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

@@ -21,7 +21,10 @@ public class GetByIdEndOfMonthReportQueryHandler : IRequestHandler<GetByIdEndOfM
     {
         try
         {
-            var EndOfMonthReport = await _repository.GetAsync(x => x.Id == request.Id);
+            var EndOfMonthReport = await _repository.GetAsync(
+                  x => x.Id == request.Id,
+                  includes: new[] { "Project" }
+              );
 
             if (EndOfMonthReport != null)
             {

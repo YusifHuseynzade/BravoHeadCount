@@ -20,7 +20,7 @@ namespace BravoHC.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Add([FromBody] CreateEncashmentCommandRequest request)
+        public async Task<IActionResult> Add([FromQuery] CreateEncashmentCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -32,7 +32,7 @@ namespace BravoHC.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Update([FromBody] UpdateEncashmentCommandRequest request)
+        public async Task<IActionResult> Update([FromQuery] UpdateEncashmentCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -54,12 +54,6 @@ namespace BravoHC.Controllers
             return Encashment != null
                 ? (IActionResult)Ok(Encashment)
                 : NotFound(new { Message = "Encashment not found." });
-        }
-        [HttpPut("UpdateJobDescription")]
-        [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Update([FromForm] UpdateEncashmentFileCommandRequest request)
-        {
-            return Ok(await _mediator.Send(request));
         }
     }
 }

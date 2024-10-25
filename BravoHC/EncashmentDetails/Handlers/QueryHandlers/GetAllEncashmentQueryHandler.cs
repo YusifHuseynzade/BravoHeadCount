@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Common.Constants;
+using Domain.Entities;
 using Domain.IRepositories;
 using EncashmentDetails.Queries.Request;
 using EncashmentDetails.Queries.Response;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace EncashmentDetails.Handlers.QueryHandlers
 {
@@ -20,21 +22,34 @@ namespace EncashmentDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllEncashmentListQueryResponse>> Handle(GetAllEncashmentQueryRequest request, CancellationToken cancellationToken)
         {
-            var Encashments = _repository.GetAll(x => true);
+            // Encashment verisini ilişkili entity'ler ile birlikte getiriyoruz
+            var encashments = _repository.GetAll(
+                x => true,
+                nameof(Encashment.Project),
+                nameof(Encashment.Branch),
+                nameof(Encashment.Attachments)
+            );
 
-            if (Encashments != null)
+            if (encashments != null)
             {
-                var response = _mapper.Map<List<GetAllEncashmentQueryResponse>>(Encashments);
+                var response = _mapper.Map<List<GetAllEncashmentQueryResponse>>(encashments);
 
                 if (request.ShowMore != null)
                 {
-                    response = response.Skip((request.Page - 1) * request.ShowMore.Take).Take(request.ShowMore.Take).ToList();
+                    response = response
+                        .Skip((request.Page - 1) * request.ShowMore.Take)
+                        .Take(request.ShowMore.Take)
+                        .ToList();
                 }
 
-                var totalCount = Encashments.Count();
+                var totalCount = encashments.Count();
 
-                PaginationListDto<GetAllEncashmentQueryResponse> model =
-                       new PaginationListDto<GetAllEncashmentQueryResponse>(response, request.Page, request.ShowMore?.Take ?? response.Count, totalCount);
+                var model = new PaginationListDto<GetAllEncashmentQueryResponse>(
+                    response,
+                    request.Page,
+                    request.ShowMore?.Take ?? response.Count,
+                    totalCount
+                );
 
                 return new List<GetAllEncashmentListQueryResponse>
                 {

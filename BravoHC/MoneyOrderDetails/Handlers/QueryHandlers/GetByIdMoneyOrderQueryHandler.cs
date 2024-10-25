@@ -21,7 +21,10 @@ public class GetByIdMoneyOrderQueryHandler : IRequestHandler<GetByIdMoneyOrderQu
     {
         try
         {
-            var MoneyOrder = await _repository.GetAsync(x => x.Id == request.Id);
+            var MoneyOrder = await _repository.GetAsync(
+                  x => x.Id == request.Id,
+                  includes: new[] { "Project", "Branch" }
+              );
 
             if (MoneyOrder != null)
             {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241025080935_CreatedNewTableAttendanceRecord")]
+    partial class CreatedNewTableAttendanceRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,10 +109,10 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("EncashmentId")
+                    b.Property<int>("EncashmentId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ExpensesReportId")
+                    b.Property<int>("ExpensesReportId")
                         .HasColumnType("integer");
 
                     b.Property<string>("FileUrl")
@@ -374,9 +376,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -413,12 +416,12 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<float>("DepositAmount")
                         .HasColumnType("numeric(18,2)");
@@ -427,13 +430,17 @@ namespace Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("ModifiedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<float>("PettyCashAmount")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
@@ -456,9 +463,6 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("BalanceEndMonth")
-                        .HasColumnType("real");
-
                     b.Property<float>("CleaningExpenses")
                         .HasColumnType("real");
 
@@ -476,9 +480,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -682,9 +687,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("ModifiedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -1171,9 +1177,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("ModifiedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("MoneyOrderDays")
@@ -1185,6 +1192,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text[]");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -1389,11 +1397,15 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entities.Encashment", "Encashment")
                         .WithMany("Attachments")
-                        .HasForeignKey("EncashmentId");
+                        .HasForeignKey("EncashmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.ExpensesReport", "ExpensesReport")
                         .WithMany("Attachments")
-                        .HasForeignKey("ExpensesReportId");
+                        .HasForeignKey("ExpensesReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Encashment");
 
