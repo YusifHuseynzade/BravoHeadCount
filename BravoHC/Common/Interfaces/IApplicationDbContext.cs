@@ -39,6 +39,13 @@ namespace Common.Interfaces
         public DbSet<MoneyOrder> MoneyOrders { get; set; }
         public DbSet<SettingFinanceOperation> SettingFinanceOperations { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+        public DbSet<Trolley> Trolleys { get; set; }
+        public DbSet<TrolleyType> TrolleyTypes { get; set; }
+        public DbSet<EncashmentHistory> EncashmentHistories { get; set; }
+        public DbSet<EndOfMonthReportHistory> EndOfMonthReportHistories { get; set; }
+        public DbSet<ExpensesReportHistory> ExpensesReportHistories { get; set; }
+        public DbSet<MoneyOrderHistory> MoneyOrderHistories { get; set; }
+        public DbSet<TrolleyHistory> TrolleyHistories { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

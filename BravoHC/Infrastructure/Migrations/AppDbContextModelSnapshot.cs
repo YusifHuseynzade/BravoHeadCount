@@ -405,6 +405,48 @@ namespace Infrastructure.Migrations
                     b.ToTable("Encashments");
                 });
 
+            modelBuilder.Entity("Domain.Entities.EncashmentHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("AmountFoundOnSite")
+                        .HasColumnType("real");
+
+                    b.Property<float>("AmountFromSales")
+                        .HasColumnType("real");
+
+                    b.Property<int>("EncashmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<float>("SafeSurplus")
+                        .HasColumnType("real");
+
+                    b.Property<string>("SealNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("TotalAmount")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EncashmentHistories");
+                });
+
             modelBuilder.Entity("Domain.Entities.EndOfMonthReport", b =>
                 {
                     b.Property<int>("Id")
@@ -446,6 +488,41 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("EndOfMonthReports");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EndOfMonthReportHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("DepositAmount")
+                        .HasColumnType("real");
+
+                    b.Property<float>("EncashmentAmount")
+                        .HasColumnType("real");
+
+                    b.Property<int>("EndOfMonthReportId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<float>("TotalAmount")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EndOfMonthReportHistories");
                 });
 
             modelBuilder.Entity("Domain.Entities.ExpensesReport", b =>
@@ -519,6 +596,68 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ExpensesReports");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ExpensesReportHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("BalanceEndMonth")
+                        .HasColumnType("real");
+
+                    b.Property<float>("CleaningExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ExpensesReportId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<float>("OperationExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Other")
+                        .HasColumnType("real");
+
+                    b.Property<float>("PrintingExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RepairExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<float>("StationeryExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TotalExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TransportationExpenses")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UtilityElectricity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UtilityWater")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExpensesReportHistories");
                 });
 
             modelBuilder.Entity("Domain.Entities.Fact", b =>
@@ -731,6 +870,74 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("MoneyOrders");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MoneyOrderHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("FiftyAZN")
+                        .HasColumnType("real");
+
+                    b.Property<float>("FiftyQapik")
+                        .HasColumnType("real");
+
+                    b.Property<float>("FiveAZN")
+                        .HasColumnType("real");
+
+                    b.Property<float>("FiveQapik")
+                        .HasColumnType("real");
+
+                    b.Property<int>("HundredAZN")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MoneyOrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<float>("OneAZN")
+                        .HasColumnType("real");
+
+                    b.Property<float>("OneQapik")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TenAZN")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TenQapik")
+                        .HasColumnType("real");
+
+                    b.Property<float>("ThreeQapik")
+                        .HasColumnType("real");
+
+                    b.Property<int>("TotalAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("TwentyAZN")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TwentyQapik")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MoneyOrderHistories");
                 });
 
             modelBuilder.Entity("Domain.Entities.Month", b =>
@@ -1342,6 +1549,116 @@ namespace Infrastructure.Migrations
                     b.ToTable("Summaries");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Trolley", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BrokenTrolleysCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CountDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TrolleyTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkingTrolleysCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TrolleyTypeId");
+
+                    b.ToTable("Trolleys");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TrolleyHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BrokenTrolleysCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TrolleyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkingTrolleysCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrolleyHistories");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TrolleyType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrolleyTypes");
+                });
+
             modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -1750,6 +2067,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("Month");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Trolley", b =>
+                {
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany("Trolleys")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.TrolleyType", "TrolleyType")
+                        .WithMany("Trolleys")
+                        .HasForeignKey("TrolleyTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("TrolleyType");
+                });
+
             modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
                 {
                     b.HasOne("Domain.Entities.Employee", "Employee")
@@ -1835,6 +2171,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("ScheduledDatas");
 
                     b.Navigation("Stores");
+
+                    b.Navigation("Trolleys");
                 });
 
             modelBuilder.Entity("Domain.Entities.ResidentalArea", b =>
@@ -1859,6 +2197,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.SubSection", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TrolleyType", b =>
+                {
+                    b.Navigation("Trolleys");
                 });
 
             modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>

@@ -7,5 +7,6 @@
         public string Position { get; set; }
         public string Encashment { get; set; }
         public string ExpensesReport { get; set; }
+        public string TrolleyType { get; set; }
     }
 }

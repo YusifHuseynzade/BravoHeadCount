@@ -44,6 +44,8 @@
     <ProjectReference Include="..\StoreDetails\StoreDetails.csproj" />
     <ProjectReference Include="..\SubSectionDetails\SubSectionDetails.csproj" />
     <ProjectReference Include="..\SummaryDetails\SummaryDetails.csproj" />
+    <ProjectReference Include="..\TrolleyDetails\TrolleyDetails.csproj" />
+    <ProjectReference Include="..\TrolleyTypeDetails\TrolleyTypeDetails.csproj" />
     <ProjectReference Include="..\VacationScheduleDetails\VacationScheduleDetails.csproj" />
   </ItemGroup>
 

@@ -9,6 +9,7 @@ using Domain.IServices;
 using EmployeeDetails.Handlers.CommandHandlers;
 using EmployeeDetails.Profiles;
 using EncashmentDetails.Profiles;
+using EndOfMonthReportDetails.Profiles;
 using ExpensesReportDetails.Profiles;
 using HeadCountBackGroundColorDetails.Profiles;
 using HeadCountDetails.HeadCountExportedService;
@@ -17,6 +18,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using MoneyOrderDetails.Profiles;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
@@ -28,6 +30,8 @@ using SickLeaveDetails.Profiles;
 using StoreDetails.Profiles;
 using SubSectionDetails.Profiles;
 using SummaryDetails.Profiles;
+using TrolleyDetails.Profiles;
+using TrolleyTypeDetails.Profiles;
 using VacationScheduleDetails.Profiles;
 
 namespace Infrastructure
@@ -69,6 +73,13 @@ namespace Infrastructure
             builder.RegisterType<ExpensesReportRepository>().As<IExpensesReportRepository>();
             builder.RegisterType<MoneyOrderRepository>().As<IMoneyOrderRepository>();
             builder.RegisterType<SettingFinanceOperationRepository>().As<ISettingFinanceOperationRepository>();
+            builder.RegisterType<TrolleyRepository>().As<ITrolleyRepository>();
+            builder.RegisterType<TrolleyTypeRepository>().As<ITrolleyTypeRepository>();
+            builder.RegisterType<EncashmentHistoryRepository>().As<IEncashmentHistoryRepository>();
+            builder.RegisterType<EndOfMonthReportHistoryRepository>().As<IEndOfMonthReportHistoryRepository>();
+            builder.RegisterType<ExpensesReportHistoryRepository>().As<IExpensesReportHistoryRepository>();
+            builder.RegisterType<MoneyOrderHistoryRepository>().As<IMoneyOrderHistoryRepository>();
+            builder.RegisterType<TrolleyHistoryRepository>().As<ITrolleyHistoryRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<ScheduledDataExportService>().AsSelf().InstancePerLifetimeScope();
@@ -111,6 +122,10 @@ namespace Infrastructure
                     cfg.AddProfile(new VacationScheduleMapper(httpContextAccessor));
                     cfg.AddProfile(new EncashmentMapper(httpContextAccessor));
                     cfg.AddProfile(new ExpensesReportMapper(httpContextAccessor));
+                    cfg.AddProfile(new EndOfMonthReportMapper(httpContextAccessor));
+                    cfg.AddProfile(new MoneyOrderMapper(httpContextAccessor));
+                    cfg.AddProfile(new TrolleyMapper(httpContextAccessor));
+                    cfg.AddProfile(new TrolleyTypeMapper(httpContextAccessor));
                 });
 
                 return config;

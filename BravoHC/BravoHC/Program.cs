@@ -8,6 +8,8 @@ using Domain.Entities;
 using EmployeeDetails;
 using EmployeeDetails.ExcelImportService;
 using EncashmentDetails;
+using EndOfMonthReportDetails;
+using ExpensesReportDetails;
 using FluentValidation.AspNetCore;
 using HeadCountBackGroundColorDetails;
 using HeadCountDetails;
@@ -18,16 +20,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MoneyOrderDetails;
 using PositionDetails;
 using ProjectDetails;
 using ProjectDetails.ExcelImportService;
 using ResidentalAreaDetails;
 using ScheduledDataDetails;
 using SectionDetails;
+using SettingFinanceOperationDetails;
 using StoreDetails;
 using SubSubSectionDetails;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using TrolleyDetails;
+using TrolleyTypeDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,6 +134,12 @@ builder.Services.AddVacationScheduleServices();
 builder.Services.AddSickLeaveServices();
 builder.Services.AddSummaryServices();
 builder.Services.AddEncashmentServices();
+builder.Services.AddExpensesReportServices();
+builder.Services.AddEndOfMonthReportServices();
+builder.Services.AddMoneyOrderServices();
+builder.Services.AddSettingFinanceOperationServices();
+builder.Services.AddTrolleyServices();
+builder.Services.AddTrolleyTypeServices();
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(
