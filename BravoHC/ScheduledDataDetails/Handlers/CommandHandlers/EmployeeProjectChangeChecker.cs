@@ -48,7 +48,6 @@ namespace ScheduledDataBackgroundService
         {
             var employees = await _employeeRepository.GetAllAsync();
 
-            // Use UTC dates to avoid PostgreSQL timestamp issues
             var currentMonthStart = DateTime.SpecifyKind(
                 new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1),
                 DateTimeKind.Utc
@@ -70,6 +69,20 @@ namespace ScheduledDataBackgroundService
 
                     foreach (var scheduledData in scheduledDatas)
                     {
+                        // Kontrol: Yeni proje için aynı tarihte zaten veri varsa ekleme yapma
+                        var existingData = await _scheduledDataRepository.GetAllAsync(sd =>
+                            sd.EmployeeId == employee.Id &&
+                            sd.ProjectId == employee.ProjectId && // Yeni proje
+                            sd.Date == scheduledData.Date); // Aynı tarih
+
+                        if (existingData.Any())
+                        {
+                            _logger.LogInformation(
+                                $"Skipped copying schedule data for employee {employee.FullName} on {scheduledData.Date:yyyy-MM-dd} to project {employee.ProjectId} (already exists)."
+                            );
+                            continue; // Bu tarih için veri zaten varsa geç
+                        }
+
                         var newScheduledData = new ScheduledData
                         {
                             EmployeeId = employee.Id,
@@ -83,7 +96,9 @@ namespace ScheduledDataBackgroundService
                     }
 
                     await _scheduledDataRepository.CommitAsync();
-                    _logger.LogInformation($"Scheduled data copied for employee {employee.FullName} to project {employee.ProjectId}.");
+                    _logger.LogInformation(
+                        $"Scheduled data copied for employee {employee.FullName} to project {employee.ProjectId}."
+                    );
                 }
             }
         }
