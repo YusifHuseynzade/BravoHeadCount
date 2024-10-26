@@ -53,7 +53,7 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
                         return new CreateVacationScheduleCommandResponse
                         {
                             IsSuccess = false,
-                            ErrorMessage = "Before the 9th of the current month, you can only create a vacation schedule for the next month or the month after the next."
+                            ErrorMessage = "Before the 25th of the current month, you can only create a vacation schedule for the next month or the month after the next."
                         };
                     }
                 }
@@ -65,7 +65,7 @@ namespace VacationScheduleDetails.Handlers.CommandHandlers
                         return new CreateVacationScheduleCommandResponse
                         {
                             IsSuccess = false,
-                            ErrorMessage = "After the 9th of the current month, you cannot create a vacation schedule for the next month. Please select a later month."
+                            ErrorMessage = "After the 25th of the current month, you cannot create a vacation schedule for the next month. Please select a later month."
                         };
                     }
                 }

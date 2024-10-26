@@ -22,6 +22,7 @@ using MoneyOrderDetails.Profiles;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
+using ScheduledDataBackgroundService;
 using ScheduledDataDetails.Handlers.CommandHandlers;
 using ScheduledDataDetails.Profiles;
 using ScheduledDataDetails.ScheduledDataExportService;
@@ -93,8 +94,11 @@ namespace Infrastructure
             //.As<IHostedService>()  // IHostedService olarak kaydet
             //.SingleInstance();
             builder.RegisterType<AttendanceBackgroundService>()
-          .As<IHostedService>()  // IHostedService olarak kaydet
-          .SingleInstance();
+            .As<IHostedService>()  // IHostedService olarak kaydet
+            .SingleInstance();
+            builder.RegisterType<EmployeeProjectChangeChecker>()
+            .As<IHostedService>()  // IHostedService olarak kaydet
+            .SingleInstance();
 
 
             builder.Register(ctx =>
