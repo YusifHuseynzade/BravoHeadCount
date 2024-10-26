@@ -45,10 +45,25 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                         continue;
                     }
 
+                   
+                    // Şu anki yerel tarihi al
+                    var today = DateTime.Now.Date;
+                    // Pazartesi'yi haftanın ilk günü olarak kabul ederek hafta başlangıcını belirle
+                    var currentWeekStart = today.AddDays(-(int)(today.DayOfWeek == DayOfWeek.Sunday ? 6 : today.DayOfWeek - DayOfWeek.Monday));
+                    // Haftanın bitiş günü (Pazar)
+                    var currentWeekEnd = currentWeekStart.AddDays(6);
+
                     // Haftanın başlangıcını ve bitişini belirle
                     var referenceDate = scheduledDataList.First().Date;
                     var weekStart = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + 1).Date;
                     var weekEnd = weekStart.AddDays(6);
+
+                    // Geçmiş haftaya güncelleme kontrolü
+                    if (weekEnd < currentWeekStart)
+                    {
+                        failureMessages.Add($"Updates for the previous week ending {weekEnd:yyyy-MM-dd} are not allowed.");
+                        continue;
+                    }
 
                     if (scheduledDataList.Count(sd => sd.Date >= weekStart && sd.Date <= weekEnd) != 7)
                     {
@@ -69,6 +84,56 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                     if (!weeklyUpdate.WeeklyUpdates.Any(update => update.PlanId == dayOffPlan.Id))
                     {
                         failureMessages.Add($"Missing 'Day Off' plan for the week starting {weekStart:yyyy-MM-dd}.");
+                        continue;
+                    }
+
+                    bool isValidSchedule = true;
+                    for (int i = 0; i < weeklyUpdate.WeeklyUpdates.Count - 1; i++)
+                    {
+                        var currentDay = weeklyUpdate.WeeklyUpdates[i];
+                        var nextDay = weeklyUpdate.WeeklyUpdates[i + 1];
+
+                        var currentPlan = await _planRepository.GetByIdAsync(currentDay.PlanId);
+                        var nextPlan = await _planRepository.GetByIdAsync(nextDay.PlanId);
+
+                        if (currentPlan != null && nextPlan != null)
+                        {
+                            // Eğer özel günlerden biri ise (Day Off, Məzuniyyət vs.), fark kontrolü atlanır
+                            if (IsSpecialPlan(currentPlan.Value) || IsSpecialPlan(nextPlan.Value))
+                            {
+                                continue; // Bu günler için zaman farkı kontrol edilmez
+                            }
+
+                            // Saat aralıklarını ayrıştır
+                            var currentEndTime = TimeSpan.Parse(currentPlan.Value.Split('-')[1]);
+                            var nextStartTime = TimeSpan.Parse(nextPlan.Value.Split('-')[0]);
+
+                            // Gece yarısını geçme durumunu kontrol et
+                            double timeDifference;
+                            if (currentEndTime > nextStartTime)
+                            {
+                                timeDifference = (TimeSpan.FromHours(24) - currentEndTime + nextStartTime).TotalHours;
+                            }
+                            else
+                            {
+                                timeDifference = (nextStartTime - currentEndTime).TotalHours;
+                            }
+
+                            // Fark 12 saatten azsa geçersiz program
+                            if (timeDifference < 12)
+                            {
+                                isValidSchedule = false;
+                                failureMessages.Add($"The time difference between the end of day {i + 1} and the start of day {i + 2} must be at least 12 hours.");
+                                break;
+                            }
+                        }
+                    }
+
+                   
+
+                    if (!isValidSchedule)
+                    {
+                        failureMessages.Add($"Invalid schedule for the week starting {weekStart:yyyy-MM-dd} due to insufficient time gap between shifts.");
                         continue;
                     }
 
@@ -126,6 +191,11 @@ namespace ScheduledDataDetailsHandlers.CommandHandlers
                     FailureMessages = failureMessages
                 };
             }
+        }
+        // Özel planları kontrol eden yardımcı metot
+        private bool IsSpecialPlan(string planValue)
+        {
+            return planValue == "Day Off" || planValue == "Məzuniyyət" || planValue == "Xəstəlik vərəqi" || planValue == "Bayram";
         }
     }
 }

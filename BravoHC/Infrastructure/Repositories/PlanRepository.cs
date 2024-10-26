@@ -22,5 +22,10 @@ namespace Infrastructure.Repositories
             return await _context.Set<Plan>()
                 .FirstOrDefaultAsync(p => p.Value == value);
         }
+        // Id'ye göre Plan getir
+        public async Task<Plan> GetByIdAsync(int id)
+        {
+            return await _context.Set<Plan>().FirstOrDefaultAsync(p => p.Id == id);
+        }
     }
 }

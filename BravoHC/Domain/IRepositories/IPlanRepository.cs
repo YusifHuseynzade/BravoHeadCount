@@ -10,5 +10,6 @@ namespace Domain.IRepositories
     public interface IPlanRepository : IRepository<Plan>
     {
         Task<Plan> GetByValueAsync(string value);
+        Task<Plan> GetByIdAsync(int id); // Id'ye göre Plan getir
     }
 }

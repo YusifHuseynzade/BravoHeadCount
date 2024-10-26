@@ -13,6 +13,7 @@ namespace ScheduledDataDetails.Commands.Response
         public int SuccessCount { get; set; } // Başarılı güncelleme sayısı
         public int FailureCount { get; set; } // Başarısız güncelleme sayısı
         public List<string> FailureMessages { get; set; } // Hata mesajlarının listesi
+        public string ErrorCode { get; set; }
 
         public UpdateScheduledDataCommandResponse()
         {
