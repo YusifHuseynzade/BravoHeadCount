@@ -22,7 +22,7 @@ namespace BravoHC.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Add([FromBody] CreateTrolleyCommandRequest request)
+        public async Task<IActionResult> Add([FromQuery] CreateTrolleyCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -34,7 +34,7 @@ namespace BravoHC.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Update([FromBody] UpdateTrolleyCommandRequest request)
+        public async Task<IActionResult> Update([FromQuery] UpdateTrolleyCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -56,6 +56,19 @@ namespace BravoHC.Controllers
             return Trolley != null
                 ? (IActionResult)Ok(Trolley)
                 : NotFound(new { Message = "Trolley not found." });
+        }
+        [HttpGet("trolleyhistory")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetHistory([FromQuery] GetTrolleyHistoryQueryRequest request)
+        {
+            var trolleyHistory = await _mediator.Send(request);
+
+            if (trolleyHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(trolleyHistory);
         }
     }
 }

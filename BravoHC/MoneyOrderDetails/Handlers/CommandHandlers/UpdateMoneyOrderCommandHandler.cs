@@ -12,6 +12,7 @@ public class UpdateMoneyOrderCommandHandler : IRequestHandler<UpdateMoneyOrderCo
 {
     private readonly IMoneyOrderRepository _moneyOrderRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMoneyOrderHistoryRepository _historyRepository;
 
     public UpdateMoneyOrderCommandHandler(
         IMoneyOrderRepository moneyOrderRepository,
@@ -102,6 +103,33 @@ public class UpdateMoneyOrderCommandHandler : IRequestHandler<UpdateMoneyOrderCo
             // Veritabanında değişiklikleri kaydet
             await _moneyOrderRepository.UpdateAsync(moneyOrder);
             await _moneyOrderRepository.CommitAsync();
+
+            // Log the update in MoneyOrderHistory
+            var history = new MoneyOrderHistory
+            {
+                MoneyOrderId = moneyOrder.Id,
+                Name = moneyOrder.Name,
+                HundredAZN = moneyOrder.HundredAZN,
+                FiftyAZN = moneyOrder.FiftyAZN,
+                TwentyAZN = moneyOrder.TwentyAZN,
+                TenAZN = moneyOrder.TenAZN,
+                FiveAZN = moneyOrder.FiveAZN,
+                OneAZN = moneyOrder.OneAZN,
+                FiftyQapik = moneyOrder.FiftyQapik,
+                TwentyQapik = moneyOrder.TwentyQapik,
+                TenQapik = moneyOrder.TenQapik,
+                FiveQapik = moneyOrder.FiveQapik,
+                ThreeQapik = moneyOrder.ThreeQapik,
+                OneQapik = moneyOrder.OneQapik,
+                TotalQuantity = moneyOrder.TotalQuantity,
+                TotalAmount = moneyOrder.TotalAmount,
+                ModifiedDate = DateTime.UtcNow,
+                ModifiedBy = fullName
+            };
+
+            // Save the history entry
+            await _historyRepository.AddAsync(history);
+            await _historyRepository.CommitAsync();
 
             response.IsSuccess = true;
             response.Message = "Money order updated successfully.";

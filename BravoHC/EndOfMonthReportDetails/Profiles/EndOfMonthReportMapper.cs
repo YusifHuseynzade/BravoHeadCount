@@ -21,5 +21,7 @@ public class EndOfMonthReportMapper : Profile
              .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode)) // Project bilgisi
             .ReverseMap()
             .ReverseMap();
+
+        CreateMap<EndOfMonthReportHistory, GetEndOfMonthReportHistoryQueryResponse>().ReverseMap();
     }
 }

@@ -9,5 +9,5 @@ namespace SettingFinanceOperationDetails.Commands.Response;
 public class CreateSettingFinanceOperationCommandResponse
 {
 	public bool IsSuccess { get; set; }
-	public string ErrorMessage { get; internal set; }
+	public string Message { get; internal set; }
 }

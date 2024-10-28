@@ -22,17 +22,20 @@ namespace EncashmentDetails.Handlers.CommandHandlers
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly IOptions<FileSettings> _settings;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEncashmentHistoryRepository _historyRepository;
 
         public UpdateEncashmentCommandHandler(
             IEncashmentRepository encashmentRepository,
             IAttachmentRepository attachmentRepository,
             IOptions<FileSettings> settings,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IEncashmentHistoryRepository historyRepository)
         {
             _encashmentRepository = encashmentRepository;
             _attachmentRepository = attachmentRepository;
             _settings = settings;
             _httpContextAccessor = httpContextAccessor;
+            _historyRepository = historyRepository;
         }
 
         public async Task<UpdateEncashmentCommandResponse> Handle(UpdateEncashmentCommandRequest request, CancellationToken cancellationToken)
@@ -71,6 +74,7 @@ namespace EncashmentDetails.Handlers.CommandHandlers
                     response.Message = $"Encashment with ID {request.Id} not found.";
                     return response;
                 }
+
 
                 // Encashment'ı güncelle
                 encashment.SetDetails(
@@ -116,6 +120,22 @@ namespace EncashmentDetails.Handlers.CommandHandlers
                 // Değişiklikleri kaydet
                 await _encashmentRepository.UpdateAsync(encashment);
                 await _encashmentRepository.CommitAsync();
+
+                // Create a history entry before updating
+                var history = new EncashmentHistory
+                {
+                    EncashmentId = encashment.Id,
+                    Name = encashment.Name,
+                    AmountFromSales = encashment.AmountFromSales,
+                    AmountFoundOnSite = encashment.AmountFoundOnSite,
+                    SafeSurplus = encashment.SafeSurplus,
+                    TotalAmount = encashment.TotalAmount,
+                    SealNumber = encashment.SealNumber,
+                    ModifiedDate = DateTime.UtcNow,
+                    ModifiedBy = fullName
+                };
+                await _historyRepository.AddAsync(history);
+                await _historyRepository.CommitAsync();
 
                 response.IsSuccess = true;
                 response.Message = "Encashment updated successfully.";

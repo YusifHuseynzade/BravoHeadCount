@@ -16,13 +16,16 @@ namespace TrolleyDetails.Handlers.CommandHandlers
     {
         private readonly ITrolleyRepository _trolleyRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ITrolleyHistoryRepository _historyRepository;
 
         public UpdateTrolleyCommandHandler(
             ITrolleyRepository trolleyRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ITrolleyHistoryRepository historyRepository)
         {
             _trolleyRepository = trolleyRepository;
             _httpContextAccessor = httpContextAccessor;
+            _historyRepository = historyRepository;
         }
 
         public async Task<UpdateTrolleyCommandResponse> Handle(UpdateTrolleyCommandRequest request, CancellationToken cancellationToken)
@@ -60,7 +63,7 @@ namespace TrolleyDetails.Handlers.CommandHandlers
                 // Update the Trolley details
                 trolley.ProjectId = request.ProjectId;
                 trolley.TrolleyTypeId = request.TrolleyTypeId;
-                trolley.CountDate = request.CountDate;
+                trolley.CountDate = request.CountDate.ToUniversalTime();
                 trolley.WorkingTrolleysCount = request.WorkingTrolleysCount;
                 trolley.BrokenTrolleysCount = request.BrokenTrolleysCount;
                 trolley.ModifiedBy = fullName;
@@ -70,6 +73,21 @@ namespace TrolleyDetails.Handlers.CommandHandlers
                 // Commit changes to the database
                 await _trolleyRepository.UpdateAsync(trolley);
                 await _trolleyRepository.CommitAsync();
+
+                // Log the update in TrolleyHistory
+                var history = new TrolleyHistory
+                {
+                    TrolleyId = trolley.Id,
+                    CountDate = trolley.CountDate.ToUniversalTime(),
+                    WorkingTrolleysCount = trolley.WorkingTrolleysCount,
+                    BrokenTrolleysCount = trolley.BrokenTrolleysCount,
+                    ModifiedDate = DateTime.UtcNow,
+                    ModifiedBy = fullName
+                };
+
+                // Save the history entry to the database
+                await _historyRepository.AddAsync(history);
+                await _historyRepository.CommitAsync();
 
                 response.IsSuccess = true;
                 response.Message = "Trolley updated successfully.";

@@ -27,5 +27,7 @@ public class ExpensesReportMapper : Profile
                 opt.MapFrom(src => src.Attachments.Select(a =>
                     $"{RequestExtensions.BaseUrl(_httpAccessor.HttpContext)}/{a.FileUrl}")))
             .ReverseMap();
+
+        CreateMap<ExpensesReportHistory, GetExpensesReportHistoryQueryResponse>().ReverseMap();
     }
 }

@@ -46,7 +46,7 @@ namespace TrolleyDetails.Handlers.CommandHandlers
                 {
                     ProjectId = request.ProjectId,
                     TrolleyTypeId = request.TrolleyTypeId,
-                    CountDate = request.CountDate,
+                    CountDate = request.CountDate.ToUniversalTime(),
                     WorkingTrolleysCount = request.WorkingTrolleysCount,
                     BrokenTrolleysCount = request.BrokenTrolleysCount,
                     CreatedBy = fullName,

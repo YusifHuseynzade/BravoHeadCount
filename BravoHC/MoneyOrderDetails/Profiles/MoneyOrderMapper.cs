@@ -23,5 +23,7 @@ public class MoneyOrderMapper : Profile
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode))
             .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name))
             .ReverseMap();
+
+        CreateMap<MoneyOrderHistory, GetMoneyOrderHistoryQueryResponse>().ReverseMap();
     }
 }

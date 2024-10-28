@@ -20,7 +20,7 @@ namespace BravoHC.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Add([FromBody] CreateSettingFinanceOperationCommandRequest request)
+        public async Task<IActionResult> Add([FromQuery] CreateSettingFinanceOperationCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -32,7 +32,7 @@ namespace BravoHC.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Update([FromBody] UpdateSettingFinanceOperationCommandRequest request)
+        public async Task<IActionResult> Update([FromQuery] UpdateSettingFinanceOperationCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }

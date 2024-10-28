@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace ExpensesReportDetails.Queries.Response
 {
-    public class ExpensesReportHistory : BaseEntity
+    public class GetExpensesReportHistoryQueryResponse
     {
+        public int Id { get; set; }
         public int ExpensesReportId { get; set; }
         public string? Name { get; set; }
         public float UtilityElectricity { get; set; }
@@ -22,7 +23,7 @@ namespace Domain.Entities
         public float Other { get; set; }
         public float TotalExpenses { get; set; }
         public string? Comment { get; set; }
-        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow.AddHours(4);
+        public DateTime ModifiedDate { get; set; } 
         public string ModifiedBy { get; set; }
     }
 }

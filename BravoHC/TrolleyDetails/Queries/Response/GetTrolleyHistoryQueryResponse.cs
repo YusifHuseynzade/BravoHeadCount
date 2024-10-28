@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace TrolleyDetails.Queries.Response
 {
-    public class TrolleyHistory: BaseEntity
+    public class GetTrolleyHistoryQueryResponse
     {
+        public int Id { get; set; }
         public int TrolleyId { get; set; }
         public int WorkingTrolleysCount { get; set; }
         public int BrokenTrolleysCount { get; set; }
         public DateTime CountDate { get; set; }
-        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow.AddHours(4);
-        public string ModifiedBy { get; set; } 
+        public DateTime ModifiedDate { get; set; }
+        public string ModifiedBy { get; set; }
     }
 }

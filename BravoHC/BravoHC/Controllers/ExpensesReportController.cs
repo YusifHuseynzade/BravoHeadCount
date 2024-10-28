@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using EndOfMonthReportDetails.Queries.Request;
 using ExpensesReportDetails.Commands.Request;
 using ExpensesReportDetails.Queries.Request;
 using MediatR;
@@ -20,7 +21,7 @@ namespace BravoHC.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Add([FromBody] CreateExpensesReportCommandRequest request)
+        public async Task<IActionResult> Add([FromQuery] CreateExpensesReportCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -32,7 +33,7 @@ namespace BravoHC.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Update([FromBody] UpdateExpensesReportCommandRequest request)
+        public async Task<IActionResult> Update([FromQuery] UpdateExpensesReportCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -54,6 +55,19 @@ namespace BravoHC.Controllers
             return ExpensesReport != null
                 ? (IActionResult)Ok(ExpensesReport)
                 : NotFound(new { Message = "ExpensesReport not found." });
+        }
+        [HttpGet("expensesreporthistory")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetHistory([FromQuery] GetExpensesReportHistoryQueryRequest request)
+        {
+            var expensesReportHistory = await _mediator.Send(request);
+
+            if (expensesReportHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(expensesReportHistory);
         }
     }
 }

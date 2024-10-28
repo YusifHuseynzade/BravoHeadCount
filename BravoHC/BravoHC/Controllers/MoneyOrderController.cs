@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using ExpensesReportDetails.Queries.Request;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace BravoHC.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Add([FromBody] CreateMoneyOrderCommandRequest request)
+        public async Task<IActionResult> Add([FromQuery] CreateMoneyOrderCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -32,7 +33,7 @@ namespace BravoHC.Controllers
         }
         [HttpPut]
         [Authorize(Roles = "Admin, Recruiter")]
-        public async Task<IActionResult> Update([FromBody] UpdateMoneyOrderCommandRequest request)
+        public async Task<IActionResult> Update([FromQuery] UpdateMoneyOrderCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
@@ -54,6 +55,19 @@ namespace BravoHC.Controllers
             return MoneyOrder != null
                 ? (IActionResult)Ok(MoneyOrder)
                 : NotFound(new { Message = "MoneyOrder not found." });
+        }
+        [HttpGet("moneyorderhistory")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetHistory([FromQuery] GetMoneyOrderHistoryQueryRequest request)
+        {
+            var moneyOrderHistory = await _mediator.Send(request);
+
+            if (moneyOrderHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(moneyOrderHistory);
         }
     }
 }

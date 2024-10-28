@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace MoneyOrderDetails.Queries.Response
 {
-    public class MoneyOrderHistory : BaseEntity
+    public class GetMoneyOrderHistoryQueryResponse
     {
+        public int Id { get; set; }
         public int MoneyOrderId { get; set; }
         public string? Name { get; set; }
         public int HundredAZN { get; set; }
@@ -24,7 +25,7 @@ namespace Domain.Entities
         public float OneQapik { get; set; }
         public int TotalQuantity { get; set; }
         public int TotalAmount { get; set; }
-        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow.AddHours(4);
+        public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
     }
 }

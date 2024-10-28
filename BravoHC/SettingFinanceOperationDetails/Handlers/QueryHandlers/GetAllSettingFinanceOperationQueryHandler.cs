@@ -21,7 +21,12 @@ namespace SettingFinanceOperationDetails.Handlers.QueryHandlers
 
         public async Task<List<GetAllSettingFinanceOperationListQueryResponse>> Handle(GetAllSettingFinanceOperationQueryRequest request, CancellationToken cancellationToken)
         {
-            var SettingFinanceOperations = _repository.GetAll(x => true);
+            var SettingFinanceOperations = _repository.GetAll(
+                x => true,
+                nameof(SettingFinanceOperation.Project),
+                nameof(SettingFinanceOperation.Branch)
+                );
+
 
             if (SettingFinanceOperations != null)
             {

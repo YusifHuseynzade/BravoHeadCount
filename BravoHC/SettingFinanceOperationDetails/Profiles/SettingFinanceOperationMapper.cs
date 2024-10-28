@@ -14,7 +14,13 @@ public class SettingFinanceOperationMapper : Profile
     {
         _httpAccessor = httpAccessor;
 
-        CreateMap<SettingFinanceOperation, GetAllSettingFinanceOperationQueryResponse>().ReverseMap();
-        CreateMap<SettingFinanceOperation, GetByIdSettingFinanceOperationQueryResponse>().ReverseMap();
+        CreateMap<SettingFinanceOperation, GetAllSettingFinanceOperationQueryResponse>()
+               .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode))
+               .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name))
+                .ReverseMap();
+        CreateMap<SettingFinanceOperation, GetByIdSettingFinanceOperationQueryResponse>()
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode))
+               .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.Name))
+                .ReverseMap();
     }
 }

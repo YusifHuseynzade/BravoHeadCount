@@ -21,7 +21,10 @@ public class GetByIdSettingFinanceOperationQueryHandler : IRequestHandler<GetByI
     {
         try
         {
-            var SettingFinanceOperation = await _repository.GetAsync(x => x.Id == request.Id);
+            var SettingFinanceOperation = await _repository.GetAsync(
+                  x => x.Id == request.Id,
+                  includes: new[] { "Project", "Branch" }
+              );
 
             if (SettingFinanceOperation != null)
             {

@@ -20,17 +20,20 @@ namespace ExpensesReportDetails.Handlers.CommandHandlers
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<FileSettings> _settings;
+        private readonly IExpensesReportHistoryRepository _historyRepository;
 
         public UpdateExpensesReportCommandHandler(
             IExpensesReportRepository expensesReportRepository,
             IAttachmentRepository attachmentRepository,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<FileSettings> settings)
+            IOptions<FileSettings> settings,
+            IExpensesReportHistoryRepository historyRepository)
         {
             _expensesReportRepository = expensesReportRepository;
             _attachmentRepository = attachmentRepository;
             _httpContextAccessor = httpContextAccessor;
             _settings = settings;
+            _historyRepository = historyRepository;
         }
 
         public async Task<UpdateExpensesReportCommandResponse> Handle(UpdateExpensesReportCommandRequest request, CancellationToken cancellationToken)
@@ -71,7 +74,7 @@ namespace ExpensesReportDetails.Handlers.CommandHandlers
 
                 expensesReport.SetDetails(
                     request.Name,
-                    request.Date,
+                    request.Date.ToUniversalTime(),
                     request.UtilityElectricity,
                     request.UtilityWater,
                     request.RepairExpenses,
@@ -121,6 +124,30 @@ namespace ExpensesReportDetails.Handlers.CommandHandlers
 
                 await _expensesReportRepository.UpdateAsync(expensesReport);
                 await _expensesReportRepository.CommitAsync();
+
+                // Log history after successful update
+                var history = new ExpensesReportHistory
+                {
+                    ExpensesReportId = expensesReport.Id,
+                    Name = expensesReport.Name,
+                    UtilityElectricity = expensesReport.UtilityElectricity,
+                    UtilityWater = expensesReport.UtilityWater,
+                    RepairExpenses = expensesReport.RepairExpenses,
+                    TransportationExpenses = expensesReport.TransportationExpenses,
+                    CleaningExpenses = expensesReport.CleaningExpenses,
+                    StationeryExpenses = expensesReport.StationeryExpenses,
+                    PrintingExpenses = expensesReport.PrintingExpenses,
+                    OperationExpenses = expensesReport.OperationExpenses,
+                    Other = expensesReport.Other,
+                    TotalExpenses = expensesReport.TotalExpenses,
+                    BalanceEndMonth = expensesReport.BalanceEndMonth,
+                    Comment = expensesReport.Comment,
+                    ModifiedDate = DateTime.UtcNow,
+                    ModifiedBy = fullName
+                };
+
+                await _historyRepository.AddAsync(history);
+                await _historyRepository.CommitAsync();
 
                 response.IsSuccess = true;
                 response.Message = "Expenses report updated successfully.";

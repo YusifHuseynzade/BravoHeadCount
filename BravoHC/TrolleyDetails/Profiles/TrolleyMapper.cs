@@ -23,5 +23,7 @@ public class TrolleyMapper : Profile
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.ProjectCode))
             .ForMember(dest => dest.TrolleyTypeName, opt => opt.MapFrom(src => src.TrolleyType.Name))
             .ReverseMap();
+
+        CreateMap<MoneyOrderHistory, GetTrolleyHistoryQueryResponse>().ReverseMap();
     }
 }

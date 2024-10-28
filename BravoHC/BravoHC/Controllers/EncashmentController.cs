@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PositionDetails.Commands.Request;
 using PositionDetails.Queries.Request;
+using StoreDetails.Queries.Request;
 
 namespace BravoHC.Controllers
 {
@@ -54,6 +55,19 @@ namespace BravoHC.Controllers
             return Encashment != null
                 ? (IActionResult)Ok(Encashment)
                 : NotFound(new { Message = "Encashment not found." });
+        }
+        [HttpGet("encashmenthistory")]
+        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        public async Task<IActionResult> GetHistory([FromQuery] GetEncashmentHistoryQueryRequest request)
+        {
+            var encashmentHistory = await _mediator.Send(request);
+
+            if (encashmentHistory == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(encashmentHistory);
         }
     }
 }

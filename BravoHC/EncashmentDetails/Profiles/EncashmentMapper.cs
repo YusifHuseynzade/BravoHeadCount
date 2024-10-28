@@ -31,5 +31,7 @@ public class EncashmentMapper : Profile
             .ForMember(dest => dest.Attachments, opt => opt.MapFrom(src =>
                 src.Attachments.Select(a => a.FileUrl)))
             .ReverseMap();
+
+        CreateMap<EncashmentHistory, GetEncashmentHistoryQueryResponse>().ReverseMap();
     }
 }

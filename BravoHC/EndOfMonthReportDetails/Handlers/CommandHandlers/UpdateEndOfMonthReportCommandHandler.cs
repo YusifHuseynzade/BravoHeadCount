@@ -16,13 +16,16 @@ public class UpdateEndOfMonthReportCommandHandler : IRequestHandler<UpdateEndOfM
 {
     private readonly IEndOfMonthReportRepository _endOfMonthReportRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IEndOfMonthReportHistoryRepository _historyRepository;
 
     public UpdateEndOfMonthReportCommandHandler(
         IEndOfMonthReportRepository endOfMonthReportRepository,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IEndOfMonthReportHistoryRepository historyRepository)
     {
         _endOfMonthReportRepository = endOfMonthReportRepository;
         _httpContextAccessor = httpContextAccessor;
+        _historyRepository = historyRepository;
     }
 
     public async Task<UpdateEndOfMonthReportCommandResponse> Handle(UpdateEndOfMonthReportCommandRequest request, CancellationToken cancellationToken)
@@ -63,6 +66,7 @@ public class UpdateEndOfMonthReportCommandHandler : IRequestHandler<UpdateEndOfM
                 return response;
             }
 
+
             // Raporun detaylarını güncelle
             report.SetDetails(
                 request.EncashmentAmount,
@@ -78,6 +82,21 @@ public class UpdateEndOfMonthReportCommandHandler : IRequestHandler<UpdateEndOfM
             // Veritabanında değişiklikleri kaydet
             await _endOfMonthReportRepository.UpdateAsync(report);
             await _endOfMonthReportRepository.CommitAsync();
+
+            // Log history only after a successful update
+            var history = new EndOfMonthReportHistory
+            {
+                EndOfMonthReportId = report.Id,
+                EncashmentAmount = report.EncashmentAmount,
+                DepositAmount = report.DepositAmount,
+                TotalAmount = report.TotalAmount,
+                Name = report.Name,
+                ModifiedDate = DateTime.UtcNow,
+                ModifiedBy = fullName
+            };
+
+            await _historyRepository.AddAsync(history);
+            await _historyRepository.CommitAsync();
 
             response.IsSuccess = true;
             response.Message = "End of month report updated successfully.";

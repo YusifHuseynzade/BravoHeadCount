@@ -85,7 +85,8 @@ public class CreateMoneyOrderCommandHandler : IRequestHandler<CreateMoneyOrderCo
                 TotalAmount = totalAmount,
                 Name = request.Name,
                 SealNumber = request.SealNumber,
-                CreatedBy = fullName
+                CreatedBy = fullName,
+                CreatedDate = DateTime.UtcNow
             };
 
             // Veritabanına ekle
