@@ -1,14 +1,10 @@
-﻿using Domain.Entities;
-using EncashmentDetails.Queries.Request;
-using EndOfMonthReportDetails.Commands.Request;
+﻿using EndOfMonthReportDetails.Commands.Request;
 using EndOfMonthReportDetails.Queries.Request;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PositionDetails.Commands.Request;
 using PositionDetails.Queries.Request;
 
-namespace BravoHC.Controllers
+namespace FinanceOperation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

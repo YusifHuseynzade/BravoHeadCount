@@ -2,6 +2,7 @@
 using Domain.IRepositories;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading;
@@ -11,17 +12,14 @@ namespace ScheduledDataBackgroundService
 {
     public class EmployeeProjectChangeChecker : BackgroundService
     {
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IScheduledDataRepository _scheduledDataRepository;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger<EmployeeProjectChangeChecker> _logger;
 
         public EmployeeProjectChangeChecker(
-            IEmployeeRepository employeeRepository,
-            IScheduledDataRepository scheduledDataRepository,
+            IServiceScopeFactory serviceScopeFactory,
             ILogger<EmployeeProjectChangeChecker> logger)
         {
-            _employeeRepository = employeeRepository;
-            _scheduledDataRepository = scheduledDataRepository;
+            _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
         }
 
@@ -33,20 +31,24 @@ namespace ScheduledDataBackgroundService
             {
                 try
                 {
-                    await CheckAndCopyScheduledData();
+                    await CheckAndCopyScheduledData(stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error in EmployeeProjectChangeChecker: {ex}");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken); // Runs every 2 minutes
+                await Task.Delay(TimeSpan.FromHours(6), stoppingToken); // Runs every 6 hour
             }
         }
 
-        private async Task CheckAndCopyScheduledData()
+        private async Task CheckAndCopyScheduledData(CancellationToken cancellationToken)
         {
-            var employees = await _employeeRepository.GetAllAsync();
+            using var scope = _serviceScopeFactory.CreateScope();
+            var employeeRepository = scope.ServiceProvider.GetRequiredService<IEmployeeRepository>();
+            var scheduledDataRepository = scope.ServiceProvider.GetRequiredService<IScheduledDataRepository>();
+
+            var employees = await employeeRepository.GetAllAsync();
 
             var currentMonthStart = DateTime.SpecifyKind(
                 new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1),
@@ -57,11 +59,11 @@ namespace ScheduledDataBackgroundService
 
             foreach (var employee in employees)
             {
-                var scheduledDatas = await _scheduledDataRepository.GetAllAsync(sd =>
+                var scheduledDatas = await scheduledDataRepository.GetAllAsyncForCron(sd =>
                     sd.EmployeeId == employee.Id &&
                     sd.Date >= currentMonthStart &&
                     sd.Date < currentDate &&
-                    sd.ProjectId != employee.ProjectId); // Find mismatched project assignments
+                    sd.ProjectId != employee.ProjectId, cancellationToken);
 
                 if (scheduledDatas.Any())
                 {
@@ -69,33 +71,32 @@ namespace ScheduledDataBackgroundService
 
                     foreach (var scheduledData in scheduledDatas)
                     {
-                        // Kontrol: Yeni proje için aynı tarihte zaten veri varsa ekleme yapma
-                        var existingData = await _scheduledDataRepository.GetAllAsync(sd =>
+                        var existingData = await scheduledDataRepository.GetAllAsyncForCron(sd =>
                             sd.EmployeeId == employee.Id &&
                             sd.ProjectId == employee.ProjectId && // Yeni proje
-                            sd.Date == scheduledData.Date); // Aynı tarih
+                            sd.Date == scheduledData.Date, cancellationToken);
 
                         if (existingData.Any())
                         {
                             _logger.LogInformation(
                                 $"Skipped copying schedule data for employee {employee.FullName} on {scheduledData.Date:yyyy-MM-dd} to project {employee.ProjectId} (already exists)."
                             );
-                            continue; // Bu tarih için veri zaten varsa geç
+                            continue;
                         }
 
                         var newScheduledData = new ScheduledData
                         {
                             EmployeeId = employee.Id,
-                            ProjectId = employee.ProjectId, // Assign to new project
-                            Date = DateTime.SpecifyKind(scheduledData.Date, DateTimeKind.Utc), // Ensure Date is UTC
+                            ProjectId = employee.ProjectId,
+                            Date = DateTime.SpecifyKind(scheduledData.Date, DateTimeKind.Utc),
                             PlanId = scheduledData.PlanId,
                             FactId = scheduledData.FactId
                         };
 
-                        await _scheduledDataRepository.AddAsync(newScheduledData);
+                        await scheduledDataRepository.AddAsync(newScheduledData);
                     }
 
-                    await _scheduledDataRepository.CommitAsync();
+                    await scheduledDataRepository.CommitAsync();
                     _logger.LogInformation(
                         $"Scheduled data copied for employee {employee.FullName} to project {employee.ProjectId}."
                     );

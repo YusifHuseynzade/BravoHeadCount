@@ -99,9 +99,9 @@ namespace Infrastructure
             //builder.RegisterType<AttendanceBackgroundService>()
             //.As<IHostedService>()  // IHostedService olarak kaydet
             //.SingleInstance();
-            //builder.RegisterType<EmployeeProjectChangeChecker>()
-            //.As<IHostedService>()  // IHostedService olarak kaydet
-            //.SingleInstance();
+            builder.RegisterType<EmployeeProjectChangeChecker>()
+            .As<IHostedService>()  // IHostedService olarak kaydet
+            .SingleInstance();
             builder.RegisterType<GeneralSettingsCronJobService>()
            .As<IHostedService>()  // IHostedService olarak kaydet
            .SingleInstance();

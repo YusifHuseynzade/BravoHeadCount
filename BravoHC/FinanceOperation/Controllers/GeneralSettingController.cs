@@ -1,15 +1,9 @@
-﻿using Domain.Entities;
-using GeneralSettingDetails.Commands.Request;
+﻿using GeneralSettingDetails.Commands.Request;
 using GeneralSettingDetails.Queries.Request;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PositionDetails.Commands.Request;
-using PositionDetails.Queries.Request;
-using SettingFinanceOperationDetails.Commands.Request;
-using SettingFinanceOperationDetails.Queries.Request;
 
-namespace BravoHC.Controllers
+namespace FinanceOperation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

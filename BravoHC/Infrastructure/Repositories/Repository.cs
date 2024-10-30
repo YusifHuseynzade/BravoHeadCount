@@ -122,5 +122,16 @@ namespace Infrastructure.Repositories
 
             return query;
         }
+        public async Task<List<TEntity>> GetAllAsyncForCron(Expression<Func<TEntity, bool>> predicate = null, CancellationToken cancellationToken = default)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.ToListAsync(cancellationToken);
+        }
     }
 }

@@ -21,5 +21,6 @@ namespace Domain.IRepositories
         Task<int> CommitAsync();
         Task UpdateAsync(TEntity entity);
         IQueryable<TEntity> Include(IQueryable<TEntity> query, params string[] includes);
+        Task<List<TEntity>> GetAllAsyncForCron(Expression<Func<TEntity, bool>> predicate = null, CancellationToken cancellationToken = default);
     }
 }
