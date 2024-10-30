@@ -20,25 +20,25 @@ namespace BravoHC.Controllers
             _mediator = mediator;
         }
         [HttpPost]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Add([FromQuery] CreateMoneyOrderCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpDelete]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteMoneyOrderCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpPut]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromQuery] UpdateMoneyOrderCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpGet]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllMoneyOrderQueryRequest request)
         {
             var MoneyOrders = await _mediator.Send(request);
@@ -46,7 +46,7 @@ namespace BravoHC.Controllers
             return Ok(MoneyOrders);
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdMoneyOrderQueryRequest { Id = id };
@@ -57,7 +57,7 @@ namespace BravoHC.Controllers
                 : NotFound(new { Message = "MoneyOrder not found." });
         }
         [HttpGet("moneyorderhistory")]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetHistory([FromQuery] GetMoneyOrderHistoryQueryRequest request)
         {
             var moneyOrderHistory = await _mediator.Send(request);

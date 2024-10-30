@@ -9,5 +9,6 @@ namespace Domain.IRepositories
 {
     public interface IEndOfMonthReportRepository : IRepository<EndOfMonthReport>
     {
+        Task<List<EndOfMonthReport>> GetAllAsync();
     }
 }

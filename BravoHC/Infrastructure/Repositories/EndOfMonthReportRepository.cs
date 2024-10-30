@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace Infrastructure.Repositories
         public EndOfMonthReportRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<List<EndOfMonthReport>> GetAllAsync()
+        {
+            // Veritabanından tüm Expense raporlarını getir
+            return await _context.EndOfMonthReports.ToListAsync();
         }
     }
 }

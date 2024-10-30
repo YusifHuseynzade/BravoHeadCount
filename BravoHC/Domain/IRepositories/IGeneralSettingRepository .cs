@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Domain.IRepositories
 {
-    public interface IExpensesReportRepository : IRepository<ExpensesReport>
+    public interface IGeneralSettingRepository : IRepository<GeneralSetting>
     {
-        Task<List<ExpensesReport>> GetAllAsync();
+        Task<GeneralSetting?> GetSettingsAsync();
     }
 }

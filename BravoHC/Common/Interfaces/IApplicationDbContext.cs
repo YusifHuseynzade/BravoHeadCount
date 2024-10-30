@@ -46,6 +46,7 @@ namespace Common.Interfaces
         public DbSet<ExpensesReportHistory> ExpensesReportHistories { get; set; }
         public DbSet<MoneyOrderHistory> MoneyOrderHistories { get; set; }
         public DbSet<TrolleyHistory> TrolleyHistories { get; set; }
+        public DbSet<GeneralSetting> GeneralSettings { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

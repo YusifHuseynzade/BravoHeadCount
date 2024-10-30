@@ -57,6 +57,7 @@ namespace Infrastructure
         public DbSet<ExpensesReportHistory> ExpensesReportHistories { get; set; }
         public DbSet<MoneyOrderHistory> MoneyOrderHistories { get; set; }
         public DbSet<TrolleyHistory> TrolleyHistories { get; set; }
+        public DbSet<GeneralSetting> GeneralSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -102,6 +102,16 @@ namespace BravoHC.Controllers
 
             return Ok(projectHistory);
         }
+        [HttpGet("GetProjectByEmail")]
+        public async Task<IActionResult> GetProjectByEmail([FromQuery] GetProjectByEmailRequest request)
+        {
+            var response = await _mediator.Send(request);
+            if (!response.IsSuccess)
+                return BadRequest(response.Message);
 
+            return Ok(response);
+        }
     }
+
 }
+

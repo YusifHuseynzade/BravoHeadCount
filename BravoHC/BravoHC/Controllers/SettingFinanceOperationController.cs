@@ -19,25 +19,25 @@ namespace BravoHC.Controllers
             _mediator = mediator;
         }
         [HttpPost]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Add([FromQuery] CreateSettingFinanceOperationCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpDelete]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteSettingFinanceOperationCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpPut]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromQuery] UpdateSettingFinanceOperationCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpGet]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllSettingFinanceOperationQueryRequest request)
         {
             var SettingFinanceOperations = await _mediator.Send(request);
@@ -45,7 +45,7 @@ namespace BravoHC.Controllers
             return Ok(SettingFinanceOperations);
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdSettingFinanceOperationQueryRequest { Id = id };

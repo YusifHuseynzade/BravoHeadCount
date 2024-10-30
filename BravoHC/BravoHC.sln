@@ -59,9 +59,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyOrderDetails", "MoneyO
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SettingFinanceOperationDetails", "SettingFinanceOperationDetails\SettingFinanceOperationDetails.csproj", "{FA1BB06C-76C5-44CA-A956-E4DDE4C008C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrolleyTypeDetails", "TrolleyTypeDetails\TrolleyTypeDetails.csproj", "{B05ED2CF-D870-4B00-9CB7-29FAE211B8E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrolleyTypeDetails", "TrolleyTypeDetails\TrolleyTypeDetails.csproj", "{B05ED2CF-D870-4B00-9CB7-29FAE211B8E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrolleyDetails", "TrolleyDetails\TrolleyDetails.csproj", "{AE7DD034-45B7-43A3-845F-895FC96E7F73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrolleyDetails", "TrolleyDetails\TrolleyDetails.csproj", "{AE7DD034-45B7-43A3-845F-895FC96E7F73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneralSettingDetails", "GeneralSettingDetails\GeneralSettingDetails.csproj", "{AB5E39F0-B6DF-4327-A146-ADF196C49F47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -185,6 +187,10 @@ Global
 		{AE7DD034-45B7-43A3-845F-895FC96E7F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE7DD034-45B7-43A3-845F-895FC96E7F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE7DD034-45B7-43A3-845F-895FC96E7F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB5E39F0-B6DF-4327-A146-ADF196C49F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB5E39F0-B6DF-4327-A146-ADF196C49F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB5E39F0-B6DF-4327-A146-ADF196C49F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB5E39F0-B6DF-4327-A146-ADF196C49F47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,6 +221,7 @@ Global
 		{FA1BB06C-76C5-44CA-A956-E4DDE4C008C4} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 		{B05ED2CF-D870-4B00-9CB7-29FAE211B8E4} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 		{AE7DD034-45B7-43A3-845F-895FC96E7F73} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
+		{AB5E39F0-B6DF-4327-A146-ADF196C49F47} = {7286184C-0559-4CE9-B882-4947B5C7EC28}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4379445D-F582-4EA4-AD1F-FF40A11DB40E}

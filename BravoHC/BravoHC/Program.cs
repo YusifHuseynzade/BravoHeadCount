@@ -8,6 +8,7 @@ using Domain.Entities;
 using EmployeeDetails;
 using EmployeeDetails.ExcelImportService;
 using EncashmentDetails;
+using GeneralSettingDetails;
 using EndOfMonthReportDetails;
 using ExpensesReportDetails;
 using FluentValidation.AspNetCore;
@@ -140,6 +141,7 @@ builder.Services.AddMoneyOrderServices();
 builder.Services.AddSettingFinanceOperationServices();
 builder.Services.AddTrolleyServices();
 builder.Services.AddTrolleyTypeServices();
+builder.Services.AddGeneralSettingServices();
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(

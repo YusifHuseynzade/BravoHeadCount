@@ -11,9 +11,11 @@ using EmployeeDetails.Profiles;
 using EncashmentDetails.Profiles;
 using EndOfMonthReportDetails.Profiles;
 using ExpensesReportDetails.Profiles;
+using GeneralSettingDetails.Profiles;
 using HeadCountBackGroundColorDetails.Profiles;
 using HeadCountDetails.HeadCountExportedService;
 using HeadCountDetails.Profiles;
+using Infrastructure.BackgroundServices;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
@@ -81,6 +83,7 @@ namespace Infrastructure
             builder.RegisterType<ExpensesReportHistoryRepository>().As<IExpensesReportHistoryRepository>();
             builder.RegisterType<MoneyOrderHistoryRepository>().As<IMoneyOrderHistoryRepository>();
             builder.RegisterType<TrolleyHistoryRepository>().As<ITrolleyHistoryRepository>();
+            builder.RegisterType<GeneralSettingRepository>().As<IGeneralSettingRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<ScheduledDataExportService>().AsSelf().InstancePerLifetimeScope();
@@ -93,12 +96,15 @@ namespace Infrastructure
             //builder.RegisterType<SummaryCronJobService>()
             //.As<IHostedService>()  // IHostedService olarak kaydet
             //.SingleInstance();
-            builder.RegisterType<AttendanceBackgroundService>()
-            .As<IHostedService>()  // IHostedService olarak kaydet
-            .SingleInstance();
-            builder.RegisterType<EmployeeProjectChangeChecker>()
-            .As<IHostedService>()  // IHostedService olarak kaydet
-            .SingleInstance();
+            //builder.RegisterType<AttendanceBackgroundService>()
+            //.As<IHostedService>()  // IHostedService olarak kaydet
+            //.SingleInstance();
+            //builder.RegisterType<EmployeeProjectChangeChecker>()
+            //.As<IHostedService>()  // IHostedService olarak kaydet
+            //.SingleInstance();
+            builder.RegisterType<GeneralSettingsCronJobService>()
+           .As<IHostedService>()  // IHostedService olarak kaydet
+           .SingleInstance();
 
 
             builder.Register(ctx =>
@@ -130,6 +136,7 @@ namespace Infrastructure
                     cfg.AddProfile(new MoneyOrderMapper(httpContextAccessor));
                     cfg.AddProfile(new TrolleyMapper(httpContextAccessor));
                     cfg.AddProfile(new TrolleyTypeMapper(httpContextAccessor));
+                    cfg.AddProfile(new GeneralSettingMapper(httpContextAccessor));
                 });
 
                 return config;

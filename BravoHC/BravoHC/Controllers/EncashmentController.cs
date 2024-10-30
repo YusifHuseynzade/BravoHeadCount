@@ -20,25 +20,25 @@ namespace BravoHC.Controllers
             _mediator = mediator;
         }
         [HttpPost]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Add([FromQuery] CreateEncashmentCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpDelete]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Delete([FromBody] DeleteEncashmentCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpPut]
-        [Authorize(Roles = "Admin, Recruiter")]
+        //[Authorize(Roles = "Admin, Recruiter")]
         public async Task<IActionResult> Update([FromQuery] UpdateEncashmentCommandRequest request)
         {
             return Ok(await _mediator.Send(request));
         }
         [HttpGet]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllEncashmentQueryRequest request)
         {
             var Encashments = await _mediator.Send(request);
@@ -46,7 +46,7 @@ namespace BravoHC.Controllers
             return Ok(Encashments);
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetById(int id)
         {
             var requestModel = new GetByIdEncashmentQueryRequest { Id = id };
@@ -57,7 +57,7 @@ namespace BravoHC.Controllers
                 : NotFound(new { Message = "Encashment not found." });
         }
         [HttpGet("encashmenthistory")]
-        [Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
+        //[Authorize(Roles = "Admin, HR Staff, Recruiter, Store Management")]
         public async Task<IActionResult> GetHistory([FromQuery] GetEncashmentHistoryQueryRequest request)
         {
             var encashmentHistory = await _mediator.Send(request);
