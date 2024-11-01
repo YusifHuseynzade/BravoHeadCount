@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -32,8 +32,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BGSStockRequestDetails\BGSStockRequestDetails.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\DCStockDetails\DCStockDetails.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\StoreStockRequestDetails\StoreStockRequestDetails.csproj" />
+    <ProjectReference Include="..\TransactionPageDetails\TransactionPageDetails.csproj" />
+    <ProjectReference Include="..\UniformAppDetails\UniformDetails.csproj" />
+    <ProjectReference Include="..\UniformConditionDetails\UniformConditionDetails.csproj" />
   </ItemGroup>
 
 </Project>

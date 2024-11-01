@@ -14,6 +14,8 @@ namespace Domain.Entities
         public string PhoneNumber { get; set; }
         public string? RecruiterComment { get; set; }
         public string? Image { get; set; }
+        public string PantSize { get; set; }
+        public string ShirtSize { get; set; }
         public int? ResidentalAreaId { get; set; }
         public ResidentalArea? ResidentalArea { get; set; }
         public int? BakuDistrictId { get; set; }
@@ -38,5 +40,7 @@ namespace Domain.Entities
         public List<SickLeave> SickLeaves { get; set; }
         public List<VacationSchedule> VacationSchedules { get; set; }
         public List<EmployeeBalance> EmployeeBalances { get; set; }
+        public List<StoreStockRequest> StoreStockRequests { get; set; }
+        public List<TransactionPage> Transactions { get; set; }
     }
 }

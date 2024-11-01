@@ -23,7 +23,6 @@ namespace Infrastructure.Configurations
             builder.Property(t => t.BrokenTrolleysCount)
                    .IsRequired();
 
-            // Relationships
             builder.HasOne(t => t.Project)
                    .WithMany(p => p.Trolleys)
                    .HasForeignKey(t => t.ProjectId)

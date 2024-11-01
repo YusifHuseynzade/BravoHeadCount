@@ -51,7 +51,7 @@ namespace ScheduledDataDetails.Handlers.CommandHandlers
                     _logger.LogError($"Error processing attendance data: {ex.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
 
@@ -90,11 +90,13 @@ namespace ScheduledDataDetails.Handlers.CommandHandlers
                 {
                     scheduledData.FactId = factId; // Fact ID'sini ekleme
                     await _scheduledDataRepository.UpdateAsync(scheduledData);
+                    await _scheduledDataRepository.CommitAsync();
                 }
                 else
                 {
                     _logger.LogWarning($"No scheduled data found for EmployeeId: {employeeId} on Date: {accessDate:yyyy-MM-dd}");
                 }
+
             }
 
             await _scheduledDataRepository.CommitAsync();
@@ -108,24 +110,42 @@ namespace ScheduledDataDetails.Handlers.CommandHandlers
             {
                 await conn.OpenAsync();
                 var query = @"
-                    SELECT EmployeeID, AccessDateAndTime, AccessDate, DeviceName, PersonName
-                    FROM [HikVision].[dbo].[EmployeeAttendance]
-                    WHERE AccessDate >= DATEADD(DAY, -1, GETDATE())
-                ";
+            SELECT EmployeeID, AccessDateAndTime, AccessDate, DeviceName, PersonName
+            FROM [HikVision].[dbo].[EmployeeAttendance]
+            WHERE AccessDate >= DATEADD(DAY, -1, GETDATE())";
 
                 using (var command = new SqlCommand(query, conn))
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        data.Add(new AttendanceRecord
+                        DateTime accessDateTime;
+                        DateTime accessDate;
+
+                        // AccessDateAndTime ve AccessDate için doğru formatı belirleyin
+                        var accessDateTimeStr = reader["AccessDateAndTime"].ToString();
+                        var accessDateStr = reader["AccessDate"].ToString();
+
+                        // Format belirleyin (örneğin: "yyyyMMddTHH:mm:ss")
+                        var format = "yyyyMMddTHH:mm:ss";
+
+                        // Parse işlemi
+                        if (DateTime.TryParseExact(accessDateTimeStr, format, null, System.Globalization.DateTimeStyles.None, out accessDateTime) &&
+                            DateTime.TryParse(accessDateStr, out accessDate))
                         {
-                            EmployeeId = reader["EmployeeID"].ToString(),
-                            AccessDateTime = DateTime.Parse(reader["AccessDateAndTime"].ToString()),
-                            AccessDate = DateTime.Parse(reader["AccessDate"].ToString()),
-                            DeviceName = reader["DeviceName"].ToString(),
-                            PersonName = reader["PersonName"].ToString()
-                        });
+                            data.Add(new AttendanceRecord
+                            {
+                                EmployeeId = reader["EmployeeID"].ToString(),
+                                AccessDateTime = accessDateTime,
+                                AccessDate = accessDate,
+                                DeviceName = reader["DeviceName"].ToString(),
+                                PersonName = reader["PersonName"].ToString()
+                            });
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"Failed to parse date for EmployeeID: {reader["EmployeeID"]}");
+                        }
                     }
                 }
             }

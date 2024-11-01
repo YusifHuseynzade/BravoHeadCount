@@ -11,6 +11,7 @@ namespace Domain.Entities
         public string Name { get; set; }
         public string? JobDescription { get; set; }
         public List<Employee> Employees { get; set; }
+        public List<UniformCondition> UniformConditions { get; set; }
         public void SetDetail(string name)
         {
             this.Name = name;

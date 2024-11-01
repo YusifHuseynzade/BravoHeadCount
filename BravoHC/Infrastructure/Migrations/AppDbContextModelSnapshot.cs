@@ -219,6 +219,51 @@ namespace Infrastructure.Migrations
                     b.ToTable("BakuTargets");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BGSStockRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Count")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UniformId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UniformId");
+
+                    b.ToTable("BGSStockRequests");
+                });
+
             modelBuilder.Entity("Domain.Entities.Branch", b =>
                 {
                     b.Property<int>("Id")
@@ -234,6 +279,57 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Branch");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DCStock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ImportedStockCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ReceptionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("StockCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StoreOrUser")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("UniformId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UniformId");
+
+                    b.ToTable("DCStocks");
                 });
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
@@ -274,6 +370,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
+                    b.Property<string>("PantSize")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -294,6 +394,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("SectionId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ShirtSize")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("StartedDate")
                         .HasColumnType("timestamp with time zone");
@@ -1511,6 +1615,51 @@ namespace Infrastructure.Migrations
                     b.ToTable("StoreHistories");
                 });
 
+            modelBuilder.Entity("Domain.Entities.StoreStockRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Count")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RequestCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UniformId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("UniformId");
+
+                    b.ToTable("StoreStockRequests");
+                });
+
             modelBuilder.Entity("Domain.Entities.SubSection", b =>
                 {
                     b.Property<int>("Id")
@@ -1573,6 +1722,84 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MonthId");
 
                     b.ToTable("Summaries");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TransactionPage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AcceptedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<List<int>>("DCStockIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("DeductedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeductedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EnactedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HandoveredBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsBBgs")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsEnacted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFirstDistribution")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("PayrollStatus")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Receiver")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SenderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TransactionStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UniCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UniformId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UniformId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Domain.Entities.Trolley", b =>
@@ -1688,6 +1915,96 @@ namespace Infrastructure.Migrations
                     b.ToTable("TrolleyTypes");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Uniform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UniCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UniName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UniType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UsageDuration")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Uniforms");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UniformCondition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountUniform")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FunctionalArea")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PositionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UniName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UniType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsageDuration")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("UniformConditions");
+                });
+
             modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -1744,6 +2061,36 @@ namespace Infrastructure.Migrations
                     b.Navigation("Encashment");
 
                     b.Navigation("ExpensesReport");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BGSStockRequest", b =>
+                {
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany("BGSStockRequests")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Uniform", "Uniform")
+                        .WithMany("BGSStockRequests")
+                        .HasForeignKey("UniformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Uniform");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DCStock", b =>
+                {
+                    b.HasOne("Domain.Entities.Uniform", "Uniform")
+                        .WithMany("DCStocks")
+                        .HasForeignKey("UniformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Uniform");
                 });
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
@@ -2149,6 +2496,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("Domain.Entities.StoreStockRequest", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("StoreStockRequests")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Uniform", "Uniform")
+                        .WithMany("StoreStockRequests")
+                        .HasForeignKey("UniformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Uniform");
+                });
+
             modelBuilder.Entity("Domain.Entities.SubSection", b =>
                 {
                     b.HasOne("Domain.Entities.Section", "Section")
@@ -2179,6 +2545,33 @@ namespace Infrastructure.Migrations
                     b.Navigation("Month");
                 });
 
+            modelBuilder.Entity("Domain.Entities.TransactionPage", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("Transactions")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany("Transactions")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Uniform", "Uniform")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UniformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Uniform");
+                });
+
             modelBuilder.Entity("Domain.Entities.Trolley", b =>
                 {
                     b.HasOne("Domain.Entities.Project", "Project")
@@ -2196,6 +2589,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("TrolleyType");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UniformCondition", b =>
+                {
+                    b.HasOne("Domain.Entities.Position", "Position")
+                        .WithMany("UniformConditions")
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Position");
                 });
 
             modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>
@@ -2239,7 +2643,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("SickLeaves");
 
+                    b.Navigation("StoreStockRequests");
+
                     b.Navigation("Summaries");
+
+                    b.Navigation("Transactions");
 
                     b.Navigation("VacationSchedules");
                 });
@@ -2272,10 +2680,14 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Position", b =>
                 {
                     b.Navigation("Employees");
+
+                    b.Navigation("UniformConditions");
                 });
 
             modelBuilder.Entity("Domain.Entities.Project", b =>
                 {
+                    b.Navigation("BGSStockRequests");
+
                     b.Navigation("Employees");
 
                     b.Navigation("ProjectSections");
@@ -2283,6 +2695,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("ScheduledDatas");
 
                     b.Navigation("Stores");
+
+                    b.Navigation("Transactions");
 
                     b.Navigation("Trolleys");
                 });
@@ -2314,6 +2728,17 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.TrolleyType", b =>
                 {
                     b.Navigation("Trolleys");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Uniform", b =>
+                {
+                    b.Navigation("BGSStockRequests");
+
+                    b.Navigation("DCStocks");
+
+                    b.Navigation("StoreStockRequests");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Domain.Entities.VacationSchedule", b =>

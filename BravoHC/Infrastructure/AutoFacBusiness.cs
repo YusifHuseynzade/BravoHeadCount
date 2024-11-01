@@ -4,9 +4,10 @@ using AutoMapper;
 using BakuDistrictDetails.Profiles;
 using BakuMetroDetails.Profiles;
 using BakuTargetDetails.Profiles;
+using BGSStockRequestDetails.Profiles;
+using DCStockDetails.Profiles;
 using Domain.IRepositories;
 using Domain.IServices;
-using EmployeeDetails.Handlers.CommandHandlers;
 using EmployeeDetails.Profiles;
 using EncashmentDetails.Profiles;
 using EndOfMonthReportDetails.Profiles;
@@ -15,7 +16,6 @@ using GeneralSettingDetails.Profiles;
 using HeadCountBackGroundColorDetails.Profiles;
 using HeadCountDetails.HeadCountExportedService;
 using HeadCountDetails.Profiles;
-using Infrastructure.BackgroundServices;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
@@ -24,17 +24,20 @@ using MoneyOrderDetails.Profiles;
 using PositionDetails.Profiles;
 using ProjectDetails.Profiles;
 using ResidentalAreaDetails.Profiles;
-using ScheduledDataBackgroundService;
 using ScheduledDataDetails.Handlers.CommandHandlers;
 using ScheduledDataDetails.Profiles;
 using ScheduledDataDetails.ScheduledDataExportService;
 using SectionDetails.Profiles;
 using SickLeaveDetails.Profiles;
 using StoreDetails.Profiles;
+using StoreStockRequestDetails.Profiles;
 using SubSectionDetails.Profiles;
 using SummaryDetails.Profiles;
+using TransactionPageDetails.Profiles;
 using TrolleyDetails.Profiles;
 using TrolleyTypeDetails.Profiles;
+using UniformConditionDetails.Profiles;
+using UniformDetails.Profiles;
 using VacationScheduleDetails.Profiles;
 
 namespace Infrastructure
@@ -84,6 +87,12 @@ namespace Infrastructure
             builder.RegisterType<MoneyOrderHistoryRepository>().As<IMoneyOrderHistoryRepository>();
             builder.RegisterType<TrolleyHistoryRepository>().As<ITrolleyHistoryRepository>();
             builder.RegisterType<GeneralSettingRepository>().As<IGeneralSettingRepository>();
+            builder.RegisterType<UniformRepository>().As<IUniformRepository>();
+            builder.RegisterType<UniformConditionRepository>().As<IUniformConditionRepository>();
+            builder.RegisterType<DCStockRepository>().As<IDCStockRepository>();
+            builder.RegisterType<BGSStockRequestRepository>().As<IBGSStockRequestRepository>();
+            builder.RegisterType<StoreStockRequestRepository>().As<IStoreStockRequestRepository>();
+            builder.RegisterType<TransactionPageRepository>().As<ITransactionPageRepository>();
             builder.RegisterType<SmsService>().As<ISmsService>();
             builder.RegisterType<HeadCountExportService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<ScheduledDataExportService>().AsSelf().InstancePerLifetimeScope();
@@ -96,15 +105,15 @@ namespace Infrastructure
             //builder.RegisterType<SummaryCronJobService>()
             //.As<IHostedService>()  // IHostedService olarak kaydet
             //.SingleInstance();
-            //builder.RegisterType<AttendanceBackgroundService>()
-            //.As<IHostedService>()  // IHostedService olarak kaydet
-            //.SingleInstance();
-            builder.RegisterType<EmployeeProjectChangeChecker>()
+            builder.RegisterType<AttendanceBackgroundService>()
             .As<IHostedService>()  // IHostedService olarak kaydet
             .SingleInstance();
-            builder.RegisterType<GeneralSettingsCronJobService>()
-           .As<IHostedService>()  // IHostedService olarak kaydet
-           .SingleInstance();
+            // builder.RegisterType<EmployeeProjectChangeChecker>()
+            // .As<IHostedService>()  // IHostedService olarak kaydet
+            // .SingleInstance();
+            // builder.RegisterType<GeneralSettingsCronJobService>()
+            //.As<IHostedService>()  // IHostedService olarak kaydet
+            //.SingleInstance();
 
 
             builder.Register(ctx =>
@@ -137,6 +146,12 @@ namespace Infrastructure
                     cfg.AddProfile(new TrolleyMapper(httpContextAccessor));
                     cfg.AddProfile(new TrolleyTypeMapper(httpContextAccessor));
                     cfg.AddProfile(new GeneralSettingMapper(httpContextAccessor));
+                    cfg.AddProfile(new UniformMapper(httpContextAccessor));
+                    cfg.AddProfile(new UniformConditionMapper(httpContextAccessor));
+                    cfg.AddProfile(new TransactionPageMapper(httpContextAccessor));
+                    cfg.AddProfile(new DCStockMapper(httpContextAccessor));
+                    cfg.AddProfile(new BGSStockRequestMapper(httpContextAccessor));
+                    cfg.AddProfile(new StoreStockRequestMapper(httpContextAccessor));
                 });
 
                 return config;

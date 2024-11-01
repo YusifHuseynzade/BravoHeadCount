@@ -20,5 +20,4 @@ public class GetAllScheduledDataQueryResponse
     public int HolidayBalance { get; set; }
     public int VacationBalance { get; set; }
     public List<ScheduledDataItem> ScheduledData { get; set; }
-
 }

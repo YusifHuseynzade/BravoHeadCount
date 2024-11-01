@@ -47,6 +47,12 @@ namespace Common.Interfaces
         public DbSet<MoneyOrderHistory> MoneyOrderHistories { get; set; }
         public DbSet<TrolleyHistory> TrolleyHistories { get; set; }
         public DbSet<GeneralSetting> GeneralSettings { get; set; }
+        public DbSet<DCStock> DCStocks { get; set; }
+        public DbSet<BGSStockRequest> BGSStockRequests { get; set; }
+        public DbSet<StoreStockRequest> StoreStockRequests { get; set; }
+        public DbSet<TransactionPage> Transactions { get; set; }
+        public DbSet<Uniform> Uniforms { get; set; }
+        public DbSet<UniformCondition> UniformConditions { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

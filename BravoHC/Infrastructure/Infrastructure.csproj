@@ -26,7 +26,9 @@
     <ProjectReference Include="..\BakuDistrictDetails\BakuDistrictDetails.csproj" />
     <ProjectReference Include="..\BakuMetroDetails\BakuMetroDetails.csproj" />
     <ProjectReference Include="..\BakuTargetDetails\BakuTargetDetails.csproj" />
+    <ProjectReference Include="..\BGSStockRequestDetails\BGSStockRequestDetails.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\DCStockDetails\DCStockDetails.csproj" />
     <ProjectReference Include="..\EmployeeDetails\EmployeeDetails.csproj" />
     <ProjectReference Include="..\EncashmentDetails\EncashmentDetails.csproj" />
     <ProjectReference Include="..\EndOfMonthReportDetails\EndOfMonthReportDetails.csproj" />
@@ -43,10 +45,14 @@
     <ProjectReference Include="..\SettingFinanceOperationDetails\SettingFinanceOperationDetails.csproj" />
     <ProjectReference Include="..\SickLeaveDetails\SickLeaveDetails.csproj" />
     <ProjectReference Include="..\StoreDetails\StoreDetails.csproj" />
+    <ProjectReference Include="..\StoreStockRequestDetails\StoreStockRequestDetails.csproj" />
     <ProjectReference Include="..\SubSectionDetails\SubSectionDetails.csproj" />
     <ProjectReference Include="..\SummaryDetails\SummaryDetails.csproj" />
+    <ProjectReference Include="..\TransactionPageDetails\TransactionPageDetails.csproj" />
     <ProjectReference Include="..\TrolleyDetails\TrolleyDetails.csproj" />
     <ProjectReference Include="..\TrolleyTypeDetails\TrolleyTypeDetails.csproj" />
+    <ProjectReference Include="..\UniformAppDetails\UniformDetails.csproj" />
+    <ProjectReference Include="..\UniformConditionDetails\UniformConditionDetails.csproj" />
     <ProjectReference Include="..\VacationScheduleDetails\VacationScheduleDetails.csproj" />
   </ItemGroup>
 

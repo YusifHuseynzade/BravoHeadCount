@@ -30,6 +30,8 @@ namespace Domain.Entities
         public List<Store> Stores { get; set; }
         public List<ScheduledData> ScheduledDatas { get; set; }
         public List<Trolley> Trolleys { get; set; }
+        public List<BGSStockRequest> BGSStockRequests { get; set; }
+        public List<TransactionPage> Transactions { get; set; }
         public string? StoreOpeningDate { get; set; }
         public string? StoreClosedDate { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow.AddHours(4);
